@@ -1,8 +1,8 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
-import com.it.doubledi.cinemamanager.common.model.entity.AuditableEntity;
-import com.it.doubledi.cinemamanager.common.model.enums.Property;
-import com.it.doubledi.cinemamanager.common.model.validator.ValidateConstraint;
+import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
+import com.it.doubledi.cinemamanager._common.model.enums.Property;
+import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

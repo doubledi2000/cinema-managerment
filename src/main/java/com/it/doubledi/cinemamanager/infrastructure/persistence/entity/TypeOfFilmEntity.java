@@ -1,7 +1,7 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
-import com.it.doubledi.cinemamanager.common.model.entity.AuditableEntity;
-import com.it.doubledi.cinemamanager.common.model.validator.ValidateConstraint;
+import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
+import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TypeOfFilmStatus;
 import lombok.Data;
 import org.hibernate.Hibernate;

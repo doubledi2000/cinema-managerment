@@ -1,14 +1,13 @@
 package com.it.doubledi.cinemamanager.domain;
 
-import com.it.doubledi.cinemamanager.common.model.domain.AuditableDomain;
+import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.FilmStatus;
 import lombok.*;
 
 import java.time.LocalDate;
 
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter(AccessLevel.PRIVATE)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Film extends AuditableDomain {

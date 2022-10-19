@@ -1,6 +1,6 @@
 package com.it.doubledi.cinemamanager.infrastructure.support.enums;
 
-import com.it.doubledi.cinemamanager.common.model.enums.Scope;
+import com.it.doubledi.cinemamanager._common.model.enums.Scope;
 
 import java.util.List;
 
