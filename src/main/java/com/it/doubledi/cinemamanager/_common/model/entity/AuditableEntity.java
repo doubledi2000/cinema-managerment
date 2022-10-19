@@ -25,7 +25,7 @@ public class AuditableEntity implements Serializable {
     protected String createdBy;
 
     @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     protected Instant createdAt = Instant.now();
 
     @LastModifiedBy
@@ -33,6 +33,6 @@ public class AuditableEntity implements Serializable {
     protected String lastModifyBy;
 
     @LastModifiedDate
-    @Column(name = "last_modify_at", nullable = false)
+    @Column(name = "last_modify_at")
     protected Instant lastModifyAt = Instant.now();
 }

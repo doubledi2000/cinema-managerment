@@ -51,4 +51,8 @@ public class Room extends AuditableDomain {
             this.rows = rows;
         }
     }
+
+    public void delete(){
+
+    }
 }

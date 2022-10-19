@@ -9,20 +9,17 @@ import com.it.doubledi.cinemamanager.application.service.RoomService;
 import com.it.doubledi.cinemamanager.domain.Chair;
 import com.it.doubledi.cinemamanager.domain.Room;
 import com.it.doubledi.cinemamanager.domain.Row;
-import com.it.doubledi.cinemamanager.domain.Seat;
 import com.it.doubledi.cinemamanager.domain.command.RoomCreateCmd;
 import com.it.doubledi.cinemamanager.domain.repository.RoomRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.ChairEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RoomEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RowEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.SeatEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.ChairEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RoomEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RowEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.SeatEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RoomEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RowEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,21 +33,23 @@ public class RoomServiceImpl implements RoomService {
     private final RoomEntityMapper roomEntityMapper;
     private final AutoMapper autoMapper;
     private final SeqRepository seqRepository;
-    private final SeatEntityMapper chairEntityMapper;
     private final RowEntityMapper rowEntityMapper;
+    private final RowEntityRepository rowEntityRepository;
 
     public RoomServiceImpl(RoomEntityRepository roomEntityRepository,
                            RoomRepository roomRepository,
                            RoomEntityMapper roomEntityMapper,
                            AutoMapper autoMapper,
-                           SeqRepository seqRepository, SeatEntityMapper chairEntityMapper, RowEntityMapper rowEntityMapper) {
+                           SeqRepository seqRepository,
+                           RowEntityMapper rowEntityMapper,
+                           RowEntityRepository rowEntityRepository) {
         this.roomEntityRepository = roomEntityRepository;
         this.roomRepository = roomRepository;
         this.roomEntityMapper = roomEntityMapper;
         this.autoMapper = autoMapper;
         this.seqRepository = seqRepository;
-        this.chairEntityMapper = chairEntityMapper;
         this.rowEntityMapper = rowEntityMapper;
+        this.rowEntityRepository = rowEntityRepository;
     }
 
     @Override
@@ -74,6 +73,12 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room getById(String id) {
+        Room room = roomRepository.getById(id);
+        List<RowEntity> rowEntities = this.rowEntityRepository.findRowByRoomId(id);
+        if(CollectionUtils.isEmpty(rowEntities)) {
+            List<Row> rows = this.rowEntityMapper.toDomain(rowEntities);
+            List<String>
+        }
         return null;
     }
 
@@ -98,9 +103,9 @@ public class RoomServiceImpl implements RoomService {
                     .rowNumber(i+1)
                     .id(IdUtils.nextId())
                     .build();
-            List<Seat> seats = new ArrayList<>();
+            List<Chair> chairs = new ArrayList<>();
             for (int j = 0; j < room.getMaxChairPerRow();j++) {
-                Seat chair = Seat.builder()
+                Chair chair = Chair.builder()
                         .id(IdUtils.nextId())
                         .rowId(row.getId())
                         .deleted(Boolean.FALSE)
@@ -109,15 +114,12 @@ public class RoomServiceImpl implements RoomService {
                         .code(seqRepository.generateChairCode())
                         .name("A")
                         .build();
-                SeatEntity chairEntity = this.chairEntityMapper.toEntity(chair);
-                seats.add(chair);
+                chairs.add(chair);
 
             }
-            List<SeatEntity> chairEntities = this.chairEntityMapper.toEntity(seats);
-            row.enrichChairs(seats);
+            row.enrichChairs(chairs);
             rows.add(row);
         }
-        List<RowEntity> rowEntities = rowEntityMapper.toEntity(rows);
         return rows;
     }
 

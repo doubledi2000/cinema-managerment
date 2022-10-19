@@ -37,11 +37,9 @@ public class RoomEntity extends AuditableEntity {
     private Boolean deleted;
 
     @Column(name = "max_row")
-    @Size(min = 1)
     private Integer maxRow;
 
     @Column(name = "max_chair_per_row")
-    @Size(min = 1)
     private Integer maxChairPerRow;
 
     @Column(name = "location_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)

@@ -4,10 +4,8 @@ import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.web.AbstractDomainRepository;
 import com.it.doubledi.cinemamanager.domain.Chair;
 import com.it.doubledi.cinemamanager.domain.Row;
-import com.it.doubledi.cinemamanager.domain.Seat;
 import com.it.doubledi.cinemamanager.domain.repository.ChairRepository;
 import com.it.doubledi.cinemamanager.domain.repository.RowRepository;
-import com.it.doubledi.cinemamanager.domain.repository.SeatRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RowEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RowEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RowEntityRepository;
@@ -23,11 +21,11 @@ public class RowDomainRepositoryImpl extends AbstractDomainRepository<Row, RowEn
 
     private final RowEntityRepository rowEntityRepository;
     private final RowEntityMapper rowEntityMapper;
-    private final SeatRepository chairRepository;
+    private final ChairRepository chairRepository;
 
     public RowDomainRepositoryImpl(RowEntityRepository rowEntityRepository,
                                    RowEntityMapper rowEntityMapper,
-                                   SeatRepository chairRepository) {
+                                   ChairRepository chairRepository) {
         super(rowEntityRepository, rowEntityMapper);
         this.rowEntityRepository = rowEntityRepository;
         this.rowEntityMapper = rowEntityMapper;
@@ -49,7 +47,7 @@ public class RowDomainRepositoryImpl extends AbstractDomainRepository<Row, RowEn
 
     @Override
     public List<Row> saveALl(List<Row> domains) {
-        List<Seat> chairs = new ArrayList<>();
+        List<Chair> chairs = new ArrayList<>();
 
         super.saveALl(domains);
         domains.forEach(d -> {

@@ -22,13 +22,18 @@ public class Row  extends AuditableDomain {
     private String roomId;
 
     private Room room;
-    private List<Seat> chairs;
+    private List<Chair> chairs;
 
-    public void enrichChairs(List<Seat> chairs) {
+    public void enrichChairs(List<Chair> chairs) {
         if(!CollectionUtils.isEmpty(chairs)) {
             this.chairs = chairs;
         }else {
             this.chairs = new ArrayList<>();
         }
     }
+
+    public void delete(){
+
+    }
+
 }
