@@ -1,8 +1,10 @@
 package com.it.doubledi.cinemamanager.domain;
 
-import com.it.doubledi.cinemamanager.common.model.domain.AuditableDomain;
+import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import lombok.*;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -10,6 +12,7 @@ import java.util.List;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Row  extends AuditableDomain {
     private String id;
     private String code;
@@ -19,5 +22,13 @@ public class Row  extends AuditableDomain {
     private String roomId;
 
     private Room room;
-    private List<Chair> chairs;
+    private List<Seat> chairs;
+
+    public void enrichChairs(List<Seat> chairs) {
+        if(!CollectionUtils.isEmpty(chairs)) {
+            this.chairs = chairs;
+        }else {
+            this.chairs = new ArrayList<>();
+        }
+    }
 }

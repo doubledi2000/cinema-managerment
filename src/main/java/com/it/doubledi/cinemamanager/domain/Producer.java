@@ -1,6 +1,6 @@
 package com.it.doubledi.cinemamanager.domain;
 
-import com.it.doubledi.cinemamanager.common.model.domain.AuditableDomain;
+import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)

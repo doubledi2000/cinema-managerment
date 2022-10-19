@@ -1,6 +1,6 @@
 package com.it.doubledi.cinemamanager.infrastructure.support.errors;
 
-import com.it.doubledi.cinemamanager.common.model.errors.ResponseError;
+import com.it.doubledi.cinemamanager._common.model.dto.error.ResponseError;
 import lombok.Getter;
 
 @Getter

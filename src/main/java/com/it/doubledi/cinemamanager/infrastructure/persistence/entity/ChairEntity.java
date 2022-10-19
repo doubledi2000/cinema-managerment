@@ -1,9 +1,10 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
-import com.it.doubledi.cinemamanager.common.model.entity.AuditableEntity;
-import com.it.doubledi.cinemamanager.common.model.validator.ValidateConstraint;
+import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
+import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import org.hibernate.Hibernate;
+import org.hibernate.validator.constraints.br.CPF;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -23,6 +24,9 @@ public class ChairEntity extends AuditableEntity {
 
     @Column(name = "name", length = ValidateConstraint.LENGTH.NAME_MAX_LENGTH)
     private String name;
+
+    @Column(name = "serialOfChair")
+    private Integer serialOfChair;
 
     @Column(name = "chair_type", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)
     private ChairType chairType;
