@@ -4,8 +4,7 @@ import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter(AccessLevel.PRIVATE)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Producer extends AuditableDomain {

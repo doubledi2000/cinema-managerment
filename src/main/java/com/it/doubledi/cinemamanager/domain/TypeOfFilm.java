@@ -5,8 +5,7 @@ import com.it.doubledi.cinemamanager.infrastructure.support.enums.TypeOfFilmStat
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter(AccessLevel.PRIVATE)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class TypeOfFilm extends AuditableDomain {

@@ -8,11 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class Row  extends AuditableDomain {
     private String id;
     private String code;

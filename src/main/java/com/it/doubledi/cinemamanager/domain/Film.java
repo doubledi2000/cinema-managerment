@@ -7,8 +7,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter(AccessLevel.PRIVATE)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Film extends AuditableDomain {
