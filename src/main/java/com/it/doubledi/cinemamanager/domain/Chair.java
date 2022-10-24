@@ -9,8 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter(AccessLevel.PRIVATE)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

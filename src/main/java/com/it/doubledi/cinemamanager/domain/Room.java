@@ -12,10 +12,9 @@ import java.util.Collections;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class Room extends AuditableDomain {
     private String id;
     private String code;
