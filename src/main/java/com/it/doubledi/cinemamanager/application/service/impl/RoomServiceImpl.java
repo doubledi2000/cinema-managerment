@@ -77,7 +77,6 @@ public class RoomServiceImpl implements RoomService {
         List<RowEntity> rowEntities = this.rowEntityRepository.findRowByRoomId(id);
         if(CollectionUtils.isEmpty(rowEntities)) {
             List<Row> rows = this.rowEntityMapper.toDomain(rowEntities);
-            List<String>
         }
         return null;
     }

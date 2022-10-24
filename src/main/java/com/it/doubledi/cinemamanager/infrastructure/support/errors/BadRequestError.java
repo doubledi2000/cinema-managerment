@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum BadRequestError implements ResponseError {
+    TYPE_OF_FILM_CODE_ALREADY_EXISTED(404000001, "Type of film code existed"),
     ;
 
 

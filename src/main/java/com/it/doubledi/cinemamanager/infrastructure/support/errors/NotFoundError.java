@@ -6,6 +6,7 @@ public enum NotFoundError implements ResponseError {
     ROOM_NOT_FOUND(4040001, "Room not found"),
     ROW_NOT_FOUND(4040002, "row not found"),
     CHAIR_NOT_FOUND(4040003, "chair not found"),
+    TYPE_OF_FILM_NOT_FOUND(4040004, "chair not found"),
     ;
     private final Integer code;
     private final String message;
