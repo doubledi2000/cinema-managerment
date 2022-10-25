@@ -21,20 +21,10 @@ public class PriceByTimeEntity extends AuditableEntity {
     @Column(name = "end_at", nullable = false)
     private Integer endAt;
 
-    @Column(name = "price", nullable = false)
-    private Float price;
-
-    @Column(name = "ticket_type", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)
-    @Enumerated(EnumType.STRING)
-    private TicketType ticketType;
-
     @Column(name = "config_price_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
     private String configPriceId;
 
     @Column(name = "deleted")
     private Boolean deleted;
-
-    @Column(name = "priority")
-    private Integer priority;
 
 }

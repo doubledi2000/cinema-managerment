@@ -1,12 +1,15 @@
 package com.it.doubledi.cinemamanager.domain;
 
+import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.ConfigPriceCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.PriceByTimeCreateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +17,9 @@ import java.util.Objects;
 
 @Data
 @Builder
-public class PriceByTime extends AuditableEntity {
+@NoArgsConstructor
+@AllArgsConstructor
+public class PriceByTime extends AuditableDomain {
     private String id;
     private Integer startAt;
     private Integer endAt;

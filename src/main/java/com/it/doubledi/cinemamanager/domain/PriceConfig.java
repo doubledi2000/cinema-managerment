@@ -8,8 +8,10 @@ import com.it.doubledi.cinemamanager.domain.command.PriceByTimeCreateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.PriceConfigStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.PriceConfigType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.SpecialBy;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 
 import java.time.DayOfWeek;
@@ -19,6 +21,8 @@ import java.util.Objects;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PriceConfig extends AuditableDomain {
     private String id;
     private PriceConfigType type;
