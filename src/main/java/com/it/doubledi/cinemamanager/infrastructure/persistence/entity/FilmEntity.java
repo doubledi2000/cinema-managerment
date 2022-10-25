@@ -4,7 +4,10 @@ package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.FilmStatus;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -18,6 +21,9 @@ import java.util.Objects;
         @Index(name = "film_producer_id_idx", columnList = "producer_id"),
 })
 @Data
+//@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class FilmEntity extends AuditableEntity {
 
     @Id

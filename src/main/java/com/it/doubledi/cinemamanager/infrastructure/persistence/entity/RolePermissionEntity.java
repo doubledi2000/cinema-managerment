@@ -6,6 +6,7 @@ import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ import java.util.Objects;
 }
 )
 @Data
+//@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class RolePermissionEntity extends AuditableEntity {

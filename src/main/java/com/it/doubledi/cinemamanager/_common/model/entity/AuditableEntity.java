@@ -1,7 +1,10 @@
 package com.it.doubledi.cinemamanager._common.model.entity;
 
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -17,6 +20,9 @@ import java.time.Instant;
 @MappedSuperclass
 @Data
 @EntityListeners(AuditingEntityListener.class)
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuditableEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

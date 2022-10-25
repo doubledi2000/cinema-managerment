@@ -3,7 +3,10 @@ package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TypeOfFilmStatus;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -14,6 +17,9 @@ import java.util.Objects;
         @Index(name = "type_of_film_deleted_idx", columnList = "deleted")
 })
 @Data
+//@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TypeOfFilmEntity extends AuditableEntity {
     @Id
     @Column(name = "id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)

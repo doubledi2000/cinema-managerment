@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -19,9 +20,9 @@ import java.util.Objects;
         @Index(name = "role_deleted_idx", columnList = "deleted")
 })
 @Data
+//@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class RoleEntity extends AuditableEntity {
 
     @Id

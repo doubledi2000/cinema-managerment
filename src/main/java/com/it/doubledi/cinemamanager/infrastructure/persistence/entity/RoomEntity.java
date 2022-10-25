@@ -3,7 +3,10 @@ package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoomStatus;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -16,6 +19,9 @@ import java.util.Objects;
         @Index(name = "room_location_id_idx", columnList = "location_id")
 })
 @Data
+//@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RoomEntity extends AuditableEntity {
     @Id
     @Column(name = "id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH, nullable = false)

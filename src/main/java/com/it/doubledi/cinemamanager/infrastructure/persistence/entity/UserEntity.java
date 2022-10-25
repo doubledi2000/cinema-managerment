@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -18,9 +19,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "users")
 @Data
+//@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class UserEntity extends AuditableEntity {
 
     @Id

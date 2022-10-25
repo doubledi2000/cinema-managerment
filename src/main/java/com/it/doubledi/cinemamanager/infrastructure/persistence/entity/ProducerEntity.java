@@ -2,7 +2,10 @@ package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -13,6 +16,9 @@ import java.util.Objects;
         @Index(name = "producer_deleted_idx", columnList = "deleted")
 })
 @Data
+//@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProducerEntity extends AuditableEntity {
 
     @Id

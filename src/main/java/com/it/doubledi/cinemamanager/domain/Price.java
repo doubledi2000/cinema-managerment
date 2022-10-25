@@ -11,10 +11,6 @@ import lombok.experimental.SuperBuilder;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-//@SuperBuilder(toBuilder=true)
-public class FilmType extends AuditableDomain {
-    private String id;
-    private String filmId;
-    private String typeId;
-    private Boolean deleted;
+//@SuperBuilder
+public class Price extends AuditableDomain {
 }

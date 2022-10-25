@@ -6,11 +6,13 @@ import com.it.doubledi.cinemamanager.domain.command.TypeOfFilmCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.TypeOfFilmUpdateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TypeOfFilmStatus;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+//@SuperBuilder
 public class TypeOfFilm extends AuditableDomain {
     private String id;
     private String code;

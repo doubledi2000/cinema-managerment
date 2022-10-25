@@ -1,20 +1,24 @@
 package com.it.doubledi.cinemamanager.domain;
 
+import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
-import com.it.doubledi.cinemamanager.domain.command.ConfigPriceCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.PriceByTimeCreateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketType;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@Builder
-public class PriceByTime extends AuditableEntity {
+@NoArgsConstructor
+@AllArgsConstructor
+//@SuperBuilder
+public class PriceByTime extends AuditableDomain {
     private String id;
     private Integer startAt;
     private Integer endAt;
@@ -45,6 +49,19 @@ public class PriceByTime extends AuditableEntity {
                 break;
         }
         this.configPriceId = configPriceId;
+        this.deleted = Boolean.FALSE;
+    }
+
+    public void update(PriceByTimeCreateCmd cmd) {
+        this.deleted = Boolean.FALSE;
+        this.price = cmd.getPrice();
+    }
+
+    public void delete() {
+        this.deleted = Boolean.TRUE;
+    }
+
+    public void undelete() {
         this.deleted = Boolean.FALSE;
     }
 }
