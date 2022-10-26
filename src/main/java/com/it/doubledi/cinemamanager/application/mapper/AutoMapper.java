@@ -16,7 +16,8 @@ public interface AutoMapper {
 
     PriceByTimeCreateCmd from(PriceByTimeCreateRequest request);
 
-    ConfigPriceCreateCmd from(ConfigPriceCreateRequest request);
+    PriceConfigCreateCmd from(PriceConfigCreateRequest request);
 
     LocationPriceConfigCmd from(LocationPriceConfigRequest request);
+    LocationCreateCmd from(LocationCreateRequest request);
 }

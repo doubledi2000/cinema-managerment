@@ -9,5 +9,5 @@ import java.util.List;
 @Data
 public class LocationPriceConfigCmd {
     private String locationId;
-    private List<ConfigPriceCreateCmd> configPriceCreateRequests;
+    private List<PriceConfigCreateCmd> priceConfigs;
 }

@@ -2,20 +2,26 @@ package com.it.doubledi.cinemamanager.infrastructure.persistence.domainrepositor
 
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.web.AbstractDomainRepository;
+import com.it.doubledi.cinemamanager.domain.Price;
 import com.it.doubledi.cinemamanager.domain.PriceByTime;
 import com.it.doubledi.cinemamanager.domain.PriceConfig;
 import com.it.doubledi.cinemamanager.domain.repository.PriceByTimeRepository;
 import com.it.doubledi.cinemamanager.domain.repository.PriceConfigRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.PriceByTimeEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.PriceConfigEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.PriceEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceByTimeEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceConfigEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.PriceByTimeEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.PriceConfigEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.PriceEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.NotFoundError;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,18 +35,24 @@ public class PriceConfigDomainRepositoryImpl extends AbstractDomainRepository<Pr
     private final PriceByTimeEntityRepository priceByTimeEntityRepository;
     private final PriceByTimeEntityMapper priceByTimeEntityMapper;
     private final PriceByTimeRepository priceByTimeRepository;
+    private final PriceEntityRepository priceEntityRepository;
+    private final PriceEntityMapper priceEntityMapper;
 
     public PriceConfigDomainRepositoryImpl(PriceConfigEntityRepository priceConfigEntityRepository,
                                            PriceConfigEntityMapper priceConfigEntityMapper,
                                            PriceByTimeEntityRepository priceByTimeEntityRepository,
                                            PriceByTimeEntityMapper priceByTimeEntityMapper,
-                                           PriceByTimeRepository priceByTimeRepository) {
+                                           PriceByTimeRepository priceByTimeRepository,
+                                           PriceEntityRepository priceEntityRepository,
+                                           PriceEntityMapper priceEntityMapper) {
         super(priceConfigEntityRepository, priceConfigEntityMapper);
         this.priceConfigEntityRepository = priceConfigEntityRepository;
         this.priceConfigEntityMapper = priceConfigEntityMapper;
         this.priceByTimeEntityRepository = priceByTimeEntityRepository;
         this.priceByTimeEntityMapper = priceByTimeEntityMapper;
         this.priceByTimeRepository = priceByTimeRepository;
+        this.priceEntityRepository = priceEntityRepository;
+        this.priceEntityMapper = priceEntityMapper;
     }
 
     @Override
@@ -50,7 +62,7 @@ public class PriceConfigDomainRepositoryImpl extends AbstractDomainRepository<Pr
     }
 
     @Override
-    protected List<PriceConfig> enrichList(List<PriceConfig> priceConfigs) {
+    public List<PriceConfig> enrichList(List<PriceConfig> priceConfigs) {
         if (CollectionUtils.isEmpty(priceConfigs)) {
             return new ArrayList<>();
         }
@@ -58,15 +70,16 @@ public class PriceConfigDomainRepositoryImpl extends AbstractDomainRepository<Pr
         List<PriceByTimeEntity> priceByTimeEntities = this.priceByTimeEntityRepository.findAllByPriceConfigIds(priceConfigIds);
 
         List<PriceByTime> priceByTimes = this.priceByTimeEntityMapper.toDomain(priceByTimeEntities);
+        this.priceByTimeRepository.enrichList(priceByTimes);
         for (PriceConfig priceConfig : priceConfigs) {
-            List<PriceByTime> priceByTimesTmp = priceByTimes.stream().filter(p -> Objects.equals(p.getConfigPriceId(), priceConfig.getId())).collect(Collectors.toList());
+            List<PriceByTime> priceByTimesTmp = priceByTimes.stream().filter(p -> Objects.equals(p.getPriceConfigId(), priceConfig.getId())).collect(Collectors.toList());
             priceConfig.enrichPriceByTime(priceByTimesTmp);
         }
-
         return priceConfigs;
     }
 
     @Override
+    @Transactional
     public PriceConfig save(PriceConfig domain) {
         if (!CollectionUtils.isEmpty(domain.getPriceByTimes())) {
             this.priceByTimeRepository.saveALl(domain.getPriceByTimes());
@@ -75,19 +88,33 @@ public class PriceConfigDomainRepositoryImpl extends AbstractDomainRepository<Pr
     }
 
     @Override
+    @Transactional
     public List<PriceConfig> saveALl(List<PriceConfig> domains) {
         if (CollectionUtils.isEmpty(domains)) {
             return new ArrayList<>();
         }
         List<PriceByTime> priceByTimes = new ArrayList<>();
+        List<Price> prices = new ArrayList<>();
         for (PriceConfig domain : domains) {
             if (!CollectionUtils.isEmpty(domain.getPriceByTimes())) {
                 priceByTimes.addAll(domain.getPriceByTimes());
             }
         }
-        if (CollectionUtils.isEmpty(priceByTimes)) {
-            this.priceByTimeRepository.saveALl(priceByTimes);
+        for (PriceByTime priceByTime : priceByTimes) {
+            if(!CollectionUtils.isEmpty(priceByTime.getPrices())){
+                prices.addAll(priceByTime.getPrices());
+            }
         }
-        return super.saveALl(domains);
+        if(!CollectionUtils.isEmpty(prices)) {
+            List<PriceEntity> priceEntities = this.priceEntityMapper.toEntity(prices);
+            this.priceEntityRepository.saveAll(priceEntities);
+        }
+        if (!CollectionUtils.isEmpty(priceByTimes)) {
+            List<PriceByTimeEntity> priceByTimeEntities = this.priceByTimeEntityMapper.toEntity(priceByTimes);
+            this.priceByTimeEntityRepository.saveAll(priceByTimeEntities);
+        }
+        List<PriceConfigEntity> priceConfigEntities = this.priceConfigEntityMapper.toEntity(domains);
+        this.priceConfigEntityRepository.saveAll(priceConfigEntities);
+        return domains;
     }
 }

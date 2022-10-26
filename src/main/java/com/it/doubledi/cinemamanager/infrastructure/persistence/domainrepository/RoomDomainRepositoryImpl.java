@@ -2,14 +2,18 @@ package com.it.doubledi.cinemamanager.infrastructure.persistence.domainrepositor
 
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.web.AbstractDomainRepository;
+import com.it.doubledi.cinemamanager.domain.Chair;
 import com.it.doubledi.cinemamanager.domain.Room;
 import com.it.doubledi.cinemamanager.domain.Row;
 import com.it.doubledi.cinemamanager.domain.repository.RoomRepository;
 import com.it.doubledi.cinemamanager.domain.repository.RowRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.ChairEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RoomEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RowEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.ChairEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RoomEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RowEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.ChairEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RoomEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RowEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.NotFoundError;
@@ -28,18 +32,24 @@ public class RoomDomainRepositoryImpl extends AbstractDomainRepository<Room, Roo
     private final RowRepository rowRepository;
     private final RowEntityMapper rowEntityMapper;
     private final RowEntityRepository rowEntityRepository;
+    private final ChairEntityRepository chairEntityRepository;
+    private final ChairEntityMapper chairEntityMapper;
 
     public RoomDomainRepositoryImpl(RoomEntityRepository roomEntityRepository,
                                     RoomEntityMapper entityMapper,
                                     RowRepository rowRepository,
                                     RowEntityMapper rowEntityMapper,
-                                    RowEntityRepository rowEntityRepository) {
+                                    RowEntityRepository rowEntityRepository,
+                                    ChairEntityRepository chairEntityRepository,
+                                    ChairEntityMapper chairEntityMapper) {
         super(roomEntityRepository, entityMapper);
         this.roomEntityRepository = roomEntityRepository;
         this.roomEntityMapper = entityMapper;
         this.rowRepository = rowRepository;
         this.rowEntityMapper = rowEntityMapper;
         this.rowEntityRepository = rowEntityRepository;
+        this.chairEntityRepository = chairEntityRepository;
+        this.chairEntityMapper = chairEntityMapper;
     }
 
     @Override
@@ -75,8 +85,16 @@ public class RoomDomainRepositoryImpl extends AbstractDomainRepository<Room, Roo
     protected List<Room> enrichList(List<Room> rooms) {
         List<RowEntity> rowEntities = rowEntityRepository.findRowByRoomIds(rooms.stream().map(Room::getId).collect(Collectors.toList()));
         List<Row> rows = rowEntityMapper.toDomain(rowEntities);
+        List<ChairEntity> chairEntities = this.chairEntityRepository.getAllChairByRowIds(rows.stream().map(Row::getId).collect(Collectors.toList()));
+        List<Chair> chairs = this.chairEntityMapper.toDomain(chairEntities);
         for (Room room : rooms) {
             List<Row> rowTmp = rows.stream().filter(r -> Objects.equals(room.getId(), r.getRoomId())).collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(rowTmp)) {
+                for (Row row : rowTmp) {
+                    List<Chair> chairTmp = chairs.stream().filter(c->Objects.equals(c.getRowId(), row.getId())).collect(Collectors.toList());
+                    row.enrichChairs(chairTmp);
+                }
+            }
             room.enrichRows(rowTmp);
         }
         return rooms;

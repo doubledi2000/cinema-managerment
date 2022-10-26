@@ -13,5 +13,5 @@ public class LocationPriceConfigRequest extends Request {
 
     private String locationId;
 
-    private List<@Valid ConfigPriceCreateRequest> configPriceCreateRequests;
+    private List<@Valid PriceConfigCreateRequest> priceConfigs;
 }

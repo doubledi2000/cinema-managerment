@@ -7,4 +7,8 @@ import java.util.List;
 
 public interface PriceConfigService {
     List<PriceConfig> setUp(LocationPriceConfigRequest request);
+
+    List<PriceConfig> demo();
+
+    List<PriceConfig> getAllPriceConfigNotSpecial(String locationId);
 }

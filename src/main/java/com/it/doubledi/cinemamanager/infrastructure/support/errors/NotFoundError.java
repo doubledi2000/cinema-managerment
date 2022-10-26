@@ -9,6 +9,7 @@ public enum NotFoundError implements ResponseError {
     TYPE_OF_FILM_NOT_FOUND(4040004, "chair not found"),
     PRICE_CONFIG_NOT_FOUND(4040004, "price config not found"),
     PRICE_BY_TIME_NOT_FOUND(4040004, "price by time not found"),
+    LOCATION_NOT_FOUND(40040004, "Location not found")
 
     ;
     private final Integer code;

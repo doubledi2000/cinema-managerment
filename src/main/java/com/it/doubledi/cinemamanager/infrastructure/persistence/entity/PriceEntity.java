@@ -8,12 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "price")
@@ -38,4 +33,7 @@ public class PriceEntity extends AuditableEntity {
 
     @Column(name = "deleted")
     private Boolean deleted;
+
+    @Column(name = "price_by_time_id")
+    private String priceByTimeId;
 }

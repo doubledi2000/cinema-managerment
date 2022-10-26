@@ -1,6 +1,8 @@
 package com.it.doubledi.cinemamanager.domain;
 
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
+import com.it.doubledi.cinemamanager._common.util.IdUtils;
+import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import lombok.*;
 import org.springframework.util.CollectionUtils;
 
@@ -29,6 +31,13 @@ public class Row  extends AuditableDomain {
         }else {
             this.chairs = new ArrayList<>();
         }
+    }
+
+    public void duplicate(String roomId, String code){
+        this.id = IdUtils.nextId();
+        this.code = code;
+        this.name += Constant.COPY_SUFFIX;
+        this.roomId = roomId;
     }
 
     public void delete(){

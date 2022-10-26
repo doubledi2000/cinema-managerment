@@ -2,6 +2,8 @@ package com.it.doubledi.cinemamanager.domain;
 
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
+import com.it.doubledi.cinemamanager._common.util.IdUtils;
+import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import lombok.*;
 
@@ -21,5 +23,12 @@ public class Chair extends AuditableDomain {
     private ChairType chairType;
     private Boolean deleted;
     private String rowId;
+
+    public void duplicate(String rowId, String code) {
+        this.id = IdUtils.nextId();
+        this.code = code;
+        this.name += Constant.COPY_SUFFIX;
+        this.rowId = rowId;
+    }
 
 }

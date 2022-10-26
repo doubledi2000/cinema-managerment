@@ -1,10 +1,10 @@
 package com.it.doubledi.cinemamanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
-import com.it.doubledi.cinemamanager.domain.command.ConfigPriceCreateCmd;
-import com.it.doubledi.cinemamanager.domain.command.LocationPriceConfigCmd;
 import com.it.doubledi.cinemamanager.domain.command.PriceByTimeCreateCmd;
+import com.it.doubledi.cinemamanager.domain.command.PriceConfigCreateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.PriceConfigStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.PriceConfigType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.SpecialBy;
@@ -18,15 +18,17 @@ import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PriceConfig extends AuditableDomain {
     private String id;
     private PriceConfigType type;
-    private DayOfWeek dayOfWeek;
+    private int dayOfWeek;
     private String drinkId;
     private Boolean special;
     private SpecialBy specialBy;
@@ -35,12 +37,13 @@ public class PriceConfig extends AuditableDomain {
     private String locationId;
     private List<PriceByTime> priceByTimes;
 
-    public PriceConfig(String locationId, ConfigPriceCreateCmd cmd, PriceConfigType type) {
+    public PriceConfig(String locationId, PriceConfigCreateCmd cmd, PriceConfigType type) {
         if (Objects.equals(type, PriceConfigType.TICKET)) {
             this.id = Objects.nonNull(cmd.getId()) ? cmd.getId() : IdUtils.nextId();
             this.type = PriceConfigType.TICKET;
             this.dayOfWeek = cmd.getDayOfWeek();
             this.status = PriceConfigStatus.ACTIVE;
+            this.locationId = locationId;
             this.deleted = Boolean.FALSE;
         }
     }
@@ -53,26 +56,47 @@ public class PriceConfig extends AuditableDomain {
         }
     }
 
-    public List<PriceByTime> getPriceByTimeFromRequest(ConfigPriceCreateCmd cmd) {
+    public List<PriceByTime> getPriceByTimeFromRequest(PriceConfigCreateCmd cmd) {
         List<PriceByTime> priceByTimes = new ArrayList<>();
-        for (PriceByTimeCreateCmd priceByTimeCreateRequest : cmd.getPriceByTimeCreateRequests()) {
+        for (PriceByTimeCreateCmd priceByTimeCreateRequest : cmd.getPriceByTimes()) {
             PriceByTime tmp = new PriceByTime(this.id, priceByTimeCreateRequest);
             priceByTimes.add(tmp);
         }
         return priceByTimes;
     }
 
-    public List<PriceConfig> getPriceConfigFromCmd(LocationPriceConfigCmd cmd) {
-        if (CollectionUtils.isEmpty(cmd.getConfigPriceCreateRequests())) {
-            return new ArrayList<>();
+    public void update(PriceConfigCreateCmd cmd) {
+        for (PriceByTime priceByTime : this.getPriceByTimes()) {
+            Optional<PriceByTimeCreateCmd> priceByTimeOptional = cmd.getPriceByTimes().stream()
+                    .filter(p -> Objects.equals(p.getId(), priceByTime.getId()))
+                    .findFirst();
+
         }
-        List<PriceConfig> priceConfigs = new ArrayList<>();
-        for (ConfigPriceCreateCmd configPriceCreateRequest : cmd.getConfigPriceCreateRequests()) {
-            PriceConfig priceConfig = new PriceConfig(cmd.getLocationId(), configPriceCreateRequest, PriceConfigType.TICKET);
-            List<PriceByTime> priceByTimes = priceConfig.getPriceByTimeFromRequest(configPriceCreateRequest);
-            priceConfig.enrichPriceByTime(priceByTimes);
-            priceConfigs.add(priceConfig);
-        }
-        return priceConfigs;
     }
+
+    public PriceConfig(String locationId, int value) {
+        this.id = IdUtils.nextId();
+        this.locationId = locationId;
+        this.dayOfWeek = value;
+        this.deleted = Boolean.FALSE;
+        this.status = PriceConfigStatus.ACTIVE;
+        PriceByTime priceByTime = new PriceByTime(this.id);
+        this.enrichPriceByTime(List.of(priceByTime));
+    }
+
+
+//
+//    public List<PriceConfig> getPriceConfigFromCmd(LocationPriceConfigCmd cmd) {
+//        if (CollectionUtils.isEmpty(cmd.getPriceByTimes())) {
+//            return new ArrayList<>();
+//        }
+//        List<PriceConfig> priceConfigs = new ArrayList<>();
+//        for (PriceConfigCreateCmd configPriceCreateRequest : cmd.getPriceByTimes()) {
+//            PriceConfig priceConfig = new PriceConfig(, configPriceCreateRequest, PriceConfigType.TICKET);
+//            List<PriceByTime> priceByTimes = priceConfig.getPriceByTimeFromRequest(configPriceCreateRequest);
+//            priceConfig.enrichPriceByTime(priceByTimes);
+//            priceConfigs.add(priceConfig);
+//        }
+//        return priceConfigs;
+//    }
 }

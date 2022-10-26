@@ -3,6 +3,7 @@ package com.it.doubledi.cinemamanager.domain;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.RoomCreateCmd;
+import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoomStatus;
 import lombok.*;
 import org.springframework.util.CollectionUtils;
@@ -49,6 +50,20 @@ public class Room extends AuditableDomain {
         }else {
             this.rows = rows;
         }
+    }
+
+    public Room(Room room){
+        this.id = IdUtils.nextId();
+        this.code = room.getCode() + Constant.COPY_SUFFIX;
+        this.name = room.getName() + Constant.COPY_SUFFIX;
+        this.description = room.getDescription();
+        this.description = room.getDescription();
+        this.maxRow = room.getMaxRow();
+        this.maxChairPerRow = room.getMaxChairPerRow();
+        this.locationId = room.getLocationId();
+        this.defaultSetting = room.getDefaultSetting();
+        this.status = RoomStatus.ACTIVE;
+        this.deleted = Boolean.FALSE;
     }
 
     public void delete(){

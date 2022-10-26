@@ -6,12 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import java.time.DayOfWeek;
 import java.util.List;
 
 @Data
 @Builder
-public class ConfigPriceCreateRequest extends Request {
+public class PriceConfigCreateRequest extends Request {
 
     private String id;
 
@@ -19,9 +18,9 @@ public class ConfigPriceCreateRequest extends Request {
     private PriceConfigType type;
 
     @NotNull(message = "DAY_OF_WEEK_REQUIRED")
-    private DayOfWeek dayOfWeek;
+    private int dayOfWeek;
 
     private String drinkId;
 
-    private List<PriceByTimeCreateRequest> priceByTimeCreateRequests;
+    private List<PriceByTimeCreateRequest> priceByTimes;
 }

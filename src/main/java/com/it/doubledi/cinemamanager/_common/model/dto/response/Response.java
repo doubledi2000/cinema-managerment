@@ -1,6 +1,7 @@
 package com.it.doubledi.cinemamanager._common.model.dto.response;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.dto.error.ResponseError;
 import lombok.Data;
 import org.springframework.util.StringUtils;
@@ -9,6 +10,7 @@ import java.io.Serializable;
 import java.time.Instant;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response<T> implements Serializable {
     protected T data;
     private Boolean success;

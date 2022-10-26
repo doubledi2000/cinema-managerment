@@ -62,7 +62,9 @@ public class RoomResourceImpl implements RoomResource {
     }
 
     @Override
-    public Response<Boolean> duplicate(String id, RoomCreateRequest request) {
-        return Response.of(roomService.duplicateRoom(id, request));
+    public Response<Boolean> duplicate(String id) {
+        return Response.of(roomService.duplicateRoom(id));
     }
+
+
 }

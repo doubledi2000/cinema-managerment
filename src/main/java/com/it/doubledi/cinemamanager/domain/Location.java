@@ -1,6 +1,8 @@
 package com.it.doubledi.cinemamanager.domain;
 
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
+import com.it.doubledi.cinemamanager._common.util.IdUtils;
+import com.it.doubledi.cinemamanager.domain.command.LocationCreateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.LocationStatus;
 import lombok.*;
 
@@ -15,4 +17,11 @@ public class Location extends AuditableDomain {
     private LocationStatus status;
     private Boolean deleted;
 
+    public Location(LocationCreateCmd cmd){
+        this.id = IdUtils.nextId();
+        this.code = cmd.getCode();
+        this.name = cmd.getName();
+        this.status = LocationStatus.ACTIVE;
+        this.deleted = Boolean.FALSE;
+    }
 }

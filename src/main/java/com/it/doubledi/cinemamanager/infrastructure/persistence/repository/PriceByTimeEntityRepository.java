@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface PriceByTimeEntityRepository extends JpaRepository<PriceByTimeEntity, String> {
-    @Query("FROM PriceByTimeEntity pbt WHERE pbt.deleted = false and pbd.priceConfigId in :ids order by pbt.priority")
+    @Query("FROM PriceByTimeEntity pbt WHERE pbt.deleted = false and pbt.priceConfigId in :ids")
     List<PriceByTimeEntity> findAllByPriceConfigIds(List<String> ids);
 }

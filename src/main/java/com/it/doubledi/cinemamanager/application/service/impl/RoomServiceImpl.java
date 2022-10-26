@@ -22,6 +22,7 @@ import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RoomE
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RowEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -66,19 +67,6 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Room getById(String id) {
         Room room = roomRepository.getById(id);
-        List<RowEntity> rowEntities = this.rowEntityRepository.findRowByRoomId(id);
-        List<Row> rows = this.rowEntityMapper.toDomain(rowEntities);
-        if(!CollectionUtils.isEmpty(rows)) {
-            List<String> rowId = rows.stream().map(Row::getId).collect(Collectors.toList());
-            List<ChairEntity> chairEntities = this.chairEntityRepository.getAllChairByRowIds(rowId);
-            List<Chair> chairs = chairEntityMapper.toDomain(chairEntities);
-            for (Row row : rows) {
-                List<Chair> tmpChairs = chairs.stream().filter(c -> Objects.equals(c.getRowId(), row.getId())).collect(Collectors.toList());
-                row.enrichChairs(tmpChairs);
-            }
-            room.enrichRows(rows);
-        }
-
         return room;
     }
 
@@ -88,8 +76,14 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Room duplicateRoom(String id, RoomCreateRequest request) {
-        return null;
+    public Room duplicateRoom(String id) {
+        Room room = this.roomRepository.getById(id);
+        Room roomDuplicate = new Room(room);
+        if(!CollectionUtils.isEmpty(room.getRows())) {
+            List<Row> rowDuplicate = this.duplicateRow(roomDuplicate.getId(), room.getRows());
+            roomDuplicate.enrichRows(rowDuplicate);
+        }
+        return roomRepository.save(roomDuplicate);
     }
 
     private List<Row> getDefaultSetting(Room room) {
@@ -124,4 +118,36 @@ public class RoomServiceImpl implements RoomService {
         return rows;
     }
 
+    private List<Row> duplicateRow(String roomId, List<Row> rows) {
+        List<Row> rowDuplicates = new ArrayList<>();
+        for (Row row : rows) {
+            Row rowTmp = Row.builder()
+                    .roomId(roomId)
+                    .code(seqRepository.generateRowCode())
+                    .name(row.getName())
+                    .rowNumber(row.getRowNumber())
+                    .id(IdUtils.nextId())
+                    .deleted(Boolean.FALSE)
+                    .build();
+            List<Chair> chairs = row.getChairs();
+            List<Chair> chairDuplicate = new ArrayList<>();
+            if(!CollectionUtils.isEmpty(chairs)) {
+                for (Chair chair : chairs) {
+                    Chair chairTmp = Chair.builder()
+                            .id(IdUtils.nextId())
+                            .rowId(rowTmp.getId())
+                            .deleted(Boolean.FALSE)
+                            .chairType(chair.getChairType())
+                            .serialOfChair(chair.getSerialOfChair())
+                            .code(seqRepository.generateChairCode())
+                            .name(chair.getName())
+                            .build();
+                    chairDuplicate.add(chairTmp);
+                }
+            }
+            rowTmp.enrichChairs(chairDuplicate);
+            rowDuplicates.add(rowTmp);
+        }
+        return rowDuplicates;
+    }
 }

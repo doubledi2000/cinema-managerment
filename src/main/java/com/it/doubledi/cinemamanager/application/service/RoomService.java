@@ -13,6 +13,6 @@ public interface RoomService {
 
     Boolean delete(String id);
 
-    Room duplicateRoom(String id, RoomCreateRequest request);
+    Room duplicateRoom(String id);
 
 }

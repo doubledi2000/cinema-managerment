@@ -7,10 +7,12 @@ import com.it.doubledi.cinemamanager.application.dto.request.RoomUpdateRequest;
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
+import com.it.doubledi.cinemamanager.domain.PriceConfig;
 import com.it.doubledi.cinemamanager.domain.Room;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequestMapping("/api")
 public interface RoomResource {
@@ -40,7 +42,5 @@ public interface RoomResource {
     PagingResponse<PageDTO<Room>> autoComplete(RoomSearchAutoCompleteRequest request);
 
     @PostMapping("/rooms/{id}/duplicate")
-    Response<Boolean> duplicate(@PathVariable("id") String id, @RequestBody @Valid RoomCreateRequest request);
-
-
+    Response<Boolean> duplicate(@PathVariable("id") String id);
 }
