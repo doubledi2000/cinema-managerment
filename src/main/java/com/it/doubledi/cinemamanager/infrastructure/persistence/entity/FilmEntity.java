@@ -31,7 +31,6 @@ public class FilmEntity extends AuditableEntity {
     private String name;
 
     @Column(name = "allowed_age_from")
-    @Size(min = 0)
     private Integer allowedAgeFrom;
 
     @Column(name = "status", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)

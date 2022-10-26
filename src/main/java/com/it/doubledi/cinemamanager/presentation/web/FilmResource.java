@@ -7,15 +7,17 @@ import com.it.doubledi.cinemamanager.application.dto.request.FilmCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.FilmSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.FilmUpdateRequest;
 import com.it.doubledi.cinemamanager.domain.Film;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RequestMapping("/api")
+@Validated
 public interface FilmResource {
 
     @PostMapping("/films")
-    Response<Film> create(@RequestBody FilmCreateRequest request);
+    Response<Film> create(@RequestBody @Valid FilmCreateRequest request);
 
     @PostMapping("/films/{id}/update")
     Response<Film> update(@PathVariable("id") String id, @RequestBody @Valid FilmUpdateRequest request);

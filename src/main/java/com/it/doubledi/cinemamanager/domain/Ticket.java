@@ -6,6 +6,7 @@ import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketType;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Data
 public class Ticket extends AuditableDomain {
@@ -19,5 +20,6 @@ public class Ticket extends AuditableDomain {
     private TicketType type;
     private String filmId;
     private String roomId;
-
+    private Instant boughtAt;
+    private String userSoldId;
 }
