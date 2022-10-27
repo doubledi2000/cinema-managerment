@@ -5,7 +5,7 @@ import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.PriceByTimeCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.PriceCreateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
-import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketType;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,9 +44,9 @@ public class PriceByTime extends AuditableDomain implements Constant {
         this.endAt = MAX_START_AT;
         this.priceConfigId = priceConfigId;
         this.deleted = Boolean.FALSE;
-        this.addPrice(new Price(this.id, TicketType.NORMAL));
-        this.addPrice(new Price(this.id, TicketType.VIP));
-        this.addPrice(new Price(this.id, TicketType.SWEET));
+        this.addPrice(new Price(this.id, ChairType.NORMAL));
+        this.addPrice(new Price(this.id, ChairType.VIP));
+        this.addPrice(new Price(this.id, ChairType.SWEET));
     }
 
 
@@ -76,7 +76,7 @@ public class PriceByTime extends AuditableDomain implements Constant {
     private void updatePrice(List<PriceCreateCmd> cmd) {
 //        this.getPrices().forEach(Price::delete);
         for (Price price : this.getPrices()) {
-            Optional<PriceCreateCmd> cmdTmp = cmd.stream().filter(p -> Objects.equals(p.getTicketType(), price.getTicketType())).findFirst();
+            Optional<PriceCreateCmd> cmdTmp = cmd.stream().filter(p -> Objects.equals(p.getChairType(), price.getChairType())).findFirst();
             if (cmdTmp.isPresent()) {
                 price.update(cmdTmp.get());
             } else {

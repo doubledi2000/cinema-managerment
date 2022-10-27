@@ -10,7 +10,8 @@ public enum NotFoundError implements ResponseError {
     PRICE_CONFIG_NOT_FOUND(4040004, "price config not found"),
     PRICE_BY_TIME_NOT_FOUND(4040004, "price by time not found"),
     LOCATION_NOT_FOUND(40040004, "Location not found"),
-    FILM_NOT_FOUND(40040004, "Film not found")
+    FILM_NOT_FOUND(40040004, "Film not found"),
+    SHOWTIME_NOT_FOUND(40040005, "Showtime not found")
     ;
     private final Integer code;
     private final String message;

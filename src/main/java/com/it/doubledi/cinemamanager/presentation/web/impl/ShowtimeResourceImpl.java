@@ -18,4 +18,15 @@ public class ShowtimeResourceImpl implements ShowtimeResource {
     public Response<Showtime> createShowtime(ShowtimeCreateRequest request) {
         return Response.of(showtimeService.create(request));
     }
+
+    @Override
+    public Response<Boolean> generateTicket(String id) {
+        showtimeService.generateTicket(id);
+        return Response.ok();
+    }
+
+    @Override
+    public Response<Showtime> findById(String id) {
+        return Response.of(showtimeService.getById(id));
+    }
 }

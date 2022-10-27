@@ -22,6 +22,7 @@ public interface FilmResource {
     @PostMapping("/films/{id}/update")
     Response<Film> update(@PathVariable("id") String id, @RequestBody @Valid FilmUpdateRequest request);
 
+    @CrossOrigin
     @GetMapping("/films/{id}")
     Response<Film> getById(@PathVariable("id") String id);
 

@@ -2,16 +2,21 @@ package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketStatus;
-import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "ticket")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TicketEntity extends AuditableEntity {
 
     @Id
@@ -31,7 +36,7 @@ public class TicketEntity extends AuditableEntity {
     private String showtimeId;
 
     @Column(name = "price")
-    private BigDecimal price;
+    private Float price;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -39,11 +44,26 @@ public class TicketEntity extends AuditableEntity {
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
-    private TicketType type;
+    private ChairType type;
 
     @Column(name = "film_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
     private String filmId;
 
     @Column(name = "room_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
     private String roomId;
+
+    @Column(name = "row_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
+    private String rowId;
+
+    @Column(name = "row_number")
+    private Integer rowNumber;
+
+    @Column(name = "row_name")
+    private String rowName;
+
+    @Column(name = "serial_of_chair")
+    private Integer serialOfChair;
+
+    @Column(name = "deleted")
+    private Boolean deleted;
 }

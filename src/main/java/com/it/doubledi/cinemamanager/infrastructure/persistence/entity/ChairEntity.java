@@ -31,6 +31,7 @@ public class ChairEntity extends AuditableEntity {
     private Integer serialOfChair;
 
     @Column(name = "chair_type", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)
+    @Enumerated(EnumType.STRING)
     private ChairType chairType;
 
     @Column(name = "deleted")

@@ -32,6 +32,7 @@ public class Film extends AuditableDomain {
     private Boolean deleted;
 
     private List<FilmType> filmTypes;
+    private List<TypeOfFilm> typeOfFilms;
 
     public Film(FilmCreateCmd cmd) {
         this.id = IdUtils.nextId();
@@ -52,6 +53,14 @@ public class Film extends AuditableDomain {
             this.filmTypes = new ArrayList<>();
         } else {
             this.filmTypes = filmTypes;
+        }
+    }
+
+    public void enrichTypeOfFilm(List<TypeOfFilm> typeOfFilms) {
+        if(CollectionUtils.isEmpty(typeOfFilms)) {
+            this.typeOfFilms = new ArrayList<>();
+        }else {
+            this.typeOfFilms = typeOfFilms;
         }
     }
 }

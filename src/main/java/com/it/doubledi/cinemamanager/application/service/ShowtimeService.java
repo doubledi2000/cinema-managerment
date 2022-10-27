@@ -13,4 +13,6 @@ public interface ShowtimeService {
     PageDTO<Showtime> search(ShowtimeSearchRequest request);
 
     PageDTO<Showtime> autoComplete(ShowtimeSearchRequest request);
+
+    void generateTicket(String id);
 }

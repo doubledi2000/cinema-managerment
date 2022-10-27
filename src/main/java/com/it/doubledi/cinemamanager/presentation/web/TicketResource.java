@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping("/api")
 public interface TicketResource {
-    @PostMapping("/generate-tickets")
-    Response<Boolean> generateTickets(@RequestBody GenerateTicketRequest request);
+//    @PostMapping("/generate-tickets")
+//    Response<Boolean> generateTickets(@RequestBody GenerateTicketRequest request);
 }

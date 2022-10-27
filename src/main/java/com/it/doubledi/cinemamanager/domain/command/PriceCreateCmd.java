@@ -1,6 +1,6 @@
 package com.it.doubledi.cinemamanager.domain.command;
 
-import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketType;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,5 +9,5 @@ import lombok.Data;
 public class PriceCreateCmd {
     private String id;
     private Float price;
-    private TicketType ticketType;
+    private ChairType chairType;
 }

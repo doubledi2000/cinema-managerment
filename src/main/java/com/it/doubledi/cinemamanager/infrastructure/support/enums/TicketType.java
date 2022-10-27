@@ -1,8 +1,8 @@
-package com.it.doubledi.cinemamanager.infrastructure.support.enums;
-
-public enum TicketType {
-    NORMAL,
-    VIP,
-    SWEET,
-    BOGY
-}
+//package com.it.doubledi.cinemamanager.infrastructure.support.enums;
+//
+//public enum ChairType {
+//    NORMAL,
+//    VIP,
+//    SWEET,
+//    BOGY
+//}

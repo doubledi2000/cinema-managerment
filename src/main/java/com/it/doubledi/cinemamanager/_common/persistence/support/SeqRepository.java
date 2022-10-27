@@ -22,4 +22,9 @@ public interface SeqRepository {
         return nextValue(Const.CHAIR_CODE.getPrefix() + "-", Const.CHAIR_CODE.getSeqName());
     }
 
+    @Transactional
+    default String generateTicketCode(){
+        return nextValue(Const.TICKET_CODE.getPrefix() + "-", Const.TICKET_CODE.getSeqName());
+    }
+
 }

@@ -33,7 +33,7 @@ public class FilmResourceImpl implements FilmResource {
 
     @Override
     public Response<Film> getById(String id) {
-        return null;
+        return Response.of(filmService.getById(id));
     }
 
     @Override

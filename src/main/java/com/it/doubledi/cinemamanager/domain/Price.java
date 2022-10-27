@@ -4,7 +4,7 @@ import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.PriceCreateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
-import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketType;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Price extends AuditableDomain {
     private String id;
     private Float price;
-    private TicketType ticketType;
+    private ChairType chairType;
     private Integer priority;
     private Boolean deleted;
     private String priceByTimeId;
@@ -26,7 +26,7 @@ public class Price extends AuditableDomain {
         this.id = IdUtils.nextId();
         this.price = cmd.getPrice();
         this.priceByTimeId = priceByTimeId;
-        switch (cmd.getTicketType()) {
+        switch (cmd.getChairType()) {
             case BOGY:
                 this.priority = 0;
                 break;
@@ -42,11 +42,10 @@ public class Price extends AuditableDomain {
         }
     }
 
-    public Price(String priceByTimeId, TicketType ticketType){
+    public Price(String priceByTimeId, ChairType chairType) {
         this.id = IdUtils.nextId();
-        this.price = Constant.TICKET_DEFAULT_PRICE;
         this.deleted = Boolean.FALSE;
-        this.ticketType = ticketType;
+        this.chairType = chairType;
         this.defaultPriority();
         this.priceByTimeId = priceByTimeId;
     }
@@ -64,18 +63,21 @@ public class Price extends AuditableDomain {
         this.deleted = Boolean.FALSE;
     }
 
-    private void defaultPriority(){
-        switch (this.getTicketType()){
+    private void defaultPriority() {
+        switch (this.getChairType()) {
             case BOGY:
                 this.priority = 0;
                 break;
             case NORMAL:
+                this.price = Constant.NORMAL_TICKET_PRICE_DEFAULT;
                 this.priority = 1;
                 break;
             case VIP:
+                this.price = Constant.VIP_TICKET_PRICE_DEFAULT;
                 this.priority = 2;
                 break;
             case SWEET:
+                this.price = Constant.SWEET_TICKET_PRICE_DEFAULT;
                 this.priority = 3;
                 break;
         }

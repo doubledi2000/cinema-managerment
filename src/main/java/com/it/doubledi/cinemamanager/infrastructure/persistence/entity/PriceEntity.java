@@ -2,7 +2,7 @@ package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
-import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketType;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,9 +24,9 @@ public class PriceEntity extends AuditableEntity {
     @Column(name = "price", nullable = false)
     private Float price;
 
-    @Column(name = "ticket_type", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)
+    @Column(name = "chair_type", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)
     @Enumerated(EnumType.STRING)
-    private TicketType ticketType;
+    private ChairType chairType;
 
     @Column(name = "priority")
     private Integer priority;
