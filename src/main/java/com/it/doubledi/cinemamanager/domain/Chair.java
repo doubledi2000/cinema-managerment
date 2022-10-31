@@ -3,6 +3,7 @@ package com.it.doubledi.cinemamanager.domain;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
+import com.it.doubledi.cinemamanager.domain.command.ChairUpdateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import lombok.*;
@@ -31,4 +32,16 @@ public class Chair extends AuditableDomain {
         this.rowId = rowId;
     }
 
+    public void delete(){
+        this.deleted = Boolean.TRUE;
+    }
+
+    public void undelete(){
+        this.deleted = Boolean.FALSE;
+    }
+
+    public void update(ChairUpdateCmd cmd) {
+        this.deleted = Boolean.FALSE;
+        this.chairType = cmd.getChairType();
+    }
 }

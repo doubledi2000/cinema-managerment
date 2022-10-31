@@ -3,6 +3,7 @@ package com.it.doubledi.cinemamanager.domain;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.RoomCreateCmd;
+import com.it.doubledi.cinemamanager.domain.command.RoomUpdateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoomStatus;
 import lombok.*;
@@ -11,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -26,7 +28,6 @@ public class Room extends AuditableDomain {
     private Integer maxRow;
     private Integer maxChairPerRow;
     private String locationId;
-    private Boolean defaultSetting;
 
     private Location location;
     private List<Row> rows;
@@ -39,7 +40,6 @@ public class Room extends AuditableDomain {
         this.maxRow = cmd.getMaxRow();
         this.maxChairPerRow = cmd.getMaxChairPerRow();
         this.locationId = cmd.getLocationId();
-        this.defaultSetting = cmd.getDefaultSetting();
         this.status = RoomStatus.ACTIVE;
         this.deleted = Boolean.FALSE;
     }
@@ -61,7 +61,6 @@ public class Room extends AuditableDomain {
         this.maxRow = room.getMaxRow();
         this.maxChairPerRow = room.getMaxChairPerRow();
         this.locationId = room.getLocationId();
-        this.defaultSetting = room.getDefaultSetting();
         this.status = RoomStatus.ACTIVE;
         this.deleted = Boolean.FALSE;
     }
@@ -69,4 +68,22 @@ public class Room extends AuditableDomain {
     public void delete(){
 
     }
+
+    public void enrichLocation(Location location) {
+        if(Objects.nonNull(location)) {
+            this.location = location;
+        }
+    }
+
+    public void update(RoomUpdateCmd cmd) {
+        this.code = cmd.getCode();
+        this.name = cmd.getName();
+        this.description = cmd.getDescription();
+        for (Row row : this.getRows()) {
+            for (Chair chair : row.getChairs()) {
+                chair.delete();
+            }
+        }
+    }
+
 }

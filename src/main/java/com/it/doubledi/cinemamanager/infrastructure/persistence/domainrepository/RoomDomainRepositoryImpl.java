@@ -3,8 +3,10 @@ package com.it.doubledi.cinemamanager.infrastructure.persistence.domainrepositor
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.web.AbstractDomainRepository;
 import com.it.doubledi.cinemamanager.domain.Chair;
+import com.it.doubledi.cinemamanager.domain.Location;
 import com.it.doubledi.cinemamanager.domain.Room;
 import com.it.doubledi.cinemamanager.domain.Row;
+import com.it.doubledi.cinemamanager.domain.repository.LocationRepository;
 import com.it.doubledi.cinemamanager.domain.repository.RoomRepository;
 import com.it.doubledi.cinemamanager.domain.repository.RowRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.ChairEntity;
@@ -23,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -34,6 +37,7 @@ public class RoomDomainRepositoryImpl extends AbstractDomainRepository<Room, Roo
     private final RowEntityRepository rowEntityRepository;
     private final ChairEntityRepository chairEntityRepository;
     private final ChairEntityMapper chairEntityMapper;
+    private final LocationRepository locationRepository;
 
     public RoomDomainRepositoryImpl(RoomEntityRepository roomEntityRepository,
                                     RoomEntityMapper entityMapper,
@@ -41,7 +45,8 @@ public class RoomDomainRepositoryImpl extends AbstractDomainRepository<Room, Roo
                                     RowEntityMapper rowEntityMapper,
                                     RowEntityRepository rowEntityRepository,
                                     ChairEntityRepository chairEntityRepository,
-                                    ChairEntityMapper chairEntityMapper) {
+                                    ChairEntityMapper chairEntityMapper,
+                                    LocationRepository locationRepository) {
         super(roomEntityRepository, entityMapper);
         this.roomEntityRepository = roomEntityRepository;
         this.roomEntityMapper = entityMapper;
@@ -50,6 +55,7 @@ public class RoomDomainRepositoryImpl extends AbstractDomainRepository<Room, Roo
         this.rowEntityRepository = rowEntityRepository;
         this.chairEntityRepository = chairEntityRepository;
         this.chairEntityMapper = chairEntityMapper;
+        this.locationRepository = locationRepository;
     }
 
     @Override
@@ -87,6 +93,7 @@ public class RoomDomainRepositoryImpl extends AbstractDomainRepository<Room, Roo
         List<Row> rows = rowEntityMapper.toDomain(rowEntities);
         List<ChairEntity> chairEntities = this.chairEntityRepository.getAllChairByRowIds(rows.stream().map(Row::getId).collect(Collectors.toList()));
         List<Chair> chairs = this.chairEntityMapper.toDomain(chairEntities);
+        List<Location> locations = this.locationRepository.findAllByIds(rooms.stream().map(Room::getLocationId).collect(Collectors.toList()));
         for (Room room : rooms) {
             List<Row> rowTmp = rows.stream().filter(r -> Objects.equals(room.getId(), r.getRoomId())).collect(Collectors.toList());
             if(!CollectionUtils.isEmpty(rowTmp)) {
@@ -96,6 +103,9 @@ public class RoomDomainRepositoryImpl extends AbstractDomainRepository<Room, Roo
                 }
             }
             room.enrichRows(rowTmp);
+
+            Optional<Location> locationOptional = locations.stream().filter(l ->Objects.equals(l.getId(), room.getLocationId())).findFirst();
+            locationOptional.ifPresent(room::enrichLocation);
         }
         return rooms;
     }

@@ -8,4 +8,5 @@ import lombok.Data;
 public class LocationCreateCmd {
     private String code;
     private String name;
+    private String address;
 }

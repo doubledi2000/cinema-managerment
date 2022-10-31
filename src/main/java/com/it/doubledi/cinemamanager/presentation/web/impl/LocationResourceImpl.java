@@ -4,6 +4,7 @@ import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationCreateRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.LocationSearchRequest;
 import com.it.doubledi.cinemamanager.application.service.LocationService;
 import com.it.doubledi.cinemamanager.domain.Location;
 import com.it.doubledi.cinemamanager.presentation.web.LocationResource;
@@ -27,22 +28,24 @@ public class LocationResourceImpl implements LocationResource {
     }
 
     @Override
-    public Response<Boolean> active() {
-        return null;
+    public Response<Boolean> active(String id) {
+        locationService.active(id);
+        return Response.ok();
     }
 
     @Override
-    public Response<Boolean> inactive() {
-        return null;
+    public Response<Boolean> inactive(String id) {
+        locationService.inactive(id);
+        return Response.ok();
     }
 
     @Override
-    public PagingResponse<PageDTO<Location>> search() {
-        return null;
+    public PagingResponse<Location> search(LocationSearchRequest request) {
+        return PagingResponse.of(locationService.search(request));
     }
 
     @Override
-    public PagingResponse<PageDTO<Location>> autoComplete() {
-        return null;
+    public PagingResponse<Location> autoComplete(LocationSearchRequest request) {
+        return PagingResponse.of(locationService.autoComplete(request));
     }
 }

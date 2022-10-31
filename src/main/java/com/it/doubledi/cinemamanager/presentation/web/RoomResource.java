@@ -36,7 +36,7 @@ public interface RoomResource {
     Response<Boolean> inactive(@PathVariable("id") String id);
 
     @GetMapping("/rooms")
-    PagingResponse<PageDTO<Room>> search(RoomSearchRequest request);
+    PagingResponse<Room> search(RoomSearchRequest request);
 
     @GetMapping("/rooms/auto-complete")
     PagingResponse<PageDTO<Room>> autoComplete(RoomSearchAutoCompleteRequest request);

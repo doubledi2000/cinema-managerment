@@ -52,8 +52,8 @@ public class RoomResourceImpl implements RoomResource {
     }
 
     @Override
-    public PagingResponse<PageDTO<Room>> search(RoomSearchRequest request) {
-        return null;
+    public PagingResponse<Room> search(RoomSearchRequest request) {
+        return PagingResponse.of(roomService.search(request));
     }
 
     @Override

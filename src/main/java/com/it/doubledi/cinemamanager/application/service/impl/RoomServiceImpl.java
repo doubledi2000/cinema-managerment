@@ -1,19 +1,24 @@
 package com.it.doubledi.cinemamanager.application.service.impl;
 
+import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager._common.persistence.support.SeqRepository;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.application.dto.request.RoomCreateRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.RoomSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoomUpdateRequest;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
+import com.it.doubledi.cinemamanager.application.mapper.AutoMapperQuery;
 import com.it.doubledi.cinemamanager.application.service.RoomService;
 import com.it.doubledi.cinemamanager.domain.Chair;
 import com.it.doubledi.cinemamanager.domain.Room;
 import com.it.doubledi.cinemamanager.domain.Row;
+import com.it.doubledi.cinemamanager.domain.command.ChairUpdateCmd;
 import com.it.doubledi.cinemamanager.domain.command.RoomCreateCmd;
+import com.it.doubledi.cinemamanager.domain.command.RoomUpdateCmd;
+import com.it.doubledi.cinemamanager.domain.command.RowUpdateCmd;
+import com.it.doubledi.cinemamanager.domain.query.RoomSearchQuery;
 import com.it.doubledi.cinemamanager.domain.repository.RoomRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.ChairEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RoomEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RowEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.ChairEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RoomEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RowEntityMapper;
@@ -22,14 +27,14 @@ import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RoomE
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RowEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -44,24 +49,67 @@ public class RoomServiceImpl implements RoomService {
     private final RowEntityRepository rowEntityRepository;
     private final ChairEntityRepository chairEntityRepository;
     private final ChairEntityMapper chairEntityMapper;
+    private final AutoMapperQuery autoMapperQuery;
 
     @Override
     public Room create(RoomCreateRequest request) {
         RoomCreateCmd cmd = autoMapper.from(request);
         Room room = new Room(cmd);
-        RoomEntity roomEntity = roomEntityMapper.toEntity(room);
-
-        if(cmd.getDefaultSetting()){
-            List<Row> rows = getDefaultSetting(room);
-            room.enrichRows(rows);;
-        }
+        List<Row> rows = getDefaultSetting(room);
+        room.enrichRows(rows);
+        ;
         roomRepository.save(room);
         return room;
     }
 
     @Override
+    @Transactional
     public Room update(String id, RoomUpdateRequest request) {
-        return null;
+        Room room = this.roomRepository.getById(id);
+        RoomUpdateCmd cmd = this.autoMapper.from(request);
+        List<Row> rows = room.getRows();
+        room.update(cmd);
+        for (RowUpdateCmd row : cmd.getRows()) {
+            Optional<Row> rowTmpOptional = rows.stream().filter(r -> Objects.equals(r.getId(), row.getId())).findFirst();
+            if (rowTmpOptional.isPresent()) {
+                Row rowTmp = rowTmpOptional.get();
+                List<Chair> chairs = rowTmp.getChairs();
+                List<ChairUpdateCmd> chairUpdateCmds = row.getChairs();
+                int count = 1;
+                for (ChairUpdateCmd chairUpdateCmd : chairUpdateCmds) {
+                    if (Objects.nonNull(chairUpdateCmd.getId())) {
+                        Optional<Chair> chairTmp = chairs.stream().filter(c -> Objects.equals(c.getId(), chairUpdateCmd.getId())).findFirst();
+                        if (chairTmp.isPresent()) {
+                            Chair chair = chairTmp.get();
+                            chair.undelete();
+                            chair.setSerialOfChair(count);
+                            if (Objects.equals(chair.getChairType(), ChairType.SWEET)) {
+                                chair.setName(rowTmp.getName() + count + " - " + rowTmp.getName() + ++count);
+                            } else {
+                                chair.setName(rowTmp.getName() + count);
+                            }
+                            count++;
+                        }
+                    } else {
+                        String chairName = Objects.equals(chairUpdateCmd.getChairType(), ChairType.SWEET)
+                                ? rowTmp.getName() + count + " - " + rowTmp.getName() + ++count
+                                : rowTmp.getName() + count;
+                        Chair chair = Chair.builder()
+                                .id(IdUtils.nextId())
+                                .code(seqRepository.generateChairCode())
+                                .serialOfChair(count)
+                                .chairType(chairUpdateCmd.getChairType())
+                                .deleted(Boolean.FALSE)
+                                .name(chairName)
+                                .rowId(rowTmp.getId())
+                                .build();
+                        rowTmp.addChair(chair);
+                        count++;
+                    }
+                }
+            }
+        }
+        return this.roomRepository.save(room);
     }
 
     @Override
@@ -79,11 +127,28 @@ public class RoomServiceImpl implements RoomService {
     public Room duplicateRoom(String id) {
         Room room = this.roomRepository.getById(id);
         Room roomDuplicate = new Room(room);
-        if(!CollectionUtils.isEmpty(room.getRows())) {
+        if (!CollectionUtils.isEmpty(room.getRows())) {
             List<Row> rowDuplicate = this.duplicateRow(roomDuplicate.getId(), room.getRows());
             roomDuplicate.enrichRows(rowDuplicate);
         }
         return roomRepository.save(roomDuplicate);
+    }
+
+    @Override
+    public PageDTO<Room> search(RoomSearchRequest request) {
+        RoomSearchQuery searchQuery = this.autoMapperQuery.toQuery(request);
+        Long count = this.roomEntityRepository.count(searchQuery);
+        if (count == 0) {
+            return PageDTO.empty();
+        }
+        List<RoomEntity> roomEntities = this.roomEntityRepository.search(searchQuery);
+        List<Room> rooms = this.roomEntityMapper.toDomain(roomEntities);
+        return new PageDTO<>(rooms, searchQuery.getPageIndex(), searchQuery.getPageSize(), count);
+    }
+
+    @Override
+    public PageDTO<Room> autoComplete(RoomSearchRequest request) {
+        return null;
     }
 
     private List<Row> getDefaultSetting(Room room) {
@@ -93,13 +158,13 @@ public class RoomServiceImpl implements RoomService {
             Row row = Row.builder()
                     .roomId(room.getId())
                     .code(seqRepository.generateRowCode())
-                    .name(CHAR_ARRAY.substring(i, i+1))
-                    .rowNumber(i+1)
+                    .name(CHAR_ARRAY.substring(i, i + 1))
+                    .rowNumber(i + 1)
                     .id(IdUtils.nextId())
                     .deleted(Boolean.FALSE)
                     .build();
             List<Chair> chairs = new ArrayList<>();
-            for (int j = 0; j < room.getMaxChairPerRow();j++) {
+            for (int j = 0; j < room.getMaxChairPerRow(); j++) {
                 Chair chair = Chair.builder()
                         .id(IdUtils.nextId())
                         .rowId(row.getId())
@@ -131,7 +196,7 @@ public class RoomServiceImpl implements RoomService {
                     .build();
             List<Chair> chairs = row.getChairs();
             List<Chair> chairDuplicate = new ArrayList<>();
-            if(!CollectionUtils.isEmpty(chairs)) {
+            if (!CollectionUtils.isEmpty(chairs)) {
                 for (Chair chair : chairs) {
                     Chair chairTmp = Chair.builder()
                             .id(IdUtils.nextId())

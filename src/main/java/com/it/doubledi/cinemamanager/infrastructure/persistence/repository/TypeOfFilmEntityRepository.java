@@ -24,7 +24,7 @@ public interface TypeOfFilmEntityRepository extends JpaRepository<TypeOfFilmEnti
             " order by tof.name asc ")
     Page<TypeOfFilmEntity> autoComplete(@Param("keyword") String keyword, @Param("statuses") List<TypeOfFilmStatus> statuses, Pageable pageable);
 
-    @Query("from TypeOfFilmEntity  tof where tof.deleted = false and tof.id in :ids")
+    @Query("from TypeOfFilmEntity tof where tof.deleted = false and tof.id in :ids")
     List<TypeOfFilmEntity> findAllTypeByIds(List<String> ids);
 
 }

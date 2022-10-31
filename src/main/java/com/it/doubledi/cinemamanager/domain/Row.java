@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Data
-public class Row  extends AuditableDomain {
+public class Row extends AuditableDomain {
     private String id;
     private String code;
     private String name;
@@ -26,22 +26,28 @@ public class Row  extends AuditableDomain {
     private List<Chair> chairs;
 
     public void enrichChairs(List<Chair> chairs) {
-        if(!CollectionUtils.isEmpty(chairs)) {
+        if (!CollectionUtils.isEmpty(chairs)) {
             this.chairs = chairs;
-        }else {
+        } else {
             this.chairs = new ArrayList<>();
         }
     }
 
-    public void duplicate(String roomId, String code){
+    public void duplicate(String roomId, String code) {
         this.id = IdUtils.nextId();
         this.code = code;
         this.name += Constant.COPY_SUFFIX;
         this.roomId = roomId;
     }
 
-    public void delete(){
+    public void delete() {
 
     }
 
+    public void addChair(Chair chair) {
+        if (CollectionUtils.isEmpty(this.chairs)) {
+            chairs = new ArrayList<>();
+        }
+        chairs.add(chair);
+    }
 }

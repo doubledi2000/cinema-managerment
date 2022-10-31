@@ -25,6 +25,9 @@ public class LocationEntity extends AuditableEntity {
     @Column(name = "name", length = ValidateConstraint.LENGTH.NAME_MAX_LENGTH)
     private String name;
 
+    @Column(name = "address", length = ValidateConstraint.LENGTH.DESC_MAX_LENGTH)
+    private String address;
+
     @Column(name = "status", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)
     @Enumerated(EnumType.STRING)
     private LocationStatus status;

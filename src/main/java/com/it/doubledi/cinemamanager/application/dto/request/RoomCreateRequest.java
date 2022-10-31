@@ -2,13 +2,17 @@ package com.it.doubledi.cinemamanager.application.dto.request;
 
 import com.it.doubledi.cinemamanager._common.model.dto.request.Request;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class RoomCreateRequest extends Request {
 
     @NotBlank(message = "CODE_REQUIRED")
@@ -31,7 +35,4 @@ public class RoomCreateRequest extends Request {
     @NotBlank(message = "LOCATION_ID_REQUIRED")
     @Size(max = ValidateConstraint.LENGTH.ID_MAX_LENGTH, message = "ID_LENGTH")
     private String locationId;
-
-    private Boolean defaultSetting;
-
 }

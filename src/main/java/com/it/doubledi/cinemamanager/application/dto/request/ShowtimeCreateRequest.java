@@ -3,8 +3,10 @@ package com.it.doubledi.cinemamanager.application.dto.request;
 import com.it.doubledi.cinemamanager._common.model.dto.request.Request;
 import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -14,6 +16,8 @@ import java.time.LocalDate;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ShowtimeCreateRequest extends Request {
     @NotBlank(message = "FILM_ID_REQUIRED")
     private String filmId;

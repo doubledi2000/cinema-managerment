@@ -81,6 +81,6 @@ public class TypeOfFilmServiceImpl implements TypeOfFilmService {
         return new PageDTO<>(typeOfFilms,
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
-                typeOfFilmEntitiesPage.getTotalPages());
+                typeOfFilmEntitiesPage.getTotalElements());
     }
 }

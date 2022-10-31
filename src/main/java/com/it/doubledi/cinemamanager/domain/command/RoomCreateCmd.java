@@ -16,5 +16,4 @@ public class RoomCreateCmd {
     private Integer maxRow;
     private Integer maxChairPerRow;
     private String locationId;
-    private Boolean defaultSetting;
 }

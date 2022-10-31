@@ -19,7 +19,14 @@ public interface AutoMapper {
     PriceConfigCreateCmd from(PriceConfigCreateRequest request);
 
     LocationPriceConfigCmd from(LocationPriceConfigRequest request);
+
     LocationCreateCmd from(LocationCreateRequest request);
+
     FilmCreateCmd from(FilmCreateRequest request);
+
     ShowtimeCreateCmd from(ShowtimeCreateRequest request);
+
+    ChairUpdateCmd from(ChairUpdateRequest request);
+
+    RowUpdateCmd from(RowUpdateRequest request);
 }
