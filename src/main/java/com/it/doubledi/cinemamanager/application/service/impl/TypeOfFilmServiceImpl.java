@@ -53,6 +53,7 @@ public class TypeOfFilmServiceImpl implements TypeOfFilmService {
         TypeOfFilmUpdateCmd cmd = autoMapper.from(request);
         TypeOfFilm typeOfFilm = this.typeOfFilmRepository.getById(id);
         typeOfFilm.update(cmd);
+        this.typeOfFilmRepository.save(typeOfFilm);
         return typeOfFilm;
     }
 

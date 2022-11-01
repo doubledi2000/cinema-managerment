@@ -1,6 +1,5 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.repository.custom;
 
-import com.it.doubledi.cinemamanager.application.dto.request.RoomSearchRequest;
 import com.it.doubledi.cinemamanager.domain.query.RoomSearchQuery;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RoomEntity;
 

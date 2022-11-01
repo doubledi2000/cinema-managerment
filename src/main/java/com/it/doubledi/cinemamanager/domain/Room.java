@@ -1,5 +1,6 @@
 package com.it.doubledi.cinemamanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.RoomCreateCmd;
@@ -18,6 +19,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Room extends AuditableDomain {
     private String id;
     private String code;

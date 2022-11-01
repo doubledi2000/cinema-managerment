@@ -29,4 +29,8 @@ public interface AutoMapper {
     ChairUpdateCmd from(ChairUpdateRequest request);
 
     RowUpdateCmd from(RowUpdateRequest request);
+
+    ProducerCreateCmd from(ProducerCreateRequest request);
+
+    ProducerUpdateCmd from(ProducerUpdateRequest request);
 }

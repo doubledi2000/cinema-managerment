@@ -1,11 +1,7 @@
 package com.it.doubledi.cinemamanager.application.mapper;
 
-import com.it.doubledi.cinemamanager.application.dto.request.LocationSearchRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RoomSearchRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.TypeOfFilmSearchRequest;
-import com.it.doubledi.cinemamanager.domain.query.LocationSearchQuery;
-import com.it.doubledi.cinemamanager.domain.query.RoomSearchQuery;
-import com.it.doubledi.cinemamanager.domain.query.TypeOfFilmSearchQuery;
+import com.it.doubledi.cinemamanager.application.dto.request.*;
+import com.it.doubledi.cinemamanager.domain.query.*;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
@@ -15,4 +11,8 @@ public interface AutoMapperQuery {
     LocationSearchQuery toQuery(LocationSearchRequest request);
 
     RoomSearchQuery toQuery(RoomSearchRequest request);
+
+    FilmSearchQuery toQuery(FilmSearchRequest request);
+
+    ProducerSearchQuery toQuery(ProducerSearchRequest request);
 }

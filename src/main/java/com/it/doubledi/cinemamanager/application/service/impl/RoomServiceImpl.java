@@ -10,6 +10,7 @@ import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapperQuery;
 import com.it.doubledi.cinemamanager.application.service.RoomService;
 import com.it.doubledi.cinemamanager.domain.Chair;
+import com.it.doubledi.cinemamanager.domain.Location;
 import com.it.doubledi.cinemamanager.domain.Room;
 import com.it.doubledi.cinemamanager.domain.Row;
 import com.it.doubledi.cinemamanager.domain.command.ChairUpdateCmd;
@@ -18,11 +19,14 @@ import com.it.doubledi.cinemamanager.domain.command.RoomUpdateCmd;
 import com.it.doubledi.cinemamanager.domain.command.RowUpdateCmd;
 import com.it.doubledi.cinemamanager.domain.query.RoomSearchQuery;
 import com.it.doubledi.cinemamanager.domain.repository.RoomRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.LocationEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RoomEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.ChairEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.LocationEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RoomEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RowEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.ChairEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.LocationEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RoomEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RowEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
@@ -35,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -50,6 +55,8 @@ public class RoomServiceImpl implements RoomService {
     private final ChairEntityRepository chairEntityRepository;
     private final ChairEntityMapper chairEntityMapper;
     private final AutoMapperQuery autoMapperQuery;
+    private final LocationEntityRepository locationEntityRepository;
+    private final LocationEntityMapper locationEntityMapper;
 
     @Override
     public Room create(RoomCreateRequest request) {
@@ -57,7 +64,6 @@ public class RoomServiceImpl implements RoomService {
         Room room = new Room(cmd);
         List<Row> rows = getDefaultSetting(room);
         room.enrichRows(rows);
-        ;
         roomRepository.save(room);
         return room;
     }
@@ -81,8 +87,8 @@ public class RoomServiceImpl implements RoomService {
                         Optional<Chair> chairTmp = chairs.stream().filter(c -> Objects.equals(c.getId(), chairUpdateCmd.getId())).findFirst();
                         if (chairTmp.isPresent()) {
                             Chair chair = chairTmp.get();
-                            chair.undelete();
                             chair.setSerialOfChair(count);
+                            chair.update(chairUpdateCmd);
                             if (Objects.equals(chair.getChairType(), ChairType.SWEET)) {
                                 chair.setName(rowTmp.getName() + count + " - " + rowTmp.getName() + ++count);
                             } else {
@@ -92,7 +98,7 @@ public class RoomServiceImpl implements RoomService {
                         }
                     } else {
                         String chairName = Objects.equals(chairUpdateCmd.getChairType(), ChairType.SWEET)
-                                ? rowTmp.getName() + count + " - " + rowTmp.getName() + ++count
+                                ? rowTmp.getName() + count + " - " + rowTmp.getName() + (count + 1)
                                 : rowTmp.getName() + count;
                         Chair chair = Chair.builder()
                                 .id(IdUtils.nextId())
@@ -109,7 +115,11 @@ public class RoomServiceImpl implements RoomService {
                 }
             }
         }
-        return this.roomRepository.save(room);
+        room = this.roomRepository.save(room);
+        for (Row row : room.getRows()) {
+            row.getChairs().retainAll(row.getChairs().stream().filter(r -> Objects.equals(r.getDeleted(), Boolean.FALSE)).collect(Collectors.toList()));
+        }
+        return room;
     }
 
     @Override
@@ -143,6 +153,14 @@ public class RoomServiceImpl implements RoomService {
         }
         List<RoomEntity> roomEntities = this.roomEntityRepository.search(searchQuery);
         List<Room> rooms = this.roomEntityMapper.toDomain(roomEntities);
+        List<String> locationIds = rooms.stream().map(Room::getLocationId).distinct().collect(Collectors.toList());
+        if(!CollectionUtils.isEmpty(locationIds)) {
+            List<LocationEntity> locationEntities = this.locationEntityRepository.findByIds(locationIds);
+            List<Location> locations = this.locationEntityMapper.toDomain(locationEntities);
+            for (Room room : rooms) {
+                locations.stream().filter(l -> Objects.equals(l.getId(), room.getLocationId())).findFirst().ifPresent(room::enrichLocation);
+            }
+        }
         return new PageDTO<>(rooms, searchQuery.getPageIndex(), searchQuery.getPageSize(), count);
     }
 

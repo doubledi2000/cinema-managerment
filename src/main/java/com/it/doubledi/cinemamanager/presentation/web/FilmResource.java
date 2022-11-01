@@ -27,9 +27,9 @@ public interface FilmResource {
     Response<Film> getById(@PathVariable("id") String id);
 
     @GetMapping("/films")
-    PagingResponse<PageDTO<Film>> search(FilmSearchRequest request);
+    PagingResponse<Film> search(FilmSearchRequest request);
 
     @GetMapping("/films/auto-complete")
-    PagingResponse<PageDTO<Film>> autoComplete(FilmSearchRequest request);
+    PagingResponse<Film> autoComplete(FilmSearchRequest request);
 
 }

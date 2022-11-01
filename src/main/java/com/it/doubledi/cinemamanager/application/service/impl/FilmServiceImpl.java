@@ -4,13 +4,19 @@ import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager.application.dto.request.FilmCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.FilmSearchRequest;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
+import com.it.doubledi.cinemamanager.application.mapper.AutoMapperQuery;
 import com.it.doubledi.cinemamanager.application.service.FilmService;
 import com.it.doubledi.cinemamanager.domain.Film;
 import com.it.doubledi.cinemamanager.domain.FilmType;
 import com.it.doubledi.cinemamanager.domain.command.FilmCreateCmd;
+import com.it.doubledi.cinemamanager.domain.query.FilmSearchQuery;
 import com.it.doubledi.cinemamanager.domain.repository.FilmRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmTypeEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.TypeOfFilmEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.FilmEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FilmEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FilmTypeEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.TypeOfFilmEntityRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +33,9 @@ public class FilmServiceImpl implements FilmService {
     private final FilmEntityMapper filmEntityMapper;
     private final AutoMapper autoMapper;
     private final TypeOfFilmEntityRepository typeOfFilmEntityRepository;
+    private final AutoMapperQuery autoMapperQuery;
+    private final FilmTypeEntityRepository filmTypeEntityRepository;
+    private final FilmEntityRepository filmEntityRepository;
 
 
     @Override
@@ -59,7 +68,21 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public PageDTO<Film> search(FilmSearchRequest request) {
-        return null;
+        FilmSearchQuery query = this.autoMapperQuery.toQuery(request);
+        if(!CollectionUtils.isEmpty(query.getTypeOfFilmIds())) {
+            List<FilmTypeEntity> filmTypeEntities = this.filmTypeEntityRepository.findByTypeIds(query.getTypeOfFilmIds());
+            if(!CollectionUtils.isEmpty(filmTypeEntities)) {
+                List<String> filmIds = filmTypeEntities.stream().map(FilmTypeEntity::getFilmId).distinct().collect(Collectors.toList());
+                query.setFilmIds(filmIds);
+            }
+        }
+        Long count = this.filmEntityRepository.count(query);
+        if(count == 0) {
+            return PageDTO.empty();
+        }
+        List<FilmEntity> filmEntities = this.filmEntityRepository.search(query);
+        List<Film> films = this.filmEntityMapper.toDomain(filmEntities);
+        return new PageDTO<>(films, query.getPageIndex(), query.getPageSize(), count);
     }
 
     @Override

@@ -7,16 +7,13 @@ import com.it.doubledi.cinemamanager.application.dto.request.TypeOfFilmCreateReq
 import com.it.doubledi.cinemamanager.application.dto.request.TypeOfFilmSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.TypeOfFilmUpdateRequest;
 import com.it.doubledi.cinemamanager.domain.TypeOfFilm;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RequestMapping("/api")
 @Valid
+@CrossOrigin("*")
 public interface TypeOfFilmResource {
     @PostMapping("/type-of-films")
     Response<TypeOfFilm> create(@RequestBody @Valid TypeOfFilmCreateRequest request);
@@ -30,7 +27,7 @@ public interface TypeOfFilmResource {
     @GetMapping("/type-of-films")
     PagingResponse<TypeOfFilm> search(TypeOfFilmSearchRequest request);
 
-    @GetMapping("/type-of-films/auto-completes")
+    @GetMapping("/type-of-films/auto-complete")
     PagingResponse<TypeOfFilm>autoComplete(TypeOfFilmSearchRequest request);
 
 }

@@ -36,13 +36,12 @@ public class FilmResourceImpl implements FilmResource {
         return Response.of(filmService.getById(id));
     }
 
-    @Override
-    public PagingResponse<PageDTO<Film>> search(FilmSearchRequest request) {
-        return null;
+    @Override public PagingResponse<Film> search(FilmSearchRequest request) {
+        return PagingResponse.of(filmService.search(request));
     }
 
     @Override
-    public PagingResponse<PageDTO<Film>> autoComplete(FilmSearchRequest request) {
+    public PagingResponse<Film> autoComplete(FilmSearchRequest request) {
         return null;
     }
 }

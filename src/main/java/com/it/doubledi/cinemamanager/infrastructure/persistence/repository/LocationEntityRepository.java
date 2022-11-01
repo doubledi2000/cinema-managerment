@@ -22,6 +22,6 @@ public interface LocationEntityRepository extends JpaRepository<LocationEntity, 
             " order by l.name asc ")
     Page<LocationEntity> autoComplete(@Param("keyword") String keyword, @Param("statuses") List<LocationStatus> statuses, Pageable pageable);
 
-    @Query("From LocationEntity l where l.deleted = false and l.id in ids")
-    List<LocationEntity> findByIds(@Param("id") List<String> ids);
+    @Query("From LocationEntity l where l.deleted = false and l.id in :ids")
+    List<LocationEntity> findByIds(@Param("ids") List<String> ids);
 }

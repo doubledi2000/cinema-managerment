@@ -2,6 +2,7 @@ package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.ProducerStatus;
 import lombok.Data;
 import org.hibernate.Hibernate;
 
@@ -29,13 +30,17 @@ public class ProducerEntity extends AuditableEntity {
     private String description;
 
     @Column(name = "deleted")
-    private String deleted;
+    private Boolean deleted;
 
     @Column(name = "representative", length = ValidateConstraint.LENGTH.NAME_MAX_LENGTH)
     private String representative;
 
     @Column(name = "nationally", length = ValidateConstraint.LENGTH.NAME_MAX_LENGTH)
     private String nationally;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private ProducerStatus status;
 
     @Override
     public boolean equals(Object o) {

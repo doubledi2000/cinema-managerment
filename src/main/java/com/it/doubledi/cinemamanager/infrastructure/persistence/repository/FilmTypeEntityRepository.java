@@ -13,4 +13,7 @@ public interface FilmTypeEntityRepository extends JpaRepository<FilmTypeEntity, 
 
     @Query("from FilmTypeEntity  ft where ft.deleted = false and ft.filmId in :filmIds")
     List<FilmTypeEntity> getAllFilmTypeByFilmIds(@Param("filmIds") List<String> filmIds);
+
+    @Query("from FilmTypeEntity ft where ft.deleted = false and ft.typeId in :ids")
+    List<FilmTypeEntity> findByTypeIds(@Param("ids") List<String> ids);
 }
