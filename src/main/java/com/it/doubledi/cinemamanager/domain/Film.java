@@ -33,6 +33,7 @@ public class Film extends AuditableDomain {
 
     private List<FilmType> filmTypes;
     private List<TypeOfFilm> typeOfFilms;
+    private Producer producer;
 
     public Film(FilmCreateCmd cmd) {
         this.id = IdUtils.nextId();

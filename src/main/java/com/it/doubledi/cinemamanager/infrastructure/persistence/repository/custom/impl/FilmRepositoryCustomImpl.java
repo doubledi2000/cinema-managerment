@@ -1,6 +1,7 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.repository.custom.impl;
 
 import com.it.doubledi.cinemamanager._common.persistence.support.SqlUtils;
+import com.it.doubledi.cinemamanager.domain.Film;
 import com.it.doubledi.cinemamanager.domain.query.FilmSearchQuery;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.LocationEntity;
@@ -25,7 +26,7 @@ public class FilmRepositoryCustomImpl implements FilmRepositoryCustom {
         StringBuilder sql = new StringBuilder("Select l from FilmEntity l");
         sql.append(createWhereQuery(searchQuery, value));
         sql.append(createOrderBy(searchQuery));
-        Query query = entityManager.createQuery(sql.toString(), LocationEntity.class);
+        Query query = entityManager.createQuery(sql.toString(), FilmEntity.class);
         value.forEach(query::setParameter);
         query.setFirstResult((searchQuery.getPageIndex() - 1) * searchQuery.getPageSize());
         query.setMaxResults(searchQuery.getPageSize());
