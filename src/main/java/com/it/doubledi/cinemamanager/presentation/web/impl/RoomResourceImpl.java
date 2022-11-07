@@ -1,25 +1,21 @@
 package com.it.doubledi.cinemamanager.presentation.web.impl;
 
+import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
+import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.RoomCreateRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RoomSearchAutoCompleteRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoomSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoomUpdateRequest;
 import com.it.doubledi.cinemamanager.application.service.RoomService;
-import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
-import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
-import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.domain.Room;
 import com.it.doubledi.cinemamanager.presentation.web.RoomResource;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@AllArgsConstructor
 public class RoomResourceImpl implements RoomResource {
 
     private final RoomService roomService;
-
-    public RoomResourceImpl(RoomService roomService) {
-        this.roomService = roomService;
-    }
 
     @Override
     public Response<Room> create(RoomCreateRequest request) {
@@ -57,8 +53,8 @@ public class RoomResourceImpl implements RoomResource {
     }
 
     @Override
-    public PagingResponse<PageDTO<Room>> autoComplete(RoomSearchAutoCompleteRequest request) {
-        return null;
+    public PagingResponse<Room> autoComplete(RoomSearchRequest request) {
+        return PagingResponse.of(roomService.autoComplete(request));
     }
 
     @Override
