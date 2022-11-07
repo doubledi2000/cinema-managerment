@@ -10,9 +10,11 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 
+import javax.persistence.Column;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -28,12 +30,15 @@ public class Film extends AuditableDomain {
     private LocalDate releaseDate;
     private LocalDate ownershipDate;
     private Integer duration;
-    private String producerId;
+    private String actors;
+    private String directors;
+    private List<String> producerIds;
     private Boolean deleted;
 
     private List<FilmType> filmTypes;
-    private List<TypeOfFilm> typeOfFilms;
-    private Producer producer;
+    private List<String> filmTypeIds;
+    private List<FilmProducer> filmProducers;
+    private List<Producer> producers;
 
     public Film(FilmCreateCmd cmd) {
         this.id = IdUtils.nextId();
@@ -44,8 +49,9 @@ public class Film extends AuditableDomain {
         this.description = cmd.getDescription();
         this.releaseDate = cmd.getReleaseDate();
         this.ownershipDate = cmd.getOwnershipDate();
+        this.actors = cmd.getActors();
+        this.directors = cmd.getDirectors();
         this.duration = cmd.getDuration();
-        this.producerId = cmd.getProducerId();
         this.deleted = Boolean.FALSE;
     }
 
@@ -54,14 +60,16 @@ public class Film extends AuditableDomain {
             this.filmTypes = new ArrayList<>();
         } else {
             this.filmTypes = filmTypes;
+            this.filmTypeIds = filmTypes.stream().map(FilmType::getTypeId).collect(Collectors.toList());
         }
     }
 
-    public void enrichTypeOfFilm(List<TypeOfFilm> typeOfFilms) {
-        if(CollectionUtils.isEmpty(typeOfFilms)) {
-            this.typeOfFilms = new ArrayList<>();
-        }else {
-            this.typeOfFilms = typeOfFilms;
+    public void enrichProducer(List<FilmProducer> filmProducers) {
+        if (CollectionUtils.isEmpty(filmProducers)) {
+            this.filmProducers = new ArrayList<>();
+        } else {
+            this.filmProducers = filmProducers;
+            this.producerIds = filmProducers.stream().map(FilmProducer::getProducerId).collect(Collectors.toList());
         }
     }
 }

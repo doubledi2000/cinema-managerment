@@ -8,6 +8,7 @@ import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapperQuery;
 import com.it.doubledi.cinemamanager.application.service.FilmService;
 import com.it.doubledi.cinemamanager.domain.Film;
+import com.it.doubledi.cinemamanager.domain.FilmProducer;
 import com.it.doubledi.cinemamanager.domain.FilmType;
 import com.it.doubledi.cinemamanager.domain.Producer;
 import com.it.doubledi.cinemamanager.domain.command.FilmCreateCmd;
@@ -56,11 +57,19 @@ public class FilmServiceImpl implements FilmService {
                 filmTypes.add(filmType);
             }
         }
+
         if(CollectionUtils.isEmpty(filmTypes)) {
             throw new ResponseException(BadRequestError.FILM_MUST_CONTAIN_TYPE);
         }
-        Producer producer = this.producerRepository.getById(request.getProducerId());
+        List<FilmProducer> filmProducers = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(request.getProducerIds())) {
+            for (String producerID : request.getProducerIds()) {
+                FilmProducer filmTmp = new FilmProducer(film.getId(), producerID);
+                filmProducers.add(filmTmp);
+            }
+        }
         film.enrichFilmType(filmTypes);
+        film.enrichProducer(filmProducers);
         this.filmRepository.save(film);
         return film;
     }
@@ -91,6 +100,7 @@ public class FilmServiceImpl implements FilmService {
         }
         List<FilmEntity> filmEntities = this.filmEntityRepository.search(query);
         List<Film> films = this.filmEntityMapper.toDomain(filmEntities);
+        this.filmRepository.enrichList(films);
         return new PageDTO<>(films, query.getPageIndex(), query.getPageSize(), count);
     }
 

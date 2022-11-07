@@ -48,6 +48,12 @@ public class FilmEntity extends AuditableEntity {
     @Column(name = "duration")
     private Integer duration;
 
+    @Column(name = "actors")
+    private String actors;
+
+    @Column(name = "directors")
+    private String directors;
+
     @Column(name = "producer_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
     private String producerId;
 

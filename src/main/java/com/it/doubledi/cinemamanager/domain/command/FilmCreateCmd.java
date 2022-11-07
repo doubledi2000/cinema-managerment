@@ -18,6 +18,8 @@ public class FilmCreateCmd {
     private LocalDate releaseDate;
     private LocalDate ownershipDate;
     private Integer duration;
-    private String producerId;
+    private String actors;
+    private String directors;
+    private List<String> producerId;
     private List<String> filmTypeIds;
 }
