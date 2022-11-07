@@ -1,7 +1,9 @@
 package com.it.doubledi.cinemamanager.application.service.impl;
 
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
+import com.it.doubledi.cinemamanager._common.model.mapper.util.PageableMapperUtil;
 import com.it.doubledi.cinemamanager._common.persistence.support.SeqRepository;
+import com.it.doubledi.cinemamanager._common.persistence.support.SqlUtils;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.application.dto.request.RoomCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoomSearchRequest;
@@ -30,7 +32,10 @@ import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.Locat
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RoomEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RowEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoomStatus;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -154,7 +159,7 @@ public class RoomServiceImpl implements RoomService {
         List<RoomEntity> roomEntities = this.roomEntityRepository.search(searchQuery);
         List<Room> rooms = this.roomEntityMapper.toDomain(roomEntities);
         List<String> locationIds = rooms.stream().map(Room::getLocationId).distinct().collect(Collectors.toList());
-        if(!CollectionUtils.isEmpty(locationIds)) {
+        if (!CollectionUtils.isEmpty(locationIds)) {
             List<LocationEntity> locationEntities = this.locationEntityRepository.findByIds(locationIds);
             List<Location> locations = this.locationEntityMapper.toDomain(locationEntities);
             for (Room room : rooms) {
@@ -166,7 +171,13 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public PageDTO<Room> autoComplete(RoomSearchRequest request) {
-        return null;
+        Pageable pageable = PageableMapperUtil.toPageable(request);
+        Page<RoomEntity> roomEntityPage = this.roomEntityRepository.autoComplete(request.getLocationIds(), SqlUtils.encodeKeyword(request.getKeyword()), List.of(RoomStatus.ACTIVE), pageable);
+        List<Room> rooms = this.roomEntityMapper.toDomain(roomEntityPage.getContent());
+        return new PageDTO<>(rooms,
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                roomEntityPage.getTotalElements());
     }
 
     private List<Row> getDefaultSetting(Room room) {
