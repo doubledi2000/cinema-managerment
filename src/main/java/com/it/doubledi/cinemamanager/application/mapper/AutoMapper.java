@@ -33,4 +33,6 @@ public interface AutoMapper {
     ProducerCreateCmd from(ProducerCreateRequest request);
 
     ProducerUpdateCmd from(ProducerUpdateRequest request);
+
+    FilmScheduleCreateCmd from(FilmScheduleCreateRequest request);
 }

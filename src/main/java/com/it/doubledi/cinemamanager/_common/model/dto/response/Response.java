@@ -39,12 +39,12 @@ public class Response<T> implements Serializable {
         return response;
     }
 
-//    public static <T> Response<T> fail(RuntimeException runtimeException) {
-//        Response<T> response = new Response<>();
-//        response.setSs(false);
-//        response.setRuntimeException(runtimeException);
-//        return response;
-//    }
+    public static <T> Response<T> fail(RuntimeException runtimeException) {
+        Response<T> response = new Response<>();
+        response.setSuccess(Boolean.FALSE);
+        response.setException(runtimeException);
+        return response;
+    }
 
     public Response<T> success() {
         success = true;

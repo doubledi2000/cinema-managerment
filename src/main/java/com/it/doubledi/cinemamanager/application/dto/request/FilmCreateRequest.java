@@ -44,9 +44,14 @@ public class FilmCreateRequest extends Request {
     @NotNull(message = "DURATION_REQUIRED")
     private Integer duration;
 
-    @NotBlank(message = "PRODUCER_ID_REQUIRED")
-    @Size(max = ValidateConstraint.LENGTH.ID_MAX_LENGTH, message = "PRODUCER_ID_LENGTH")
-    private String producerId;
+    @Size(max = ValidateConstraint.LENGTH.DESC_MAX_LENGTH, message = "DESC_LENGTH")
+    private String actors;
+
+    @Size(max = ValidateConstraint.LENGTH.NAME_MAX_LENGTH, message = "NAME_LENGTH")
+    private String directors;
+
+    @NotEmpty(message = "PRODUCER_ID_REQUIRED")
+    private List<String> producerIds;
 
     @NotEmpty(message = "FILM_TYPE_REQUIRED")
     private List<String> filmTypeIds;

@@ -1,20 +1,18 @@
 package com.it.doubledi.cinemamanager.application.dto.response;
 
-import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
+import com.it.doubledi.cinemamanager.domain.Film;
+import com.it.doubledi.cinemamanager.domain.Showtime;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 @Data
 public class ShowtimeResponse {
-    private String id;
     private LocalDate premiereDate;
-    private Integer startAt;
-    private Integer endAt;
-    private String roomId;
     private String filmId;
-    private Boolean deleted;
-    private ShowtimeStatus status;
+    private List<Showtime> details;
+    private Film film;
 }

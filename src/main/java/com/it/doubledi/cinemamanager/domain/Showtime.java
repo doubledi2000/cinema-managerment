@@ -3,7 +3,9 @@ package com.it.doubledi.cinemamanager.domain;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.application.dto.response.RowShowtimeResponse;
+import com.it.doubledi.cinemamanager.domain.command.FilmScheduleCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.ShowtimeCreateCmd;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
 import lombok.*;
 import org.springframework.util.CollectionUtils;
@@ -31,19 +33,16 @@ public class Showtime extends AuditableDomain {
     private Room room;
     private List<RowShowtimeResponse> rows;
 
-    public Showtime(ShowtimeCreateCmd cmd) {
+    public Showtime(ShowtimeCreateCmd cmd,FilmScheduleCreateCmd filmScheduleCreateCmd,  FilmEntity filmEntity) {
         this.id = IdUtils.nextId();
-        this.premiereDate = cmd.getPremiereDate();
-        this.startAt = cmd.getStartAt();
+        this.premiereDate = cmd.getPremierDate();
         this.roomId = cmd.getRoomId();
-        this.filmId = cmd.getFilmId();
         this.deleted = Boolean.FALSE;
-        this.autoGenerateTicket = cmd.getAutoGenerateTicket();
-        if (cmd.getAutoGenerateTicket()) {
-            this.status = ShowtimeStatus.WAIT_ON_SALE;
-        } else {
-            this.status = ShowtimeStatus.WAIT_GEN_TICKET;
-        }
+        this.status = ShowtimeStatus.WAIT_GEN_TICKET;
+        this.autoGenerateTicket = Boolean.FALSE;
+        this.filmId = filmScheduleCreateCmd.getFilmId();
+        this.startAt = filmScheduleCreateCmd.getStartAt();
+        this.endAt = filmScheduleCreateCmd.getStartAt() + filmEntity.getDuration();
     }
 
     public void calEndAt(int duration) {

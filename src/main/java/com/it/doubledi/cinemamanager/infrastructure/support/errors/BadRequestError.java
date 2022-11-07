@@ -7,7 +7,12 @@ import lombok.Getter;
 public enum BadRequestError implements ResponseError {
     TYPE_OF_FILM_CODE_ALREADY_EXISTED(40400001, "Type of film code existed"),
     DURATION_OF_FILM_REQUIRED(40400003, "Duration of film is required"),
-    FILM_ALREADY_GEN_TICKET(40040003, "Film already generate ticket")
+    FILM_ALREADY_GEN_TICKET(40040003, "Film already generate ticket"),
+    FILM_MUST_CONTAIN_TYPE(40040004, "Film must contain type"),
+    ROOM_ALREADY_SCHEDULED(40400005, "Room already have been scheduled"),
+    NO_FILM_IN_SHOWTIME_CREATE_LIST(40400006, "No film found in film scheduled list"),
+    FILM_WITH_ID_NOT_FOUND(40400007, "Film with id %s not found"),
+    FILM_SCHEDULED_CONFLICT(40400008, "Film scheduled conflict")
     ;
 
 

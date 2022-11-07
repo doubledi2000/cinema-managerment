@@ -1,16 +1,20 @@
 package com.it.doubledi.cinemamanager.application.service.impl;
 
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
+import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager.application.dto.request.FilmCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.FilmSearchRequest;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapperQuery;
 import com.it.doubledi.cinemamanager.application.service.FilmService;
 import com.it.doubledi.cinemamanager.domain.Film;
+import com.it.doubledi.cinemamanager.domain.FilmProducer;
 import com.it.doubledi.cinemamanager.domain.FilmType;
+import com.it.doubledi.cinemamanager.domain.Producer;
 import com.it.doubledi.cinemamanager.domain.command.FilmCreateCmd;
 import com.it.doubledi.cinemamanager.domain.query.FilmSearchQuery;
 import com.it.doubledi.cinemamanager.domain.repository.FilmRepository;
+import com.it.doubledi.cinemamanager.domain.repository.ProducerRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmTypeEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.TypeOfFilmEntity;
@@ -18,6 +22,7 @@ import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.FilmEntit
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FilmEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FilmTypeEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.TypeOfFilmEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -36,6 +41,7 @@ public class FilmServiceImpl implements FilmService {
     private final AutoMapperQuery autoMapperQuery;
     private final FilmTypeEntityRepository filmTypeEntityRepository;
     private final FilmEntityRepository filmEntityRepository;
+    private final ProducerRepository producerRepository;
 
 
     @Override
@@ -51,7 +57,19 @@ public class FilmServiceImpl implements FilmService {
                 filmTypes.add(filmType);
             }
         }
+
+        if(CollectionUtils.isEmpty(filmTypes)) {
+            throw new ResponseException(BadRequestError.FILM_MUST_CONTAIN_TYPE);
+        }
+        List<FilmProducer> filmProducers = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(request.getProducerIds())) {
+            for (String producerID : request.getProducerIds()) {
+                FilmProducer filmTmp = new FilmProducer(film.getId(), producerID);
+                filmProducers.add(filmTmp);
+            }
+        }
         film.enrichFilmType(filmTypes);
+        film.enrichProducer(filmProducers);
         this.filmRepository.save(film);
         return film;
     }
@@ -82,6 +100,7 @@ public class FilmServiceImpl implements FilmService {
         }
         List<FilmEntity> filmEntities = this.filmEntityRepository.search(query);
         List<Film> films = this.filmEntityMapper.toDomain(filmEntities);
+        this.filmRepository.enrichList(films);
         return new PageDTO<>(films, query.getPageIndex(), query.getPageSize(), count);
     }
 

@@ -7,23 +7,21 @@ import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.response.RowShowtimeResponse;
+import com.it.doubledi.cinemamanager.application.dto.response.ShowtimeResponse;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
 import com.it.doubledi.cinemamanager.application.service.ShowtimeService;
 import com.it.doubledi.cinemamanager.domain.*;
+import com.it.doubledi.cinemamanager.domain.command.FilmScheduleCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.ShowtimeCreateCmd;
 import com.it.doubledi.cinemamanager.domain.repository.FilmRepository;
 import com.it.doubledi.cinemamanager.domain.repository.RoomRepository;
 import com.it.doubledi.cinemamanager.domain.repository.ShowtimeRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.PriceByTimeEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.PriceEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RoomEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.*;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.FilmEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceByTimeEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FilmEntityRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.PriceByTimeEntityRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.PriceEntityRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RoomEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.ShowtimeEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.*;
 import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
@@ -35,10 +33,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -54,22 +51,27 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     private final PriceByTimeEntityMapper priceByTimeEntityMapper;
     private final PriceEntityRepository priceEntityRepository;
     private final PriceEntityMapper priceEntityMapper;
+    private final ShowtimeEntityRepository showtimeEntityRepository;
+    private final FilmTypeEntityRepository filmTypeEntityRepository;
+    private final FilmEntityMapper filmEntityMapper;
+    private final ShowtimeEntityMapper showtimeEntityMapper;
 
     @Override
     public Showtime create(ShowtimeCreateRequest request) {
-        ShowtimeCreateCmd cmd = this.autoMapper.from(request);
-
-        RoomEntity rooMEntity = this.roomEntityRepository.findById(cmd.getRoomId()).orElseThrow(() -> new ResponseException(NotFoundError.ROOM_NOT_FOUND));
-        FilmEntity filmEntity = this.filmEntityRepository.findFilmById(cmd.getFilmId()).orElseThrow(() -> new ResponseException(NotFoundError.FILM_NOT_FOUND));
-
-        Showtime showtime = new Showtime(cmd);
-        if (Objects.nonNull(filmEntity.getDuration())) {
-            showtime.calEndAt(filmEntity.getDuration());
-        } else {
-            throw new ResponseException(BadRequestError.DURATION_OF_FILM_REQUIRED);
-        }
-
-        return this.showtimeRepository.save(showtime);
+//        ShowtimeCreateCmd cmd = this.autoMapper.from(request);
+//
+//        RoomEntity rooMEntity = this.roomEntityRepository.findById(cmd.getRoomId()).orElseThrow(() -> new ResponseException(NotFoundError.ROOM_NOT_FOUND));
+//        FilmEntity filmEntity = this.filmEntityRepository.findFilmById(cmd.getFilmId()).orElseThrow(() -> new ResponseException(NotFoundError.FILM_NOT_FOUND));
+//
+//        Showtime showtime = new Showtime(cmd);
+//        if (Objects.nonNull(filmEntity.getDuration())) {
+//            showtime.calEndAt(filmEntity.getDuration());
+//        } else {
+//            throw new ResponseException(BadRequestError.DURATION_OF_FILM_REQUIRED);
+//        }
+//
+//        return this.showtimeRepository.save(showtime);
+        return null;
     }
 
     @Override
@@ -78,8 +80,46 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     }
 
     @Override
-    public PageDTO<Showtime> search(ShowtimeSearchRequest request) {
-        return null;
+    public List<ShowtimeResponse> search(ShowtimeSearchRequest request) {
+        if(Objects.isNull(request.getPremierDate())) {
+            request.setPremierDate(LocalDate.now());
+        }
+        List<String> filmIds = null;
+        if(!CollectionUtils.isEmpty(request.getFilmIds())) {
+            filmIds = request.getFilmIds();
+        }
+
+        if(!CollectionUtils.isEmpty(request.getTypeOfFilmIds())) {
+            List<FilmTypeEntity> filmTypeEntities = this.filmTypeEntityRepository.findByTypeIds(request.getTypeOfFilmIds());
+            if(!CollectionUtils.isEmpty(filmTypeEntities)) {
+                if(!CollectionUtils.isEmpty(filmIds)) {
+                    filmIds.retainAll(filmTypeEntities.stream().map(FilmTypeEntity::getFilmId).collect(Collectors.toList()));
+                }else {
+                    filmIds = filmTypeEntities.stream().map(FilmTypeEntity::getFilmId).collect(Collectors.toList());
+                }
+            }
+        }
+
+        List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findShowtimeByParams(filmIds, request.getPremierDate(), request.getStartTime());
+        List<String> filmInListIds = showtimeEntities.stream().map(ShowtimeEntity::getFilmId).collect(Collectors.toList());
+        List<FilmEntity> filmEntities = this.filmEntityRepository.findByIds(filmInListIds);
+        List<Film> films = this.filmEntityMapper.toDomain(filmEntities);
+        List<ShowtimeResponse> showtimeResponses= new ArrayList<>();
+            List<Showtime> showtimes = this.showtimeEntityMapper.toDomain(showtimeEntities);
+        for (Film film : films) {
+            List<Showtime> showtimeTmps = showtimes.stream()
+                    .filter(s -> Objects.equals(s.getFilmId(), film.getId()))
+                    .sorted(Comparator.comparing(Showtime::getStartAt))
+                    .collect(Collectors.toList());
+            ShowtimeResponse showtimeResponse = ShowtimeResponse.builder()
+                    .film(film)
+                    .filmId(film.getId())
+                    .premiereDate(request.getPremierDate())
+                    .details(showtimeTmps)
+                    .build();
+            showtimeResponses.add(showtimeResponse);
+        }
+        return showtimeResponses;
     }
 
     @Override
@@ -111,6 +151,37 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         showtime.enrichRowShowtimeResponse(rows);
         showtime.genTicket();
         this.showtimeRepository.save(showtime);
+    }
+
+    @Override
+    public List<Showtime> createMulti(ShowtimeCreateRequest request) {
+        ShowtimeCreateCmd cmd = this.autoMapper.from(request);
+        if (CollectionUtils.isEmpty(cmd.getFilms())) {
+            return new ArrayList<>();
+        }
+        RoomEntity roomEntity = this.roomEntityRepository.findById(cmd.getRoomId()).orElseThrow(() -> new ResponseException(NotFoundError.ROOM_NOT_FOUND));
+        List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findByRoomIdAndPremiereDate(cmd.getRoomId(), cmd.getPremierDate());
+        if (!CollectionUtils.isEmpty(showtimeEntities)) {
+            throw new ResponseException(BadRequestError.ROOM_ALREADY_SCHEDULED);
+        }
+        List<String> filmIds = cmd.getFilms().stream().map(FilmScheduleCreateCmd::getFilmId).collect(Collectors.toList());
+        List<FilmEntity> filmEntities = this.filmEntityRepository.findByIds(filmIds);
+        if (CollectionUtils.isEmpty(filmEntities)) {
+            throw new ResponseException(BadRequestError.NO_FILM_IN_SHOWTIME_CREATE_LIST);
+        }
+        List<Showtime> showtimes = this.getShowtimeFromCmd(cmd, filmEntities).stream().sorted(Comparator.comparing(Showtime::getStartAt)).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(showtimes)) {
+            throw new ResponseException(BadRequestError.NO_FILM_IN_SHOWTIME_CREATE_LIST);
+        }
+        Integer endTimeTmp = -1;
+        for (Showtime showtime : showtimes) {
+            if(endTimeTmp >= showtime.getStartAt()) {
+                throw new ResponseException(BadRequestError.FILM_SCHEDULED_CONFLICT);
+            }
+            endTimeTmp = showtime.getEndAt();
+        }
+        this.showtimeRepository.saveALl(showtimes);
+        return showtimes;
     }
 
     private List<RowShowtimeResponse> generateTickets(String showtimeId, Room room, Film film, PriceByTime priceByTime) {
@@ -158,5 +229,23 @@ public class ShowtimeServiceImpl implements ShowtimeService {
             rowShowtimeResponses.add(rowShowtimeResponse);
         }
         return rowShowtimeResponses;
+    }
+
+    private List<Showtime> getShowtimeFromCmd(ShowtimeCreateCmd cmd, List<FilmEntity> filmEntities) {
+        List<Showtime> showtimes = new ArrayList<>();
+        List<String> filmIdsNotFound = new ArrayList<>();
+        for (FilmScheduleCreateCmd film : cmd.getFilms()) {
+            Optional<FilmEntity> filmEntity = filmEntities.stream().filter(f -> Objects.equals(f.getId(), film.getFilmId())).findFirst();
+            if (filmEntity.isPresent()) {
+                Showtime showtime = new Showtime(cmd, film, filmEntity.get());
+                showtimes.add(showtime);
+            } else {
+                filmIdsNotFound.add(film.getFilmId());
+            }
+        }
+        if (!CollectionUtils.isEmpty(filmIdsNotFound)) {
+            throw new ResponseException("Film with ids [" + filmIdsNotFound + "] not found ", NotFoundError.FILM_NOT_FOUND);
+        }
+        return showtimes;
     }
 }

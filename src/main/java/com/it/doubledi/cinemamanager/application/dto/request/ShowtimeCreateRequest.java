@@ -7,30 +7,24 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShowtimeCreateRequest extends Request {
-    @NotBlank(message = "FILM_ID_REQUIRED")
-    private String filmId;
 
     @NotBlank(message = "ROOM_ID_REQUIRED")
     private String roomId;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate premierDate;
+    @NotEmpty(message = "FILM_REQUIRED")
+    List<@Valid FilmScheduleCreateRequest> films;
 
-    private LocalDate premiereDate;
-
-    @NotNull(message = "START_AT_REQUIRED")
-    @Min(value = Constant.MIN_START_AT)
-    @Max(value = Constant.MAX_START_AT)
-    private Integer startAt;
-
-    private Boolean autoGenerateTicket;
 }
