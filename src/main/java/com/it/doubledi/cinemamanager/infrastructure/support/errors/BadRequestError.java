@@ -12,7 +12,9 @@ public enum BadRequestError implements ResponseError {
     ROOM_ALREADY_SCHEDULED(40400005, "Room already have been scheduled"),
     NO_FILM_IN_SHOWTIME_CREATE_LIST(40400006, "No film found in film scheduled list"),
     FILM_WITH_ID_NOT_FOUND(40400007, "Film with id %s not found"),
-    FILM_SCHEDULED_CONFLICT(40400008, "Film scheduled conflict")
+    FILM_SCHEDULED_CONFLICT(40400008, "Film scheduled conflict"),
+    EMPLOYEE_CODE_EXISTED(40400009, "Employee code existed"),
+    USERNAME_EXISTED(40400010, "Username existed")
     ;
 
 

@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface UserEntityRepository extends JpaRepository<UserEntity, String> {
     @Query(name = "select u from UserEntity u where u.deleted = false and u.username = :username")
     Optional<UserEntity> findUserByUsername(String username);
+
+    @Query(name = "FROM UserEntity U WHERE U.deleted = false and U.employeeCode = :code")
+    Optional<UserEntity> findByCode(String code);
 }
