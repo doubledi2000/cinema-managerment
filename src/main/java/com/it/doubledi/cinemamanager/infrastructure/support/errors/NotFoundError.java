@@ -13,7 +13,8 @@ public enum NotFoundError implements ResponseError {
     FILM_NOT_FOUND(40040004, "Film not found"),
     SHOWTIME_NOT_FOUND(40040005, "Showtime not found"),
     PRODUCER_NOT_FOUND(40040006, "Producer not found"),
-    TICKET_NOT_FOUND(40040007, "Ticket not found")
+    USER_NOT_FOUND(40040007, "User not found"),
+    TICKET_NOT_FOUND(40040007, "Ticket not found"),
     ;
     private final Integer code;
     private final String message;

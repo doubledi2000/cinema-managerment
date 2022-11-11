@@ -26,7 +26,7 @@ public class UserLocationEntity extends AuditableEntity {
     private String userId;
 
     @Column(name = "deleted")
-    private String deleted;
+    private Boolean deleted;
 
     @Override
     public boolean equals(Object o) {
