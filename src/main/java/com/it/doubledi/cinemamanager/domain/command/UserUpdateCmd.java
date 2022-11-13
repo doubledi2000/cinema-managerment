@@ -21,4 +21,5 @@ public class UserUpdateCmd {
     private String avatarFileId;
 
     private List<String> locationIds;
+    private List<String> roleIds;
 }

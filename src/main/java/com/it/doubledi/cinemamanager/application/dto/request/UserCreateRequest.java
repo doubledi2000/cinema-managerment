@@ -31,4 +31,5 @@ public class UserCreateRequest extends Request {
     private String avatarFileId;
 
     private List<String> locationIds;
+    private List<String> roleIds;
 }

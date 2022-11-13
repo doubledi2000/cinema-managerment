@@ -15,6 +15,7 @@ public enum NotFoundError implements ResponseError {
     PRODUCER_NOT_FOUND(40040006, "Producer not found"),
     USER_NOT_FOUND(40040007, "User not found"),
     TICKET_NOT_FOUND(40040007, "Ticket not found"),
+    ROLE_NOT_FOUND(40040008, "Role not found"),
     ;
     private final Integer code;
     private final String message;

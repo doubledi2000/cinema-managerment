@@ -14,7 +14,10 @@ public enum BadRequestError implements ResponseError {
     FILM_WITH_ID_NOT_FOUND(40400007, "Film with id %s not found"),
     FILM_SCHEDULED_CONFLICT(40400008, "Film scheduled conflict"),
     EMPLOYEE_CODE_EXISTED(40400009, "Employee code existed"),
-    USERNAME_EXISTED(40400010, "Username existed")
+    USERNAME_EXISTED(40400010, "Username existed"),
+    EMAIL_EXISTED(40400010, "Username existed"),
+    PHONE_NUMBER_EXISTED(40400010, "Username existed")
+
     ;
 
 
