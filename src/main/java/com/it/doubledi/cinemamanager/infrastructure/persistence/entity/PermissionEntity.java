@@ -36,6 +36,9 @@ public class PermissionEntity extends AuditableEntity {
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
+    @Column(name = "priority")
+    private int priority;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

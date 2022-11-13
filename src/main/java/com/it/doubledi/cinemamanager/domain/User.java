@@ -15,6 +15,8 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -40,6 +42,8 @@ public class User extends AuditableDomain {
     //enrich
     private List<String> locationIds;
     private List<UserLocation> locations;
+    private List<String> roleIds;
+    private List<UserRole> roles;
 
     public User(UserCreateCmd cmd) {
         this.id = IdUtils.nextId();
@@ -68,7 +72,8 @@ public class User extends AuditableDomain {
         this.gender = cmd.getGender();
         this.title = cmd.getTitle();
         this.departmentName = cmd.getDepartmentName();
-
+        this.updateRole(cmd);
+        this.updateLocation(cmd);
     }
 
     public void enrichUserLocation(List<UserLocation> userLocations) {
@@ -87,6 +92,22 @@ public class User extends AuditableDomain {
         }
     }
 
+    public void enrichRoleIds(List<String> roleIds) {
+        if (!CollectionUtils.isEmpty(roleIds)) {
+            this.roleIds = roleIds;
+        } else {
+            this.roleIds = new ArrayList<>();
+        }
+    }
+
+    public void enrichUserRole(List<UserRole> userRoles) {
+        if (!CollectionUtils.isEmpty(userRoles)) {
+            this.roles = userRoles;
+        } else {
+            this.roles = new ArrayList<>();
+        }
+    }
+
     public void addUserLocation(UserLocation userLocation) {
         if (CollectionUtils.isEmpty(this.locations)) {
             this.locations = new ArrayList<>();
@@ -97,4 +118,46 @@ public class User extends AuditableDomain {
     public void deleteAllLocation() {
         this.getLocations().forEach(UserLocation::delete);
     }
+
+    public void updateRole(UserUpdateCmd cmd) {
+        if (!CollectionUtils.isEmpty(this.roles)) {
+            this.roles.forEach(UserRole::delete);
+        } else {
+            this.roles = new ArrayList<>();
+        }
+
+        cmd.getRoleIds().forEach(roleId -> {
+            Optional<UserRole> userRoleOptional = this.roles.stream().filter(r -> Objects.equals(r.getRoleId(), roleId)).findFirst();
+            if (userRoleOptional.isPresent()) {
+                userRoleOptional.get().undelete();
+            } else {
+                this.addRole(new UserRole(this.id, roleId));
+            }
+        });
+    }
+
+    public void addRole(UserRole userRole) {
+        if (!CollectionUtils.isEmpty(this.roles)) {
+            this.roles = new ArrayList<>();
+        }
+        this.roles.add(userRole);
+    }
+
+    public void updateLocation(UserUpdateCmd cmd) {
+        if (!CollectionUtils.isEmpty(this.locations)) {
+            this.locations.forEach(UserLocation::delete);
+        } else {
+            this.locations = new ArrayList<>();
+        }
+
+        cmd.getLocationIds().forEach(locationId -> {
+            Optional<UserLocation> userLocationOptional = this.locations.stream().filter(r -> Objects.equals(r.getBuildingId(), locationId)).findFirst();
+            if (userLocationOptional.isPresent()) {
+                userLocationOptional.get().undelete();
+            } else {
+                this.addUserLocation(new UserLocation(this.id, locationId));
+            }
+        });
+    }
+
 }

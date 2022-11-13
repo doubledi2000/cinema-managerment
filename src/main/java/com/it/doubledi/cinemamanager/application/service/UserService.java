@@ -2,6 +2,7 @@ package com.it.doubledi.cinemamanager.application.service;
 
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager.application.dto.request.UserCreateRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.UserSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.UserUpdateRequest;
 import com.it.doubledi.cinemamanager.domain.User;
 
@@ -12,7 +13,7 @@ public interface UserService {
 
     User findById(String id);
 
-    PageDTO<User> search();
+    PageDTO<User> search(UserSearchRequest request);
 
-    PageDTO<User> autoComplete();
+    PageDTO<User> autoComplete(UserSearchRequest request);
 }

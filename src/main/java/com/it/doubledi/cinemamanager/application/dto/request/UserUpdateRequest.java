@@ -26,4 +26,5 @@ public class UserUpdateRequest extends Request {
     private String avatarFileId;
 
     private List<String> locationIds;
+    private List<String> roleIds;
 }

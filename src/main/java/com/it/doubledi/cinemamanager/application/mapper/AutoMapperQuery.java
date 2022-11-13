@@ -15,4 +15,8 @@ public interface AutoMapperQuery {
     FilmSearchQuery toQuery(FilmSearchRequest request);
 
     ProducerSearchQuery toQuery(ProducerSearchRequest request);
+
+    UserSearchQuery toQuery(UserSearchRequest request);
+
+    RoleSearchQuery toQuery(RoleSearchRequest request);
 }

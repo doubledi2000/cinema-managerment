@@ -13,4 +13,7 @@ public interface UserLocationEntityRepository extends JpaRepository<UserLocation
     @Query("From UserLocationEntity  UL where UL.deleted = false and UL.userId in :userIds")
     List<UserLocationEntity> findAllByUserIds(List<String> userIds);
 
+    @Query("From UserLocationEntity UL where UL.deleted = false and UL.buildingId in :locationIds")
+    List<UserLocationEntity> findByLocationIds(List<String> locationIds);
+
 }
