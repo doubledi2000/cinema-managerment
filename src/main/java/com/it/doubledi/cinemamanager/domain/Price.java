@@ -26,6 +26,8 @@ public class Price extends AuditableDomain {
         this.id = IdUtils.nextId();
         this.price = cmd.getPrice();
         this.priceByTimeId = priceByTimeId;
+        this.chairType = cmd.getChairType();
+        this.deleted = Boolean.FALSE;
         switch (cmd.getChairType()) {
             case BOGY:
                 this.priority = 0;
@@ -53,6 +55,10 @@ public class Price extends AuditableDomain {
     public void update(PriceCreateCmd cmd) {
         this.price = cmd.getPrice();
         this.deleted = Boolean.FALSE;
+    }
+
+    public void update(Price price) {
+        this.price = price.getPrice();
     }
 
     public void delete() {

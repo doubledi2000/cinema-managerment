@@ -13,6 +13,6 @@ public interface PriceConfigEntityRepository extends JpaRepository<PriceConfigEn
     @Query("From PriceConfigEntity pc where pc.deleted = false")
     List<PriceConfigEntity> getAllPriceConfigs();
 
-    @Query("from PriceConfigEntity pc where pc.deleted = false and pc.locationId = :locationId")
-    List<PriceConfigEntity> getAllByLocationId(@Param("locationId") String locationId);
+    @Query("from PriceConfigEntity pc where pc.deleted = false and pc.locationId = :locationId and pc.special = :special")
+    List<PriceConfigEntity> getAllByLocationId(@Param("locationId") String locationId, Boolean special);
 }

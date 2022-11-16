@@ -49,6 +49,21 @@ public class PriceByTime extends AuditableDomain implements Constant {
         this.addPrice(new Price(this.id, ChairType.SWEET));
     }
 
+    public PriceByTime(String priceConfigId, PriceByTime priceByTime) {
+        this.id = IdUtils.nextId();
+        this.startAt = priceByTime.startAt;
+        this.endAt = priceByTime.endAt;
+        this.priceConfigId = priceConfigId;
+        this.deleted = Boolean.FALSE;
+        for (Price price : priceByTime.getPrices()) {
+            PriceCreateCmd cmd = PriceCreateCmd.builder()
+                    .id(IdUtils.nextId())
+                    .price(price.getPrice())
+                    .chairType(price.getChairType())
+                    .build();
+            this.addPrice(new Price(this.id, cmd));
+        }
+    }
 
     public void update(PriceByTimeCreateCmd cmd) {
         this.startAt = cmd.getStartAt();
@@ -73,6 +88,23 @@ public class PriceByTime extends AuditableDomain implements Constant {
         }
     }
 
+    public void delete() {
+        this.deleted = Boolean.TRUE;
+        this.prices.forEach(Price::delete);
+    }
+
+    public void update(PriceByTime priceByTimeUpdate) {
+        this.deleted = Boolean.FALSE;
+        for (Price price : this.prices) {
+            price.undelete();
+            Optional<Price> priceOptional = priceByTimeUpdate.prices.stream()
+                    .filter(p -> Objects.equals(p.getChairType(), price.getChairType()))
+                    .findFirst();
+            priceOptional.ifPresent(price::update);
+        }
+    }
+
+
     private void updatePrice(List<PriceCreateCmd> cmd) {
 //        this.getPrices().forEach(Price::delete);
         for (Price price : this.getPrices()) {
@@ -82,8 +114,6 @@ public class PriceByTime extends AuditableDomain implements Constant {
             } else {
                 Price tmp = new Price(this.id, cmdTmp.get());
             }
-
-
         }
     }
 

@@ -43,4 +43,8 @@ public interface AutoMapper {
     RoleCreateCmd from(RoleCreateRequest request);
 
     RoleUpdateCmd from(RoleUpdateRequest request);
+
+    RolePermittedCmd from(RolePermittedRequest request);
+
+    TicketPriceConfigUpdateCmd from(TicketPriceConfigUpdateRequest request);
 }

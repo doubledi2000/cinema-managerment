@@ -1,10 +1,11 @@
 package com.it.doubledi.cinemamanager.presentation.web;
 
-import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationSearchRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.TicketPriceConfigUpdateRequest;
+import com.it.doubledi.cinemamanager.application.dto.response.LocationPriceConfigResponse;
 import com.it.doubledi.cinemamanager.domain.Location;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,4 +29,10 @@ public interface LocationResource {
 
     @GetMapping("/locations/auto-complete")
     PagingResponse<Location> autoComplete(LocationSearchRequest request);
+
+    @GetMapping("/locations/{id}/ticket-price-normal")
+    Response<LocationPriceConfigResponse> getTicketPriceConfigNormal(@PathVariable("id") String id);
+
+    @PostMapping("/locations/update/ticket-price-normal")
+    Response<Boolean> updateTicketPrice(@RequestBody TicketPriceConfigUpdateRequest request);
 }

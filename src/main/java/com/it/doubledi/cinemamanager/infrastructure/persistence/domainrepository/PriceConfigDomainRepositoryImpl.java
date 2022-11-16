@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -72,7 +73,10 @@ public class PriceConfigDomainRepositoryImpl extends AbstractDomainRepository<Pr
         List<PriceByTime> priceByTimes = this.priceByTimeEntityMapper.toDomain(priceByTimeEntities);
         this.priceByTimeRepository.enrichList(priceByTimes);
         for (PriceConfig priceConfig : priceConfigs) {
-            List<PriceByTime> priceByTimesTmp = priceByTimes.stream().filter(p -> Objects.equals(p.getPriceConfigId(), priceConfig.getId())).collect(Collectors.toList());
+            List<PriceByTime> priceByTimesTmp = priceByTimes.stream()
+                    .filter(p -> Objects.equals(p.getPriceConfigId(), priceConfig.getId()))
+                    .sorted(Comparator.comparing(PriceByTime::getStartAt))
+                    .collect(Collectors.toList());
             priceConfig.enrichPriceByTime(priceByTimesTmp);
         }
         return priceConfigs;

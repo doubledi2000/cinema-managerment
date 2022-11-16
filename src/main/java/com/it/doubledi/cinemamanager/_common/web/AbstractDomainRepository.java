@@ -32,8 +32,7 @@ public abstract class AbstractDomainRepository<D, E, I> implements DomainReposit
     @Override
     @Transactional
     public D save(D domain) {
-        E entity = this.entityMapper.toEntity(domain);
-        this.jpaRepository.save(entity);
+        this.saveALl(List.of(domain));
         return domain;
     }
 

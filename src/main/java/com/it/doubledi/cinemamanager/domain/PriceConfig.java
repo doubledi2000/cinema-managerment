@@ -74,16 +74,42 @@ public class PriceConfig extends AuditableDomain {
         }
     }
 
-    public PriceConfig(String locationId, int value) {
+    public PriceConfig(String locationId, int value, Boolean special) {
         this.id = IdUtils.nextId();
         this.locationId = locationId;
         this.dayOfWeek = value;
         this.deleted = Boolean.FALSE;
+        this.special = special;
         this.status = PriceConfigStatus.ACTIVE;
         PriceByTime priceByTime = new PriceByTime(this.id);
         this.enrichPriceByTime(List.of(priceByTime));
     }
 
+    public void delete(){
+        this.priceByTimes.forEach(PriceByTime::delete);
+    }
+
+    public void updatePriceList(PriceConfig priceConfigUpdate){
+        for (PriceByTime priceByTimeUpdate : priceConfigUpdate.priceByTimes) {
+            Optional<PriceByTime> priceByTimeOptional = this.priceByTimes.stream()
+                    .filter(p-> Objects.equals(p.getId(), priceByTimeUpdate.getId()))
+                    .findFirst();
+
+            if(priceByTimeOptional.isPresent()) {
+                priceByTimeOptional.get().update(priceByTimeUpdate);
+            }else {
+                PriceByTime priceByTime = new PriceByTime(this.id, priceByTimeUpdate);
+                this.addPriceByTime(priceByTime);
+            }
+        }
+    }
+
+    public void addPriceByTime(PriceByTime priceByTime){
+        if(CollectionUtils.isEmpty(priceByTimes)){
+            this.priceByTimes = new ArrayList<>();
+        }
+        this.priceByTimes.add(priceByTime);
+    }
 
 //
 //    public List<PriceConfig> getPriceConfigFromCmd(LocationPriceConfigCmd cmd) {

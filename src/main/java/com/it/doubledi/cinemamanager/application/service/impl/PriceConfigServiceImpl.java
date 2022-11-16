@@ -1,11 +1,14 @@
 package com.it.doubledi.cinemamanager.application.service.impl;
 
 import com.it.doubledi.cinemamanager.application.dto.request.LocationPriceConfigRequest;
+import com.it.doubledi.cinemamanager.application.dto.response.LocationPriceConfigResponse;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
 import com.it.doubledi.cinemamanager.application.service.PriceConfigService;
+import com.it.doubledi.cinemamanager.domain.Location;
 import com.it.doubledi.cinemamanager.domain.PriceConfig;
 import com.it.doubledi.cinemamanager.domain.command.LocationPriceConfigCmd;
 import com.it.doubledi.cinemamanager.domain.command.PriceConfigCreateCmd;
+import com.it.doubledi.cinemamanager.domain.repository.LocationRepository;
 import com.it.doubledi.cinemamanager.domain.repository.PriceConfigRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.PriceConfigEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceConfigEntityMapper;
@@ -27,6 +30,7 @@ public class PriceConfigServiceImpl implements PriceConfigService {
     private final PriceConfigEntityRepository priceConfigEntityRepository;
     private final PriceConfigEntityMapper priceConfigEntityMapper;
     private final AutoMapper autoMapper;
+    private final LocationRepository locationRepository;
 
     @Override
     public List<PriceConfig> setUp(LocationPriceConfigRequest request) {
@@ -45,19 +49,27 @@ public class PriceConfigServiceImpl implements PriceConfigService {
 
     @Override
     public List<PriceConfig> demo() {
-        PriceConfig priceConfig = new PriceConfig("11", DayOfWeek.MONDAY.getValue());
-        List<PriceConfig> priceConfigs = new ArrayList<>();
-        priceConfigs.add(priceConfig);
-        priceConfigRepository.saveALl(priceConfigs);
-        return List.of(priceConfig);
+//        PriceConfig priceConfig = new PriceConfig("11", DayOfWeek.MONDAY.getValue());
+//        List<PriceConfig> priceConfigs = new ArrayList<>();
+//        priceConfigs.add(priceConfig);
+//        priceConfigRepository.saveALl(priceConfigs);
+//        return List.of(priceConfig);
+        return new ArrayList<>();
     }
 
     @Override
-    public List<PriceConfig> getAllPriceConfigNotSpecial(String locationId) {
-        List<PriceConfigEntity> priceConfigEntities = this.priceConfigEntityRepository.getAllByLocationId(locationId);
+    public LocationPriceConfigResponse getAllPriceConfigNotSpecial(String locationId) {
+        Location location = this.locationRepository.getById(locationId);
+        List<PriceConfigEntity> priceConfigEntities = this.priceConfigEntityRepository.getAllByLocationId(locationId, Boolean.FALSE);
         List<PriceConfig> priceConfigs = this.priceConfigEntityMapper.toDomain(priceConfigEntities);
         this.priceConfigRepository.enrichList(priceConfigs);
-        return priceConfigs;
+
+        return LocationPriceConfigResponse.builder()
+                .locationId(location.getId())
+                .locationCode(location.getCode())
+                .locationName(location.getName())
+                .priceConfigs(priceConfigs)
+                .build();
     }
 
 }

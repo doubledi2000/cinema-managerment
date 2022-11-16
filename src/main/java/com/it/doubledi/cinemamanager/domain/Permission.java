@@ -18,4 +18,12 @@ public class Permission extends AuditableDomain {
     private String name;
     private Boolean deleted;
     private int priority;
+
+    public void delete() {
+        this.deleted = Boolean.TRUE;
+    }
+
+    public void undelete() {
+        this.deleted = Boolean.FALSE;
+    }
 }

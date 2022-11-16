@@ -3,6 +3,7 @@ package com.it.doubledi.cinemamanager.presentation.web.impl;
 import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleCreateRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.RolePermittedRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleUpdateRequest;
 import com.it.doubledi.cinemamanager.application.service.RoleService;
@@ -42,5 +43,10 @@ public class RoleResourceImpl implements RoleResource {
     @Override
     public Response<List<Permission>> findAllPermission() {
         return Response.of(this.roleService.findAllPermission());
+    }
+
+    @Override
+    public Response<Role> permit(String id, RolePermittedRequest request) {
+        return Response.of(this.roleService.permission(id, request));
     }
 }

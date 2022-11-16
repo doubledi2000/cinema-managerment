@@ -16,8 +16,9 @@ public enum BadRequestError implements ResponseError {
     EMPLOYEE_CODE_EXISTED(40400009, "Employee code existed"),
     USERNAME_EXISTED(40400010, "Username existed"),
     EMAIL_EXISTED(40400010, "Username existed"),
-    PHONE_NUMBER_EXISTED(40400010, "Username existed")
-
+    PHONE_NUMBER_EXISTED(40400010, "Username existed"),
+    PRICE_BY_TIME_REQUIRED(40400010, "Price by time required"),
+    PRICE_BY_TIME_MUST_COVER_FULL_DAY(40400012, "Price by time must cover full day")
     ;
 
 

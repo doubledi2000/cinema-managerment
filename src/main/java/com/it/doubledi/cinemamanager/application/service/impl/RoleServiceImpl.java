@@ -2,6 +2,7 @@ package com.it.doubledi.cinemamanager.application.service.impl;
 
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleCreateRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.RolePermittedRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleUpdateRequest;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
@@ -10,6 +11,7 @@ import com.it.doubledi.cinemamanager.application.service.RoleService;
 import com.it.doubledi.cinemamanager.domain.Permission;
 import com.it.doubledi.cinemamanager.domain.Role;
 import com.it.doubledi.cinemamanager.domain.command.RoleCreateCmd;
+import com.it.doubledi.cinemamanager.domain.command.RolePermittedCmd;
 import com.it.doubledi.cinemamanager.domain.command.RoleUpdateCmd;
 import com.it.doubledi.cinemamanager.domain.query.RoleSearchQuery;
 import com.it.doubledi.cinemamanager.domain.repository.RoleRepository;
@@ -78,5 +80,14 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<Permission> findAllPermission() {
         return this.permissionEntityMapper.toDomain(this.permissionEntityRepository.findAll());
+    }
+
+    @Override
+    public Role permission(String id, RolePermittedRequest request) {
+        Role role = this.roleRepository.getById(id);
+        RolePermittedCmd cmd =this.autoMapper.from(request);
+        role.updatePermission(cmd);
+        this.roleRepository.save(role);
+        return role;
     }
 }

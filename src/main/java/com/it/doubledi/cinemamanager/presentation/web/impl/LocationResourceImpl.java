@@ -1,10 +1,11 @@
 package com.it.doubledi.cinemamanager.presentation.web.impl;
 
-import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationSearchRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.TicketPriceConfigUpdateRequest;
+import com.it.doubledi.cinemamanager.application.dto.response.LocationPriceConfigResponse;
 import com.it.doubledi.cinemamanager.application.service.LocationService;
 import com.it.doubledi.cinemamanager.domain.Location;
 import com.it.doubledi.cinemamanager.presentation.web.LocationResource;
@@ -47,5 +48,16 @@ public class LocationResourceImpl implements LocationResource {
     @Override
     public PagingResponse<Location> autoComplete(LocationSearchRequest request) {
         return PagingResponse.of(locationService.autoComplete(request));
+    }
+
+    @Override
+    public Response<LocationPriceConfigResponse> getTicketPriceConfigNormal(String id) {
+        return Response.of(locationService.getAllPriceConfigNotSpecial(id));
+    }
+
+    @Override
+    public Response<Boolean> updateTicketPrice(TicketPriceConfigUpdateRequest request) {
+        locationService.updatePriceConfig(request);
+        return Response.ok();
     }
 }

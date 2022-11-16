@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface PriceByTimeEntityRepository extends JpaRepository<PriceByTimeEntity, String> {
-    @Query("FROM PriceByTimeEntity pbt WHERE pbt.deleted = false and pbt.priceConfigId in :ids")
+    @Query("FROM PriceByTimeEntity pbt WHERE pbt.deleted = false and pbt.priceConfigId in :ids ")
     List<PriceByTimeEntity> findAllByPriceConfigIds(List<String> ids);
 
     @Query("Select pbt from PriceByTimeEntity pbt inner join PriceConfigEntity pc on pbt.priceConfigId = pc.id " +

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.RoleCreateCmd;
+import com.it.doubledi.cinemamanager.domain.command.RolePermittedCmd;
 import com.it.doubledi.cinemamanager.domain.command.RoleUpdateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoleLevel;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoleStatus;
@@ -15,6 +16,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -52,9 +55,34 @@ public class Role extends AuditableDomain {
         }
     }
 
+    public void enrichRolePermission(List<RolePermission> rolePermissions) {
+        this.permissions = rolePermissions;
+    }
+
     public void update(RoleUpdateCmd cmd) {
         this.name = cmd.getName();
         this.description = cmd.getDescription();
         this.isRoot = cmd.getIsRoot();
+    }
+
+    public void updatePermission(RolePermittedCmd cmd) {
+        this.permissions.forEach(RolePermission::delete);
+        for (String permissionId : cmd.getPermissionIds()) {
+            Optional<RolePermission> rolePermissionOptional = this.permissions.stream()
+                    .filter(r -> Objects.equals(r.getPermissionId(), permissionId))
+                    .findFirst();
+            if (rolePermissionOptional.isPresent()) {
+                rolePermissionOptional.get().undelete();
+            } else {
+                this.addPermission(new RolePermission(this.id, permissionId));
+            }
+        }
+    }
+
+    public void addPermission(RolePermission rolePermission) {
+        if (CollectionUtils.isEmpty(this.getPermissions())) {
+            this.permissions = new ArrayList<>();
+        }
+        this.permissions.add(rolePermission);
     }
 }

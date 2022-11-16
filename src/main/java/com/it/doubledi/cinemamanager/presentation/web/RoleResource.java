@@ -4,6 +4,7 @@ import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleCreateRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.RolePermittedRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleUpdateRequest;
 import com.it.doubledi.cinemamanager.domain.Permission;
@@ -29,4 +30,7 @@ public interface RoleResource {
 
     @GetMapping("/permissions/find-all")
     Response<List<Permission>> findAllPermission();
+
+    @PostMapping("/roles/{id}/permit")
+    Response<Role> permit(@PathVariable("id") String id, @RequestBody RolePermittedRequest request);
 }

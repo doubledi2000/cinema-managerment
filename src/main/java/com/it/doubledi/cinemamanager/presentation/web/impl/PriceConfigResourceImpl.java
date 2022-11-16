@@ -1,6 +1,7 @@
 package com.it.doubledi.cinemamanager.presentation.web.impl;
 
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
+import com.it.doubledi.cinemamanager.application.dto.response.LocationPriceConfigResponse;
 import com.it.doubledi.cinemamanager.application.service.PriceConfigService;
 import com.it.doubledi.cinemamanager.domain.PriceConfig;
 import com.it.doubledi.cinemamanager.presentation.web.PriceConfigResource;
@@ -19,7 +20,7 @@ public class PriceConfigResourceImpl implements PriceConfigResource {
     }
 
     @Override
-    public Response<List<PriceConfig>> getAllTicketPriceNotSpecial(String locationId) {
+    public Response<LocationPriceConfigResponse> getAllTicketPriceNotSpecial(String locationId) {
         return Response.of(priceConfigService.getAllPriceConfigNotSpecial(locationId));
     }
 }
