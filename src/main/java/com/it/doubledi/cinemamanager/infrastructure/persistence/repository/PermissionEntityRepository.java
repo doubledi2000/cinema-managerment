@@ -12,4 +12,7 @@ public interface PermissionEntityRepository extends JpaRepository<PermissionEnti
 
     @Query("From PermissionEntity p where p.deleted = false order by p.priority")
     List<PermissionEntity> findAll();
+
+    @Query("from PermissionEntity p where p.deleted = false and p.id in :ids")
+    List<PermissionEntity> findALlByIds(List<String> ids);
 }

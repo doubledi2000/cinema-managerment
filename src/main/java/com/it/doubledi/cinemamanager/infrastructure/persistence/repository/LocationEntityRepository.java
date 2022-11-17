@@ -1,5 +1,6 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.repository;
 
+import com.it.doubledi.cinemamanager.domain.Location;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.LocationEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.custom.LocationRepositoryCustom;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.LocationStatus;
@@ -24,4 +25,7 @@ public interface LocationEntityRepository extends JpaRepository<LocationEntity, 
 
     @Query("From LocationEntity l where l.deleted = false and l.id in :ids")
     List<LocationEntity> findByIds(@Param("ids") List<String> ids);
+
+    @Query("From LocationEntity l where l.deleted = false")
+    List<LocationEntity> findAllLocation();
 }
