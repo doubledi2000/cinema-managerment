@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -16,18 +17,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomUserDetailService customUserDetailService;
     private final ForbiddenTokenFilter forbiddenTokenFilter;
     private final CustomAuthenticationFilter customAuthenticationFilter;
+    private final JwtFilter jwtFilter;
 
     public SecurityConfig(CustomUserDetailService customUserDetailService,
                           ForbiddenTokenFilter forbiddenTokenFilter,
-                          CustomAuthenticationFilter customAuthenticationFilter) {
+                          CustomAuthenticationFilter customAuthenticationFilter,
+                          JwtFilter jwtFilter) {
         this.customUserDetailService = customUserDetailService;
         this.forbiddenTokenFilter = forbiddenTokenFilter;
         this.customAuthenticationFilter = customAuthenticationFilter;
+        this.jwtFilter = jwtFilter;
     }
 
     @Override
@@ -48,12 +53,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeHttpRequests().antMatchers("/authenticate").permitAll()
+        http.csrf().disable().authorizeHttpRequests().antMatchers("/api/authenticate").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.addFilterBefore(forbiddenTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

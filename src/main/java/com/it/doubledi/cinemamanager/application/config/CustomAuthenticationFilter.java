@@ -6,8 +6,11 @@ import com.it.doubledi.cinemamanager._common.web.security.AuthorityService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
@@ -33,24 +36,37 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = this.resolveToken(request);
-        String userId = this.tokenProvider.extractUserId(token);
-        UserAuthority userAuthority = authorityService.getUserAuthority(userId);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User principal = new User(authentication.getName(), "", userAuthority.getGrantedPermissions().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet()));
-        AbstractAuthenticationToken auth = new UserAuthentication(
-                principal,
-                authentication.getCredentials(),
-                userAuthority.getGrantedPermissions().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet()),
-                userAuthority.getIsRoot(),
-                userAuthority.getUserId(),
-                userAuthority.getUserLevel(),
-                token,
-                userAuthority.getGrantedPermissions(),
-                userAuthority.getLocationIds()
-        );
-        SecurityContextHolder.getContext().setAuthentication(auth);
+//        String token = this.resolveToken(request);
+//        String userId = this.tokenProvider.extractUserId(token);
+//        UserAuthority userAuthority = authorityService.getUserAuthority(userId);
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User principal = new User(authentication.getName(), "", userAuthority.getGrantedPermissions().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet()));
+//        AbstractAuthenticationToken auth = new UserAuthentication(
+//                principal,
+//                authentication.getCredentials(),
+//                userAuthority.getGrantedPermissions().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet()),
+//                userAuthority.getIsRoot(),
+//                userAuthority.getUserId(),
+//                userAuthority.getUserLevel(),
+//                token,
+//                userAuthority.getGrantedPermissions(),
+//                userAuthority.getLocationIds()
+//        );
+//        SecurityContextHolder.getContext().setAuthentication(auth);
         filterChain.doFilter(request, response);;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication == null) {
+            return true;
+        }
+        if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            return !authentication.isAuthenticated();
+        }
+        return authentication instanceof AnonymousAuthenticationToken;
     }
 
     private String resolveToken(HttpServletRequest request) {

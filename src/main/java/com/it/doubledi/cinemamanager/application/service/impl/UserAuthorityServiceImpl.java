@@ -49,12 +49,18 @@ public class UserAuthorityServiceImpl implements AuthorityService {
                     .map(RoleEntity::getId)
                     .collect(Collectors.toList());
             isRoot = roleEntities.stream().anyMatch(r -> Boolean.TRUE.equals(r.getIsRoot()));
-            List<RolePermissionEntity> rolePermissionEntities = this.rolePermissionEntityRepository.findAllByRoleIds(roleIds);
-            List<PermissionEntity> permissionEntities = this.permissionEntityRepository.findALlByIds(
-                    rolePermissionEntities.stream()
-                            .map(RolePermissionEntity::getPermissionId)
-                            .distinct()
-                            .collect(Collectors.toList()));
+            List<RolePermissionEntity> rolePermissionEntities;
+            List<PermissionEntity> permissionEntities = new ArrayList<>();
+            if(!isRoot) {
+                rolePermissionEntities = this.rolePermissionEntityRepository.findAllByRoleIds(roleIds);
+                permissionEntities = this.permissionEntityRepository.findALlByIds(
+                        rolePermissionEntities.stream()
+                                .map(RolePermissionEntity::getPermissionId)
+                                .distinct()
+                                .collect(Collectors.toList()));
+            }else {
+                permissionEntities = this.permissionEntityRepository.findAll();
+            }
             if (!CollectionUtils.isEmpty(permissionEntities)) {
                 grantedAuthorities = permissionEntities.stream()
                         .map(r -> String.format("%s:%s", r.getResourceCode().toLowerCase(), r.getScope().toString().toLowerCase()))

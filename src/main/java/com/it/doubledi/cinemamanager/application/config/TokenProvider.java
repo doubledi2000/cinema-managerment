@@ -28,7 +28,19 @@ public class TokenProvider {
     private final String SECRET = "doubledi";
     private final long accessTokenExpiresIn = (long)30 * 24 * 60 * 60 * 1000;
     private final UserEntityRepository userEntityRepository;
+    private final String USER_ID = "user_id";
 
+    public String createToken(Authentication authentication, String userId) {
+        long now = Instant.now().toEpochMilli();
+        Date validity = new Date(now + this.accessTokenExpiresIn);
+
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim(USER_ID, userId)
+                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .setExpiration(validity)
+                .compact();
+    }
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
