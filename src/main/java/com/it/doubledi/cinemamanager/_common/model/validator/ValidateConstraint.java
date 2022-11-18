@@ -10,6 +10,7 @@ public interface ValidateConstraint {
         int ENUM_MAX_LENGTH = 20;
         int ID_MAX_LENGTH = 36;
         int PASSWORD_MAX_LENGTH = 30;
+        int PASSWORD_MIN_LENGTH = 3;
         int VALUE_MAX_LENGTH = 1000;
         int PHONE_MAX_LENGTH = 20;
         int EMAIL_MAX_LENGTH = 50;

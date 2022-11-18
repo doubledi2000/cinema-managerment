@@ -2,6 +2,7 @@ package com.it.doubledi.cinemamanager.domain;
 
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.model.enums.Gender;
+import com.it.doubledi.cinemamanager._common.model.enums.UserLevel;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.UserCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.UserUpdateCmd;
@@ -37,6 +38,7 @@ public class User extends AuditableDomain {
     private String departmentName;
     private String description;
     private UserStatus status;
+    private UserLevel userLevel;
     private String avatarFileId;
 
     //enrich

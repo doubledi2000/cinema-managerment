@@ -7,6 +7,7 @@ import com.it.doubledi.cinemamanager.application.dto.request.TypeOfFilmCreateReq
 import com.it.doubledi.cinemamanager.application.dto.request.TypeOfFilmSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.TypeOfFilmUpdateRequest;
 import com.it.doubledi.cinemamanager.domain.TypeOfFilm;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,6 +26,7 @@ public interface TypeOfFilmResource {
     Response<TypeOfFilm> getById(@PathVariable("id") String id);
 
     @GetMapping("/type-of-films")
+    @PreAuthorize("hasPermission(null,'usekr:createf')")
     PagingResponse<TypeOfFilm> search(TypeOfFilmSearchRequest request);
 
     @GetMapping("/type-of-films/auto-complete")

@@ -3,6 +3,7 @@ package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.enums.Gender;
+import com.it.doubledi.cinemamanager._common.model.enums.UserLevel;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.UserStatus;
 import lombok.AllArgsConstructor;
@@ -67,6 +68,10 @@ public class UserEntity extends AuditableEntity {
     @Column(name = "status", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)
     @Enumerated(EnumType.STRING)
     private UserStatus status;
+
+    @Column(name = "user_level", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private UserLevel userLevel;
 
     @Column(name = "avatar_file_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
     private String avatarFileId;
