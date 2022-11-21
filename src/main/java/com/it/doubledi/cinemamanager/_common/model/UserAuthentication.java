@@ -1,6 +1,8 @@
 package com.it.doubledi.cinemamanager._common.model;
 
 import com.it.doubledi.cinemamanager._common.model.enums.UserLevel;
+import lombok.Data;
+import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.CollectionUtils;
@@ -10,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 public class UserAuthentication extends UsernamePasswordAuthenticationToken {
 
     private final boolean isRoot;

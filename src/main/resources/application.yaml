@@ -12,6 +12,16 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: postgres
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    timeout: 1m
+  cache:
+    redis:
+      time-to-live: 1m
+    custom-cache:
+      user-authority: 1m
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true

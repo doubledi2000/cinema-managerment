@@ -12,6 +12,7 @@ import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.*;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoleStatus;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -35,6 +36,7 @@ public class UserAuthorityServiceImpl implements AuthorityService {
     private final UserLocationEntityRepository userLocationEntityRepository;
 
     @Override
+    @Cacheable(value = "user-authority", key = "#userId", unless = "#userId == null || #result == null", condition = "#userId != null")
     public UserAuthority getUserAuthority(String userId) {
         User user = this.userRepository.getById(userId);
         List<String> grantedAuthorities = new ArrayList<>();

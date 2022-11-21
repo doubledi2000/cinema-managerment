@@ -21,6 +21,8 @@ import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.TypeO
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TypeOfFilmStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class TypeOfFilmServiceImpl implements TypeOfFilmService {
     private final TypeOfFilmRepository typeOfFilmRepository;
     private final TypeOfFilmEntityRepository typeOfFilmEntityRepository;
@@ -58,8 +61,8 @@ public class TypeOfFilmServiceImpl implements TypeOfFilmService {
     }
 
     @Override
-    public TypeOfFilm getById(String id) {
-        return typeOfFilmRepository.getById(id);
+    public TypeOfFilm getById(String typeOfFilmId) {
+        return typeOfFilmRepository.getById(typeOfFilmId);
     }
 
     @Override
