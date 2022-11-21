@@ -34,8 +34,9 @@ public class ForbiddenTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-//        String token = this.resolveToken(request);
+        String token = this.resolveToken(request);
 //        String username =  tokenProvider.extractSubject(token);
+//        if (tokenProvider.validateToken(token, userDetails))
         filterChain.doFilter(request, response);
     }
 
