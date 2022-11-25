@@ -41,9 +41,9 @@ public class Ticket extends AuditableDomain {
     }
 
     public boolean unselect(TicketBookingRequest request) {
-        if (Objects.equals(this.getStatus(), TicketStatus.SELECTED) && Objects.equals(this.userSoldId, request.getUserId())) {
+        if (Objects.equals(this.getStatus(), TicketStatus.SELECTED) && Objects.equals(this.userSoldId,request.getUserId())) {
             this.status = TicketStatus.AVAILABLE;
-            this.userSoldId = "";
+            this.userSoldId = null;
             return true;
         }
         return false;

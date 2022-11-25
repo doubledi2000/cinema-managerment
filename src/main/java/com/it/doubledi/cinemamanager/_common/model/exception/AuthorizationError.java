@@ -5,6 +5,7 @@ import com.it.doubledi.cinemamanager._common.model.dto.error.ResponseError;
 public enum AuthorizationError implements ResponseError {
     USER_DO_NOT_HAVE_ROLE(40301001, "You don't have role"),
     NOT_SUPPORT_AUTHENTICATION(40300003, "Your authentication has not been supported yet"),
+    ACCESS_DENIED(40300001, "Access Denied"),
     ;
 
     private final Integer code;

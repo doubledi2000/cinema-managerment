@@ -1,5 +1,9 @@
 package com.it.doubledi.cinemamanager.application.service.impl;
 
+import com.it.doubledi.cinemamanager._common.model.exception.AuthenticationError;
+import com.it.doubledi.cinemamanager._common.model.exception.AuthorizationError;
+import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
+import com.it.doubledi.cinemamanager.application.config.SecurityUtils;
 import com.it.doubledi.cinemamanager.application.dto.request.TicketBookingRequest;
 import com.it.doubledi.cinemamanager.application.dto.response.RowShowtimeResponse;
 import com.it.doubledi.cinemamanager.application.dto.response.TicketBookingResponse;
@@ -12,6 +16,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor

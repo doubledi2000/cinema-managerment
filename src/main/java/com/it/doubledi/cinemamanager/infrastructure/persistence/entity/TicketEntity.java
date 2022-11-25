@@ -64,6 +64,9 @@ public class TicketEntity extends AuditableEntity {
     @Column(name = "serial_of_chair")
     private Integer serialOfChair;
 
+    @Column(name = "user_sold_id")
+    private String userSoldId;
+
     @Column(name = "deleted")
     private Boolean deleted;
 }

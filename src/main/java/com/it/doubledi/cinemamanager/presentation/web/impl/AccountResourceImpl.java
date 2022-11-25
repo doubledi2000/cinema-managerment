@@ -1,5 +1,7 @@
 package com.it.doubledi.cinemamanager.presentation.web.impl;
 
+import com.it.doubledi.cinemamanager._common.model.UserAuthentication;
+import com.it.doubledi.cinemamanager._common.model.UserAuthority;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.LoginRequest;
 import com.it.doubledi.cinemamanager.application.dto.response.AuthToken;
@@ -18,5 +20,10 @@ public class AccountResourceImpl implements AccountResource {
     public Response<AuthToken> login(LoginRequest request) {
 
         return Response.of(accountService.login(request));
+    }
+
+    @Override
+    public Response<UserAuthority> myAuthorities() {
+        return Response.of(accountService.myAuthorities());
     }
 }
