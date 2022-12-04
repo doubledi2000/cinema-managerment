@@ -27,3 +27,27 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2MB
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIARJJ2LLOKROLHWY7U
+      secret-key: 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
+    region:
+      static: ap-northeast-1
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: cinema-storage
+logging:
+  level:
+    com.amazonaws.util.EC2MetadataUtils: error
+    com.amazonaws.internal.InstanceMetadataServiceResourceFetcher: error

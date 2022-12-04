@@ -18,7 +18,12 @@ public enum BadRequestError implements ResponseError {
     EMAIL_EXISTED(40400010, "Username existed"),
     PHONE_NUMBER_EXISTED(40400010, "Username existed"),
     PRICE_BY_TIME_REQUIRED(40400010, "Price by time required"),
-    PRICE_BY_TIME_MUST_COVER_FULL_DAY(40400012, "Price by time must cover full day")
+    PRICE_BY_TIME_MUST_COVER_FULL_DAY(40400012, "Price by time must cover full day"),
+    USER_HAS_NO_LOCATION(40400013, "User has no location"),
+    OPEN_SHOWTIME_TEMPLATE_FAIL(40400013, "Open showtime template fail"),
+    FILM_SHEET_TEMPLATE_REQUIRED(40400014, "Film sheet required"),
+    ROOM_SHEET_TEMPLATE_REQUIRED(40400015, "Room sheet required"),
+    DOWNLOAD_SHOWTIME_TEMPLATE_FAIL(40400016, "download showtime template fail"),
     ;
 
 

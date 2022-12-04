@@ -21,13 +21,19 @@ public class FileEntity extends AuditableEntity {
     @Column(name = "id")
     private String id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "original_name")
+    private String originalName;
 
     @Column(name = "type")
     private String type;
 
-    @Column(name = "bytes", length = 10 * 1024 * 1024)
-    private byte[] bytes;
+    @Column(name = "size")
+    private Long size;
+
+    @Column(name = "path")
+    private String path;
+
+    @Column(name = "deleted")
+    private Boolean deleted;
 
 }

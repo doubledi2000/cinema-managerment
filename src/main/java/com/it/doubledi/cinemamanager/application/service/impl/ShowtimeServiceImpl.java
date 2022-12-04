@@ -4,6 +4,7 @@ import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.persistence.support.SeqRepository;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
+import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeConfigSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.response.RowShowtimeResponse;
@@ -105,7 +106,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         List<FilmEntity> filmEntities = this.filmEntityRepository.findByIds(filmInListIds);
         List<Film> films = this.filmEntityMapper.toDomain(filmEntities);
         List<ShowtimeResponse> showtimeResponses= new ArrayList<>();
-            List<Showtime> showtimes = this.showtimeEntityMapper.toDomain(showtimeEntities);
+        List<Showtime> showtimes = this.showtimeEntityMapper.toDomain(showtimeEntities);
         for (Film film : films) {
             List<Showtime> showtimeTmps = showtimes.stream()
                     .filter(s -> Objects.equals(s.getFilmId(), film.getId()))
@@ -182,6 +183,11 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         }
         this.showtimeRepository.saveALl(showtimes);
         return showtimes;
+    }
+
+    @Override
+    public PageDTO<Showtime> getShowtimeConfig(ShowtimeConfigSearchRequest request) {
+        return null;
     }
 
     private List<RowShowtimeResponse> generateTickets(String showtimeId, Room room, Film film, PriceByTime priceByTime) {

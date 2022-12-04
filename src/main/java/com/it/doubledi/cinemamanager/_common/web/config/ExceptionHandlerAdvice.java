@@ -20,14 +20,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.file.AccessDeniedException;
 import java.util.Objects;
 
-//@Configuration
-//@ControllerAdvice
-//@Order
+@Configuration
+@ControllerAdvice
+@Order
 @Slf4j
 public class ExceptionHandlerAdvice {
     private final String EXCEPTION_MESSAGE = "custom_exception_message";
 
-    @ExceptionHandler(HttpClientErrorException.Forbidden.class)
+    @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse<Object>> handleValidationException(HttpClientErrorException.Forbidden e, HttpServletRequest request){
         log.warn("Failed to handle request " + request.getMethod() + ": " + request.getRequestURI() + ": " + e.getMessage(), e);
         catchException(e);
@@ -39,20 +39,20 @@ public class ExceptionHandlerAdvice {
                         .build());
     }
 
-//
-//    @ExceptionHandler({ResponseException.class})
-//    public ResponseEntity<ErrorResponse<Object>> handleResponseException(ResponseException e, HttpServletRequest request) {
-//        log.warn("Failed to handle request {}: {}", request.getRequestURI(), e.getError().getMessage(), e);
-//        ResponseError error = e.getError();
-//        catchException(e);
-//        return ResponseEntity.status(error.getStatus())
-//                .body(ErrorResponse.builder()
-//                        .code(error.getCode())
-//                        .error(error.getName())
-//                        .message(error.getMessage())
-//                        .build());
-//
-//    }
+
+    @ExceptionHandler(ResponseException.class)
+    public ResponseEntity<ErrorResponse<Object>> handleResponseException(ResponseException e, HttpServletRequest request) {
+        log.warn("Failed to handle request {}: {}", request.getRequestURI(), e.getError().getMessage(), e);
+        ResponseError error = e.getError();
+        catchException(e);
+        return ResponseEntity.status(error.getStatus())
+                .body(ErrorResponse.builder()
+                        .code(error.getCode())
+                        .error(error.getName())
+                        .message(error.getMessage())
+                        .build());
+
+    }
 
     private void catchException(Exception exception) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();

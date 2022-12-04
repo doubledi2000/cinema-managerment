@@ -4,6 +4,7 @@ import com.it.doubledi.cinemamanager.application.service.impl.CustomUserDetailSe
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -53,8 +55,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.cors();
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
+        http.addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 //        http.addFilterAfter(forbiddenTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler(){
+        return new RestAccessDeniedHandler();
     }
 }

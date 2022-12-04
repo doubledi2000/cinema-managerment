@@ -1,6 +1,7 @@
 package com.it.doubledi.cinemamanager.application.service;
 
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
+import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeConfigSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.response.ShowtimeResponse;
@@ -20,4 +21,6 @@ public interface ShowtimeService {
     void generateTicket(String id);
 
     List<Showtime> createMulti(ShowtimeCreateRequest request);
+
+    PageDTO<Showtime> getShowtimeConfig(ShowtimeConfigSearchRequest request);
 }
