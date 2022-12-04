@@ -1,6 +1,11 @@
 package com.it.doubledi.cinemamanager.application.service.impl;
 
+import com.it.doubledi.cinemamanager._common.model.UserAuthentication;
+import com.it.doubledi.cinemamanager._common.model.UserAuthority;
+import com.it.doubledi.cinemamanager._common.model.exception.AuthenticationError;
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
+import com.it.doubledi.cinemamanager._common.web.security.AuthorityService;
+import com.it.doubledi.cinemamanager.application.config.SecurityUtils;
 import com.it.doubledi.cinemamanager.application.config.TokenProvider;
 import com.it.doubledi.cinemamanager.application.dto.request.LoginRequest;
 import com.it.doubledi.cinemamanager.application.dto.response.AuthToken;
@@ -24,6 +29,7 @@ public class AccountServiceImpl implements AccountService {
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
     private final UserEntityRepository userEntityRepository;
+    private final AuthorityService authorityService;
     @Override
     public AuthToken login(LoginRequest request) {
          Optional<UserEntity> userEntity = this.userEntityRepository.findUserByUsername(request.getUsername());
@@ -39,5 +45,19 @@ public class AccountServiceImpl implements AccountService {
         return AuthToken.builder()
                 .accessToken(accessToken)
                 .build();
+    }
+
+    @Override
+    public UserAuthority myAuthorities() {
+        String me = currentUserId();
+        return this.authorityService.getUserAuthority(me);
+    }
+
+    public String currentUserId() {
+        Optional<String> userId = SecurityUtils.getCurrentUserLoginId();
+        if (userId.isEmpty()) {
+            throw new ResponseException(AuthenticationError.UNAUTHORISED);
+        }
+        return userId.get();
     }
 }

@@ -19,10 +19,13 @@ public class RegexPermissionEvaluator implements PermissionEvaluator {
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         String requiredPermission = permission.toString();
         log.warn("Regex PermissionEvaluator hasPermission");
-//        if(!(authentication instanceof UserAuthentication)) {
-//            throw new ResponseException(AuthorizationError.NOT_SUPPORT_AUTHENTICATION);
-//        }
-//        UserAuthentication userAuthentication = (UserAuthentication) authentication;
+        if(!(authentication instanceof UserAuthentication)) {
+            throw new ResponseException(AuthorizationError.NOT_SUPPORT_AUTHENTICATION);
+        }
+        UserAuthentication userAuthentication = (UserAuthentication) authentication;
+        if(userAuthentication.isRoot()) {
+            return true;
+        }
         return authentication.getAuthorities().stream().anyMatch(p->Pattern.matches(p.getAuthority(),requiredPermission));
     }
 

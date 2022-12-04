@@ -1,7 +1,9 @@
 package com.it.doubledi.cinemamanager._common.model.exception;
 
 import com.it.doubledi.cinemamanager._common.model.dto.error.ResponseError;
+import lombok.Getter;
 
+@Getter
 public enum AuthenticationError implements ResponseError {
     UNKNOWN(40100001, "UNKNOWN"),
     UNAUTHORISED(40100002, "Unauthorised"),

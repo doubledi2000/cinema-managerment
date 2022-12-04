@@ -34,7 +34,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     @Override
     public Long count(UserSearchQuery searchQuery) {
         Map<String, Object> value = new HashMap<>();
-        StringBuilder sql = new StringBuilder("Select u from UserEntity u ");
+        StringBuilder sql = new StringBuilder("Select count(*) from UserEntity u ");
         sql.append(createWhereQuery(searchQuery, value));
         Query query = entityManager.createQuery(sql.toString(), Long.class);
         value.forEach(query::setParameter);
@@ -47,7 +47,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
             sql.append(" AND (u.fullName like :keyword or u.username like :keyword or u.employeeCode like :keyword u.phoneNumber like :keyword ");
             values.put("keyword", searchQuery.getKeyword());
         }
-        if (CollectionUtils.isEmpty(searchQuery.getUserIds())) {
+        if (!CollectionUtils.isEmpty(searchQuery.getUserIds())) {
             sql.append(" AND u.id in :ids");
             values.put("ids", searchQuery.getUserIds());
         }

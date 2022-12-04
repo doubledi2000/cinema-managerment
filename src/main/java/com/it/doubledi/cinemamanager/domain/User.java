@@ -46,6 +46,7 @@ public class User extends AuditableDomain {
     private List<UserLocation> locations;
     private List<String> roleIds;
     private List<UserRole> roles;
+    private String viewAvatarUrl;
 
     public User(UserCreateCmd cmd) {
         this.id = IdUtils.nextId();
@@ -160,6 +161,10 @@ public class User extends AuditableDomain {
                 this.addUserLocation(new UserLocation(this.id, locationId));
             }
         });
+    }
+
+    public void enrichAvatar(String url) {
+        this.viewAvatarUrl = url;
     }
 
 }

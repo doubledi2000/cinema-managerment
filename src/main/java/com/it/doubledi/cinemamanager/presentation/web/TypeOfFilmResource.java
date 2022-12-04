@@ -26,7 +26,7 @@ public interface TypeOfFilmResource {
     Response<TypeOfFilm> getById(@PathVariable("id") String id);
 
     @GetMapping("/type-of-films")
-    @PreAuthorize("hasPermission(null,'user:create')")
+    @PreAuthorize("hasPermission(null,'user:view')")
     PagingResponse<TypeOfFilm> search(TypeOfFilmSearchRequest request);
 
     @GetMapping("/type-of-films/auto-complete")

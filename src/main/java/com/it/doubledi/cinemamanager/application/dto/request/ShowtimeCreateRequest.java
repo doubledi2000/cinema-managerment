@@ -27,4 +27,5 @@ public class ShowtimeCreateRequest extends Request {
     @NotEmpty(message = "FILM_REQUIRED")
     List<@Valid FilmScheduleCreateRequest> films;
 
+
 }

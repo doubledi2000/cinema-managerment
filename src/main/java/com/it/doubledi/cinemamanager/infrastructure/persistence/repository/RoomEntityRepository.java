@@ -28,5 +28,11 @@ public interface RoomEntityRepository extends JpaRepository<RoomEntity, String>,
             " order by r.name asc ")
     Page<RoomEntity> autoComplete(@Param("locationIds") List<String> locationIds, @Param("keyword") String keyword, @Param("statuses") List<RoomStatus> statuses, Pageable pageable);
 
+    @Query("from RoomEntity r where r.deleted = false and coalesce(:locationIds, null) is null or r.locationId in :locationIds")
+    List<RoomEntity> findByLocationIds(List<String> locationIds);
+
+    @Query("from RoomEntity r where r.deleted = false and coalesce(:locationIds, null) is null or r.locationId in :locationIds and r.status = status")
+    List<RoomEntity> findByLocationIdsAndStatus(List<String> locationIds, RoomStatus status);
+
 
 }

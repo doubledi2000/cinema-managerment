@@ -11,6 +11,7 @@ import com.it.doubledi.cinemamanager.infrastructure.support.errors.NotFoundError
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,8 @@ public class UserDomainRepositoryImpl extends AbstractDomainRepository<User, Use
     private final UserRoleEntityRepository userRoleEntityRepository;
     private final RoleEntityRepository roleEntityRepository;
     private final RoleEntityMapper roleEntityMapper;
+    private final FileEntityRepository fileEntityRepository;
+
     public UserDomainRepositoryImpl(UserEntityRepository userEntityRepository,
                                     UserEntityMapper userEntityMapper,
                                     UserLocationEntityRepository userLocationEntityRepository,
@@ -40,7 +43,8 @@ public class UserDomainRepositoryImpl extends AbstractDomainRepository<User, Use
                                     UserRoleEntityMapper userRoleEntityMapper,
                                     UserRoleEntityRepository userRoleEntityRepository,
                                     RoleEntityRepository roleEntityRepository,
-                                    RoleEntityMapper roleEntityMapper) {
+                                    RoleEntityMapper roleEntityMapper,
+                                    FileEntityRepository fileEntityRepository) {
         super(userEntityRepository, userEntityMapper);
         this.userEntityRepository = userEntityRepository;
         this.userEntityMapper = userEntityMapper;
@@ -52,6 +56,7 @@ public class UserDomainRepositoryImpl extends AbstractDomainRepository<User, Use
         this.userRoleEntityRepository = userRoleEntityRepository;
         this.roleEntityRepository = roleEntityRepository;
         this.roleEntityMapper = roleEntityMapper;
+        this.fileEntityRepository = fileEntityRepository;
     }
 
     @Override
@@ -75,7 +80,7 @@ public class UserDomainRepositoryImpl extends AbstractDomainRepository<User, Use
             if (!CollectionUtils.isEmpty(e.getLocations())) {
                 userLocations.addAll(e.getLocations());
             }
-            if(!CollectionUtils.isEmpty(e.getRoles())) {
+            if (!CollectionUtils.isEmpty(e.getRoles())) {
                 userRoles.addAll(e.getRoles());
             }
         });
@@ -105,12 +110,13 @@ public class UserDomainRepositoryImpl extends AbstractDomainRepository<User, Use
         List<String> roleIds = userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList());
         List<RoleEntity> roleEntities = this.roleEntityRepository.findAllByIds(roleIds);
         List<Role> roles = this.roleEntityMapper.toDomain(roleEntities);
-        userRoles.forEach( e -> {
+        userRoles.forEach(e -> {
             Optional<Role> roleTmp = roles.stream().filter(r -> Objects.equals(r.getId(), e.getRoleId())).findFirst();
             roleTmp.ifPresent(e::enrichRole);
         });
 
-
+        List<String> fileIds = users.stream().map(User::getAvatarFileId).filter(StringUtils::hasLength).collect(Collectors.toList());
+        List<FileEntity> fileEntities = this.fileEntityRepository.findByIds(fileIds);
         for (User user : users) {
             List<String> locationIdsTmp = userLocations.stream()
                     .filter(u -> Objects.equals(user.getId(), u.getUserId()))
@@ -121,10 +127,15 @@ public class UserDomainRepositoryImpl extends AbstractDomainRepository<User, Use
             List<UserLocation> userLocationsTmp = userLocations.stream().filter(u -> Objects.equals(u.getUserId(), user.getId())).collect(Collectors.toList());
             user.enrichUserLocation(userLocationsTmp);
 
-            List<String> roleIdsTmp = userRoles.stream().filter(u ->Objects.equals(u.getUserId(), user.getId())).map(UserRole::getRoleId).collect(Collectors.toList());
+            List<String> roleIdsTmp = userRoles.stream().filter(u -> Objects.equals(u.getUserId(), user.getId())).map(UserRole::getRoleId).collect(Collectors.toList());
             user.enrichRoleIds(roleIdsTmp);
-            List<UserRole> userRolesTmp = userRoles.stream().filter( u ->Objects.equals(u.getUserId(), user.getId())).collect(Collectors.toList());
+            List<UserRole> userRolesTmp = userRoles.stream().filter(u -> Objects.equals(u.getUserId(), user.getId())).collect(Collectors.toList());
             user.enrichUserRole(userRolesTmp);
+
+            Optional<FileEntity> fileEntityOptional = fileEntities.stream().filter(f -> Objects.equals(f.getId(), user.getAvatarFileId())).findFirst();
+            fileEntityOptional.ifPresent(f -> {
+                user.enrichAvatar(f.getPath());
+            });
         }
         return users;
     }

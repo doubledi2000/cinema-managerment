@@ -5,11 +5,13 @@ import lombok.Data;
 import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -22,7 +24,7 @@ public class UserAuthentication extends UsernamePasswordAuthenticationToken {
     private final List<String> grantedPermissions;
     private final List<String> locationIds;
 
-    public UserAuthentication(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, boolean isRoot, String userId, UserLevel userLevel, String token, List<String> grantedPermissions, List<String> locationIds) {
+    public UserAuthentication(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, boolean isRoot, String userId, UserLevel userLevel, String token, Set<SimpleGrantedAuthority> grantedPermissions, List<String> locationIds) {
         super(principal, credentials, authorities);
         this.isRoot = isRoot;
         this.userId = userId;
