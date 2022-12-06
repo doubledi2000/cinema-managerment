@@ -3,11 +3,7 @@ package com.it.doubledi.cinemamanager.domain;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager.domain.command.DrinkUpdateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.DrinkStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -24,6 +20,7 @@ public class Drink extends AuditableDomain {
     private String description;
     private String fileId;
     private Boolean deleted;
+    private String imagePath;
 
     public void update(DrinkUpdateCmd cmd) {
         this.name = cmd.getName();
@@ -38,5 +35,9 @@ public class Drink extends AuditableDomain {
 
     public void inactive() {
         this.status = DrinkStatus.INACTIVE;
+    }
+
+    public void enrichFile(File file) {
+        this.imagePath = file.getPath();
     }
 }

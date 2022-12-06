@@ -7,17 +7,24 @@ import com.it.doubledi.cinemamanager.application.dto.request.DrinkCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.DrinkSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.DrinkUpdateRequest;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
+import com.it.doubledi.cinemamanager.application.mapper.AutoMapperQuery;
 import com.it.doubledi.cinemamanager.application.service.DrinkService;
 import com.it.doubledi.cinemamanager.domain.Drink;
 import com.it.doubledi.cinemamanager.domain.Location;
 import com.it.doubledi.cinemamanager.domain.command.DrinkCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.DrinkUpdateCmd;
+import com.it.doubledi.cinemamanager.domain.query.DrinkSearchQuery;
 import com.it.doubledi.cinemamanager.domain.repository.DrinkRepository;
 import com.it.doubledi.cinemamanager.domain.repository.LocationRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.DrinkEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.DrinkEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.DrinkEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.DrinkStatus;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -28,7 +35,9 @@ public class DinkServiceImpl implements DrinkService {
 
     private final LocationRepository locationRepository;
     private final DrinkRepository drinkRepository;
-
+    private final AutoMapperQuery autoMapperQuery;
+    private final DrinkEntityRepository drinkEntityRepository;
+    private final DrinkEntityMapper drinkEntityMapper;
 
     @Override
     public Drink create(DrinkCreateRequest request) {
@@ -58,7 +67,7 @@ public class DinkServiceImpl implements DrinkService {
 
     @Override
     public Drink getById(String id) {
-        return null;
+        return this.drinkRepository.getById(id);
     }
 
     @Override
@@ -77,7 +86,17 @@ public class DinkServiceImpl implements DrinkService {
 
     @Override
     public PageDTO<Drink> search(DrinkSearchRequest request) {
-        return null;
+        DrinkSearchQuery searchQuery = this.autoMapperQuery.toQuery(request);
+        Long count = this.drinkEntityRepository.count(searchQuery);
+
+        if (count == 0) {
+            return PageDTO.empty();
+        }
+
+        List<DrinkEntity> drinkEntities = this.drinkEntityRepository.search(searchQuery);
+        List<Drink> drinks = this.drinkEntityMapper.toDomain(drinkEntities);
+        this.drinkRepository.enrichList(drinks);
+        return new PageDTO<>(drinks, searchQuery.getPageIndex(), searchQuery.getPageSize(), count);
     }
 
     @Override
