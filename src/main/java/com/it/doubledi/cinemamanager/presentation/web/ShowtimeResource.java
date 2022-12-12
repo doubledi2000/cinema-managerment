@@ -33,4 +33,5 @@ public interface ShowtimeResource {
 
     @GetMapping("/showtimes/download-template")
     void downloadShowtimeTemplate(HttpServletResponse response);
+
 }

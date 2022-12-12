@@ -18,6 +18,7 @@ public enum NotFoundError implements ResponseError {
     ROLE_NOT_FOUND(40040008, "Role not found"),
     FILE_NOT_FOUND(40040009, "File not found"),
     DRINK_NOT_FOUND(40040009, "Drink not found"),
+    INVOICE_NOT_FOUND(40040010, "Invoice not found"),
     ;
     private final Integer code;
     private final String message;
