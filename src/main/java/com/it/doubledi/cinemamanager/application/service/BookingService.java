@@ -5,4 +5,6 @@ import com.it.doubledi.cinemamanager.domain.Invoice;
 
 public interface BookingService {
     Invoice booking(InvoiceCreateRequest request);
+
+    Invoice getById(String id);
 }

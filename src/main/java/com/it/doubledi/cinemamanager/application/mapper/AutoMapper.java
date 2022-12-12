@@ -5,6 +5,7 @@ import com.it.doubledi.cinemamanager.application.dto.request.DrinkCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.DrinkUpdateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.FilmCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.FilmScheduleCreateRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.InvoiceCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationPriceConfigRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.PriceByTimeCreateRequest;
@@ -28,6 +29,7 @@ import com.it.doubledi.cinemamanager.domain.command.DrinkCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.DrinkUpdateCmd;
 import com.it.doubledi.cinemamanager.domain.command.FilmCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.FilmScheduleCreateCmd;
+import com.it.doubledi.cinemamanager.domain.command.InvoiceCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.LocationCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.LocationPriceConfigCmd;
 import com.it.doubledi.cinemamanager.domain.command.PriceByTimeCreateCmd;
@@ -95,4 +97,6 @@ public interface AutoMapper {
     DrinkCreateCmd from(DrinkCreateRequest request);
 
     DrinkUpdateCmd from(DrinkUpdateRequest request);
+
+    InvoiceCreateCmd from(InvoiceCreateRequest request);
 }

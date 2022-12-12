@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InvoiceCreateRequest extends Request {
+    private String locationId;
     private String showtimeId;
     private List<ItemCreateRequest> items;
 }

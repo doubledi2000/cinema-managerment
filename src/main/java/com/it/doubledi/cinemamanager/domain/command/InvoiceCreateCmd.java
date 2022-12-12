@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 @Builder
 public class InvoiceCreateCmd {
+    private String locationId;
     private String showtimeId;
     private List<ItemCreateCmd> items;
 }

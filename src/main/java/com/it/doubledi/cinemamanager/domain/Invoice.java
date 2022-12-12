@@ -30,16 +30,19 @@ public class Invoice extends AuditableDomain {
     private List<Item> items;
     private List<Ticket> tickets;
 
-    public Invoice(InvoiceCreateCmd cmd, String userId, List<Drink> drinks) {
+    public Invoice(String userId) {
         this.id = IdUtils.nextId();
         this.userId = userId;
         this.paymentTime = Instant.now();
         this.deleted = Boolean.FALSE;
         this.items = new ArrayList<>();
-
     }
 
-    private List<Item> getListItem(InvoiceCreateCmd cmd, List<Drink> drinks) {
+    public void calculatorTotal() {
+        this.total = this.items.stream().reduce(0d, (t, item) -> t + item.getQuantity() * item.getPrice(), Double::sum);
+    }
+
+    private void getListItem(InvoiceCreateCmd cmd, List<Drink> drinks) {
         cmd.getItems().forEach(i -> {
             Optional<Drink> drinkOptional = drinks.stream().filter(d -> Objects.equals(d.getId(), i.getItemId())).findFirst();
             if (drinkOptional.isPresent()) {
@@ -56,6 +59,21 @@ public class Invoice extends AuditableDomain {
         items.add(item);
     }
 
+    public void addItem(Ticket ticket) {
+        if (CollectionUtils.isEmpty(this.items)) {
+            this.items = new ArrayList<>();
+        }
+        Item item = new Item(ticket, this.id);
+        this.items.add(item);
+    }
+
+    public void addItem(Drink drink, int quantity) {
+        if (CollectionUtils.isEmpty(this.items)) {
+            this.items = new ArrayList<>();
+        }
+        Item item = new Item(drink, quantity, this.id);
+        this.items.add(item);
+    }
 
     public void enrichItem(List<Item> items) {
         if (!CollectionUtils.isEmpty(items)) {

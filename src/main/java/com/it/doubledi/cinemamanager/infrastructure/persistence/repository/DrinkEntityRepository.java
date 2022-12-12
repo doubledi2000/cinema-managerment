@@ -14,4 +14,7 @@ public interface DrinkEntityRepository extends JpaRepository<DrinkEntity, String
 
     @Query("from DrinkEntity d where d.deleted = false and d.locationId in :locationIds and d.status in :statuses")
     List<DrinkEntity> findAllByLocationIds(List<String> locationIds, List<DrinkStatus> statuses);
+
+    @Query("from DrinkEntity d where d.deleted = false and d.locationId = :locationId and d.id in :ids")
+    List<DrinkEntity> findAllByIds(String locationId, List<String> ids);
 }

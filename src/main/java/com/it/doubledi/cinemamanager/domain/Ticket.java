@@ -18,7 +18,7 @@ public class Ticket extends AuditableDomain {
     private String name;
     private String chairId;
     private String showtimeId;
-    private Float price;
+    private Double price;
     private TicketStatus status;
     private ChairType type;
     private String filmId;
@@ -41,11 +41,15 @@ public class Ticket extends AuditableDomain {
     }
 
     public boolean unselect(TicketBookingRequest request) {
-        if (Objects.equals(this.getStatus(), TicketStatus.SELECTED) && Objects.equals(this.userSoldId,request.getUserId())) {
+        if (Objects.equals(this.getStatus(), TicketStatus.SELECTED) && Objects.equals(this.userSoldId, request.getUserId())) {
             this.status = TicketStatus.AVAILABLE;
             this.userSoldId = null;
             return true;
         }
         return false;
+    }
+
+    public void sold() {
+        this.status = TicketStatus.SOLD;
     }
 }

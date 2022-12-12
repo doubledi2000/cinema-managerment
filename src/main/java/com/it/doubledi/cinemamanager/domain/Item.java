@@ -22,6 +22,17 @@ public class Item extends AuditableDomain {
     private Boolean deleted;
     private String invoiceId;
 
+    public Item(Ticket ticket, String invoiceId) {
+        this.id = IdUtils.nextId();
+        this.type = ItemType.TICKET;
+        this.quantity = 1;
+        this.price = ticket.getPrice();
+        this.itemId = ticket.getId();
+        this.itemName = ticket.getName();
+        this.deleted = Boolean.FALSE;
+        this.invoiceId = invoiceId;
+    }
+
     public Item(Drink drink, int quantity, String invoiceId) {
         this.id = IdUtils.nextId();
         this.type = ItemType.DRINK;
