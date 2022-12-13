@@ -24,6 +24,8 @@ public enum BadRequestError implements ResponseError {
     FILM_SHEET_TEMPLATE_REQUIRED(40400014, "Film sheet required"),
     ROOM_SHEET_TEMPLATE_REQUIRED(40400015, "Room sheet required"),
     DOWNLOAD_SHOWTIME_TEMPLATE_FAIL(40400016, "download showtime template fail"),
+    READ_FILE_FAIL(40400016, "Read file fail"),
+    INPUT_INVALID(40400017, "Input invalid"),
     ;
 
 

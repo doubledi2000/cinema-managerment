@@ -52,4 +52,8 @@ public class Ticket extends AuditableDomain {
     public void sold() {
         this.status = TicketStatus.SOLD;
     }
+
+    public void finish(){
+        this.status = TicketStatus.UNAVAILABLE;
+    }
 }

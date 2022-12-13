@@ -30,16 +30,20 @@ import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.NotFoundError;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ShowtimeServiceImpl implements ShowtimeService {
     private final RoomRepository roomRepository;
     private final FilmRepository filmRepository;
@@ -82,20 +86,20 @@ public class ShowtimeServiceImpl implements ShowtimeService {
 
     @Override
     public List<ShowtimeResponse> search(ShowtimeSearchRequest request) {
-        if(Objects.isNull(request.getPremierDate())) {
+        if (Objects.isNull(request.getPremierDate())) {
             request.setPremierDate(LocalDate.now());
         }
         List<String> filmIds = null;
-        if(!CollectionUtils.isEmpty(request.getFilmIds())) {
+        if (!CollectionUtils.isEmpty(request.getFilmIds())) {
             filmIds = request.getFilmIds();
         }
 
-        if(!CollectionUtils.isEmpty(request.getTypeOfFilmIds())) {
+        if (!CollectionUtils.isEmpty(request.getTypeOfFilmIds())) {
             List<FilmTypeEntity> filmTypeEntities = this.filmTypeEntityRepository.findByTypeIds(request.getTypeOfFilmIds());
-            if(!CollectionUtils.isEmpty(filmTypeEntities)) {
-                if(!CollectionUtils.isEmpty(filmIds)) {
+            if (!CollectionUtils.isEmpty(filmTypeEntities)) {
+                if (!CollectionUtils.isEmpty(filmIds)) {
                     filmIds.retainAll(filmTypeEntities.stream().map(FilmTypeEntity::getFilmId).collect(Collectors.toList()));
-                }else {
+                } else {
                     filmIds = filmTypeEntities.stream().map(FilmTypeEntity::getFilmId).collect(Collectors.toList());
                 }
             }
@@ -105,7 +109,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         List<String> filmInListIds = showtimeEntities.stream().map(ShowtimeEntity::getFilmId).collect(Collectors.toList());
         List<FilmEntity> filmEntities = this.filmEntityRepository.findByIds(filmInListIds);
         List<Film> films = this.filmEntityMapper.toDomain(filmEntities);
-        List<ShowtimeResponse> showtimeResponses= new ArrayList<>();
+        List<ShowtimeResponse> showtimeResponses = new ArrayList<>();
         List<Showtime> showtimes = this.showtimeEntityMapper.toDomain(showtimeEntities);
         for (Film film : films) {
             List<Showtime> showtimeTmps = showtimes.stream()
@@ -135,7 +139,8 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         if (!Objects.equals(showtime.getStatus(), ShowtimeStatus.WAIT_GEN_TICKET)) {
             throw new ResponseException(BadRequestError.FILM_ALREADY_GEN_TICKET);
         }
-        Optional<PriceByTimeEntity> priceByTimeEntityOptional = this.priceByTimeEntityRepository.getPriceByTimeBySpecificTime(showtime.getRoom().getLocationId(), showtime.getPremiereDate().getDayOfWeek().getValue(), showtime.getStartAt());
+        Optional<PriceByTimeEntity> priceByTimeEntityOptional = this.priceByTimeEntityRepository
+                .getPriceByTimeBySpecificTime(showtime.getRoom().getLocationId(), showtime.getPremiereDate().getDayOfWeek().getValue() - 1, showtime.getStartAt());
         PriceByTime priceByTime = null;
         if (priceByTimeEntityOptional.isPresent()) {
             priceByTime = this.priceByTimeEntityMapper.toDomain(priceByTimeEntityOptional.get());
@@ -151,7 +156,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         List<RowShowtimeResponse> rows = generateTickets(showtime.getId(), showtime.getRoom(), showtime.getFilm(), priceByTime);
         showtime.enrichRowShowtimeResponse(rows);
         showtime.genTicket();
-        this.showtimeRepository.save(showtime);
+        //his.showtimeRepository.save(showtime);
     }
 
     @Override
@@ -176,7 +181,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         }
         Integer endTimeTmp = -1;
         for (Showtime showtime : showtimes) {
-            if(endTimeTmp >= showtime.getStartAt()) {
+            if (endTimeTmp >= showtime.getStartAt()) {
                 throw new ResponseException(BadRequestError.FILM_SCHEDULED_CONFLICT);
             }
             endTimeTmp = showtime.getEndAt();
@@ -214,7 +219,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
                         .name(row.getName() + chair.getSerialOfChair())
                         .chairId(chair.getId())
                         .showtimeId(showtimeId)
-                        .price(price)
+                        .price((double) price)
                         .type(chair.getChairType())
                         .filmId(film.getId())
                         .roomId(room.getId())
@@ -253,5 +258,37 @@ public class ShowtimeServiceImpl implements ShowtimeService {
             throw new ResponseException("Film with ids [" + filmIdsNotFound + "] not found ", NotFoundError.FILM_NOT_FOUND);
         }
         return showtimes;
+    }
+
+
+    //task
+    @Scheduled(cron = "0 * * * * *")
+    public void finishShowtime() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDate localDate = localDateTime.toLocalDate();
+        int time = localDateTime.getHour() * 60 + localDateTime.getMinute();
+        List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findAllToFinish(localDate, time, List.of(ShowtimeStatus.FINISH, ShowtimeStatus.CANCELED));
+        if (CollectionUtils.isEmpty(showtimeEntities)) {
+            log.info("No showtime to finish");
+            return;
+        }
+
+        List<Showtime> showtimes = this.showtimeEntityMapper.toDomain(showtimeEntities);
+        this.showtimeRepository.enrichList(showtimes);
+        showtimes.forEach(Showtime::finish);
+//        this.showtimeRepository.saveALl()
+    }
+
+    @Scheduled(cron = "0 * * * * *")
+    public void syncGenerateTicket() {
+        LocalDate localDate = LocalDate.now().plusDays(3);
+        List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findAllToGenerateTicket(localDate, ShowtimeStatus.WAIT_GEN_TICKET);
+        if (CollectionUtils.isEmpty(showtimeEntities)) {
+            return;
+        }
+
+        showtimeEntities.forEach(s -> {
+            this.generateTicket(s.getId());
+        });
     }
 }

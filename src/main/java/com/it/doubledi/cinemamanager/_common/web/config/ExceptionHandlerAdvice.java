@@ -49,7 +49,7 @@ public class ExceptionHandlerAdvice {
                 .body(ErrorResponse.builder()
                         .code(error.getCode())
                         .error(error.getName())
-                        .message(error.getMessage())
+                        .message(e.getMessage())
                         .build());
 
     }

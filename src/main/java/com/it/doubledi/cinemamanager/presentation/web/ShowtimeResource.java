@@ -8,6 +8,7 @@ import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeSearchReque
 import com.it.doubledi.cinemamanager.application.dto.response.ShowtimeResponse;
 import com.it.doubledi.cinemamanager.domain.Showtime;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -34,4 +35,6 @@ public interface ShowtimeResource {
     @GetMapping("/showtimes/download-template")
     void downloadShowtimeTemplate(HttpServletResponse response);
 
+    @PostMapping("/showtimes/upload-showtimes")
+    Response<Boolean> uploadShowtime(@RequestBody MultipartFile file);
 }
