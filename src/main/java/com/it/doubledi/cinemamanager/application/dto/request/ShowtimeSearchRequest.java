@@ -21,4 +21,10 @@ public class ShowtimeSearchRequest extends PagingRequest {
     private List<String> filmIds;
     private List<String> typeOfFilmIds;
     private List<String> roomIds;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startAt;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endAt;
 }

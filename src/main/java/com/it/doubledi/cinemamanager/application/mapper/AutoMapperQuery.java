@@ -21,4 +21,6 @@ public interface AutoMapperQuery {
     RoleSearchQuery toQuery(RoleSearchRequest request);
 
     DrinkSearchQuery toQuery(DrinkSearchRequest request);
+
+    ShowtimeConfigSearchQuery toQuery(ShowtimeConfigSearchRequest request);
 }

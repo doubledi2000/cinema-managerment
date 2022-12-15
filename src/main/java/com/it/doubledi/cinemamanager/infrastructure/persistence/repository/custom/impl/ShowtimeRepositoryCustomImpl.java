@@ -13,6 +13,7 @@ import javax.persistence.Query;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Repository
 public class ShowtimeRepositoryCustomImpl implements ShowtimeRepositoryCustom {
@@ -45,8 +46,16 @@ public class ShowtimeRepositoryCustomImpl implements ShowtimeRepositoryCustom {
 
     private String createWhereQuery(ShowtimeConfigSearchQuery searchQuery, Map<String, Object> values) {
         StringBuilder sql = new StringBuilder(" WHERE s.deleted = false");
-        sql.append(" AND s.premiereDate = :time ");
-        values.put("time", searchQuery.getTime());
+
+        if (Objects.nonNull(searchQuery.getStartTime())) {
+            sql.append(" AND s.premiereDate >= :startTime");
+            values.put("startTime", searchQuery.getStartTime());
+        }
+
+        if (Objects.nonNull(searchQuery.getEndTime())) {
+            sql.append(" AND s.premiereDate <= :endTime ");
+            values.put("endTime", searchQuery.getEndTime());
+        }
 
         if (!CollectionUtils.isEmpty(searchQuery.getStatuses())) {
             sql.append(" AND s.status in :statuses ");
@@ -71,10 +80,9 @@ public class ShowtimeRepositoryCustomImpl implements ShowtimeRepositoryCustom {
         if (StringUtils.hasLength(searchQuery.getSortBy())) {
             sql.append("order by s.").append(searchQuery.getSortBy().replace(".", " "));
         } else {
-            sql.append("order by s.createdAt desc");
+            sql.append("order by s.premiereDate desc, s.startAt asc");
         }
         return sql.toString();
-
     }
 
 }

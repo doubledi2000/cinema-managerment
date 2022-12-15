@@ -1,5 +1,6 @@
 package com.it.doubledi.cinemamanager.presentation.web.impl;
 
+import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeConfigSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeCreateRequest;
@@ -45,7 +46,7 @@ public class ShowtimeResourceImpl implements ShowtimeResource {
     }
 
     @Override
-    public Response<List<Showtime>> getShowtimeConfig(ShowtimeConfigSearchRequest request) {
+    public PagingResponse<Showtime> getShowtimeConfig(ShowtimeConfigSearchRequest request) {
         return null;
     }
 

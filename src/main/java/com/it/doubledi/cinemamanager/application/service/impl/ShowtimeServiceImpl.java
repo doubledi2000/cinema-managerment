@@ -10,10 +10,12 @@ import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeSearchReque
 import com.it.doubledi.cinemamanager.application.dto.response.RowShowtimeResponse;
 import com.it.doubledi.cinemamanager.application.dto.response.ShowtimeResponse;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
+import com.it.doubledi.cinemamanager.application.mapper.AutoMapperQuery;
 import com.it.doubledi.cinemamanager.application.service.ShowtimeService;
 import com.it.doubledi.cinemamanager.domain.*;
 import com.it.doubledi.cinemamanager.domain.command.FilmScheduleCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.ShowtimeCreateCmd;
+import com.it.doubledi.cinemamanager.domain.query.ShowtimeConfigSearchQuery;
 import com.it.doubledi.cinemamanager.domain.repository.FilmRepository;
 import com.it.doubledi.cinemamanager.domain.repository.RoomRepository;
 import com.it.doubledi.cinemamanager.domain.repository.ShowtimeRepository;
@@ -48,6 +50,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     private final RoomRepository roomRepository;
     private final FilmRepository filmRepository;
     private final AutoMapper autoMapper;
+    private final AutoMapperQuery autoMapperQuery;
     private final RoomEntityRepository roomEntityRepository;
     private final FilmEntityRepository filmEntityRepository;
     private final ShowtimeRepository showtimeRepository;
@@ -156,7 +159,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         List<RowShowtimeResponse> rows = generateTickets(showtime.getId(), showtime.getRoom(), showtime.getFilm(), priceByTime);
         showtime.enrichRowShowtimeResponse(rows);
         showtime.genTicket();
-        //his.showtimeRepository.save(showtime);
+        this.showtimeRepository.save(showtime);
     }
 
     @Override
@@ -192,6 +195,11 @@ public class ShowtimeServiceImpl implements ShowtimeService {
 
     @Override
     public PageDTO<Showtime> getShowtimeConfig(ShowtimeConfigSearchRequest request) {
+        ShowtimeConfigSearchQuery query = this.autoMapperQuery.toQuery(request);
+        Long count = this.showtimeEntityRepository.count(query);
+        if(count == 0) {
+            return PageDTO.empty();
+        }
         return null;
     }
 
@@ -284,11 +292,12 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         LocalDate localDate = LocalDate.now().plusDays(3);
         List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findAllToGenerateTicket(localDate, ShowtimeStatus.WAIT_GEN_TICKET);
         if (CollectionUtils.isEmpty(showtimeEntities)) {
+            log.info("No showtime to generate ticket");
             return;
         }
-
         showtimeEntities.forEach(s -> {
             this.generateTicket(s.getId());
         });
+
     }
 }

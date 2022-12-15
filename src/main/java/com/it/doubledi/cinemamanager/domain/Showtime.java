@@ -31,6 +31,7 @@ public class Showtime extends AuditableDomain {
     private Boolean deleted;
     private ShowtimeStatus status;
     private Boolean autoGenerateTicket;
+    private String locationId;
 
     private Film film;
     private Room room;

@@ -7,7 +7,11 @@ import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeCreateReque
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.response.ShowtimeResponse;
 import com.it.doubledi.cinemamanager.domain.Showtime;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +34,7 @@ public interface ShowtimeResource {
     Response<List<ShowtimeResponse>> search(ShowtimeSearchRequest request);
 
     @GetMapping("/showtimes/config")
-    Response<List<Showtime>> getShowtimeConfig(ShowtimeConfigSearchRequest request);
+    PagingResponse<Showtime> getShowtimeConfig(ShowtimeConfigSearchRequest request);
 
     @GetMapping("/showtimes/download-template")
     void downloadShowtimeTemplate(HttpServletResponse response);

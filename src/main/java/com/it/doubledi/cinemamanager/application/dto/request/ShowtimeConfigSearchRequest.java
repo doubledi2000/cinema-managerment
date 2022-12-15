@@ -15,8 +15,10 @@ import java.util.List;
 @NoArgsConstructor
 public class ShowtimeConfigSearchRequest extends PagingRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate time;
-    private ShowtimeStatus status;
+    private LocalDate startTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endTime;
+    private List<ShowtimeStatus> statuses;
     private List<String> roomIds;
     private List<String> filmIds;
 }

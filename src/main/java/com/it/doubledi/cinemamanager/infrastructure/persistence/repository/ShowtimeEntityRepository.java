@@ -1,6 +1,7 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.repository;
 
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.ShowtimeEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.custom.ShowtimeRepositoryCustom;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,7 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface ShowtimeEntityRepository extends JpaRepository<ShowtimeEntity, String> {
+public interface ShowtimeEntityRepository extends JpaRepository<ShowtimeEntity, String>, ShowtimeRepositoryCustom {
     @Query("from ShowtimeEntity s where s.deleted = false and s.id in :ids")
     List<ShowtimeEntity> findAllByIds(List<String> ids);
 

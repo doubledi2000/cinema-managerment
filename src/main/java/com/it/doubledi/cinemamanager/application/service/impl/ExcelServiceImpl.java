@@ -31,7 +31,11 @@ import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestErr
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.NotFoundError;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -47,8 +51,13 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -185,8 +194,8 @@ public class ExcelServiceImpl implements ExcelService {
         }
 
         List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findAllByRoomIds(roomIds, premiereDate);
-        if(!CollectionUtils.isEmpty(showtimeEntities)) {
-            List<String> roomIdsConflict = showtimeEntities.stream().map(ShowtimeEntity::getRoomId).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(showtimeEntities)) {
+            List<String> roomIdsConflict = showtimeEntities.stream().map(ShowtimeEntity::getRoomId).distinct().collect(Collectors.toList());
             throw new ResponseException("Create showtime conflict with room ids " + roomIdsConflict, BadRequestError.FILM_SCHEDULED_CONFLICT);
         }
 
@@ -196,45 +205,46 @@ public class ExcelServiceImpl implements ExcelService {
         showtimeCreateInBatchRequests.forEach(s -> {
             Optional<Film> filmOptional = films.stream().filter(f -> Objects.equals(f.getId(), s.getFilmId())).findFirst();
             Film film = null;
-            if(filmOptional.isPresent()) {
+            if (filmOptional.isPresent()) {
                 film = filmOptional.get();
             }
             Optional<Room> roomOptional = rooms.stream().filter(r -> Objects.equals(r.getId(), s.getRoomId())).findFirst();
             Room room = null;
-            if(roomOptional.isPresent()) {
+            if (roomOptional.isPresent()) {
                 room = roomOptional.get();
             }
-           if(Objects.nonNull(film) && Objects.nonNull(room)) {
-               Showtime showtime = Showtime.builder()
-                       .id(IdUtils.nextId())
-                       .premiereDate(premiereDate)
-                       .roomId(room.getId())
-                       .filmId(film.getId())
-                       .status(ShowtimeStatus.WAIT_GEN_TICKET)
-                       .startAt(s.getStartAt())
-                       .endAt(s.getStartAt() + film.getDuration())
-                       .deleted(Boolean.FALSE)
-                       .autoGenerateTicket(Boolean.FALSE)
-                       .build();
-               showtimes.add(showtime);
-           }
+            if (Objects.nonNull(film) && Objects.nonNull(room)) {
+                Showtime showtime = Showtime.builder()
+                        .id(IdUtils.nextId())
+                        .premiereDate(premiereDate)
+                        .roomId(room.getId())
+                        .filmId(film.getId())
+                        .status(ShowtimeStatus.WAIT_GEN_TICKET)
+                        .startAt(s.getStartAt())
+                        .endAt(s.getStartAt() + film.getDuration())
+                        .deleted(Boolean.FALSE)
+                        .autoGenerateTicket(Boolean.FALSE)
+                        .locationId(room.getLocationId())
+                        .build();
+                showtimes.add(showtime);
+            }
         });
         Map<String, List<Showtime>> map = showtimes.stream()
                 .collect(Collectors.groupingBy(Showtime::getRoomId));
 
         List<String> roomIdsConflict = new ArrayList<>();
-        for (String key: map.keySet()) {
+        for (String key : map.keySet()) {
             List<Showtime> showtimesTmp = map.get(key).stream().sorted(Comparator.comparing(Showtime::getStartAt)).collect(Collectors.toList());
             int endAtTmp = showtimesTmp.get(0).getEndAt();
-            for(int i = 1; i < showtimesTmp.size(); i++) {
+            for (int i = 1; i < showtimesTmp.size(); i++) {
                 Showtime showtimeTmp = showtimesTmp.get(i);
-                if(showtimeTmp.getStartAt() <= endAtTmp) {
+                if (showtimeTmp.getStartAt() <= endAtTmp) {
                     roomIdsConflict.add(showtimeTmp.getRoomId());
                 }
                 endAtTmp = showtimeTmp.getEndAt();
             }
         }
-        if(!CollectionUtils.isEmpty(roomIdsConflict)) {
+        if (!CollectionUtils.isEmpty(roomIdsConflict)) {
             throw new ResponseException("Scheduled conflict with room id " + roomIdsConflict, BadRequestError.FILM_SCHEDULED_CONFLICT);
         }
 
@@ -267,7 +277,7 @@ public class ExcelServiceImpl implements ExcelService {
                             filmId = value;
                             break;
                         case 3:
-                            startAt = (int)Float.parseFloat(value);
+                            startAt = (int) Float.parseFloat(value);
                             break;
                     }
                 } catch (Exception e) {

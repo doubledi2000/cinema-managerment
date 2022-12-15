@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class RoomServiceImpl implements RoomService {
-    private final String CHAR_ARRAY = "ABCDEFGHIJKLMNOPQ";
+    private final String CHAR_ARRAY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private final RoomEntityRepository roomEntityRepository;
     private final RoomRepository roomRepository;
     private final RoomEntityMapper roomEntityMapper;
@@ -201,7 +201,7 @@ public class RoomServiceImpl implements RoomService {
                         .chairType(ChairType.NORMAL)
                         .serialOfChair(j)
                         .code(seqRepository.generateChairCode())
-                        .name("A")
+                        .name(String.valueOf(CHAR_ARRAY.charAt(j)))
                         .build();
                 chairs.add(chair);
 

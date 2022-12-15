@@ -51,4 +51,7 @@ public class ShowtimeEntity extends AuditableEntity {
     @Column(name = "auto_generate_ticket")
     private Boolean autoGenerateTicket;
 
+    @Column(name = "location_id")
+    private String location_id;
+
 }
