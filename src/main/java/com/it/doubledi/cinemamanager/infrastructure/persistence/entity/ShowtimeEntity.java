@@ -52,6 +52,6 @@ public class ShowtimeEntity extends AuditableEntity {
     private Boolean autoGenerateTicket;
 
     @Column(name = "location_id")
-    private String location_id;
+    private String locationId;
 
 }

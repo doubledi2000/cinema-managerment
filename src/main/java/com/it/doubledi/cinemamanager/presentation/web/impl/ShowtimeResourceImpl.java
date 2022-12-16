@@ -47,7 +47,7 @@ public class ShowtimeResourceImpl implements ShowtimeResource {
 
     @Override
     public PagingResponse<Showtime> getShowtimeConfig(ShowtimeConfigSearchRequest request) {
-        return null;
+        return PagingResponse.of(this.showtimeService.getShowtimeConfig(request));
     }
 
     @Override

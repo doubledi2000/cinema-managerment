@@ -45,7 +45,7 @@ public class ShowtimeRepositoryCustomImpl implements ShowtimeRepositoryCustom {
     }
 
     private String createWhereQuery(ShowtimeConfigSearchQuery searchQuery, Map<String, Object> values) {
-        StringBuilder sql = new StringBuilder(" WHERE s.deleted = false");
+        StringBuilder sql = new StringBuilder(" WHERE s.deleted = false ");
 
         if (Objects.nonNull(searchQuery.getStartTime())) {
             sql.append(" AND s.premiereDate >= :startTime");
@@ -78,9 +78,9 @@ public class ShowtimeRepositoryCustomImpl implements ShowtimeRepositoryCustom {
     private String createOrderBy(ShowtimeConfigSearchQuery searchQuery) {
         StringBuilder sql = new StringBuilder();
         if (StringUtils.hasLength(searchQuery.getSortBy())) {
-            sql.append("order by s.").append(searchQuery.getSortBy().replace(".", " "));
+            sql.append(" order by s.").append(searchQuery.getSortBy().replace(".", " "));
         } else {
-            sql.append("order by s.premiereDate desc, s.startAt asc");
+            sql.append(" order by s.premiereDate desc, s.startAt asc");
         }
         return sql.toString();
     }

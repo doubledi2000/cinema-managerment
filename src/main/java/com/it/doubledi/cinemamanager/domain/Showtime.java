@@ -33,6 +33,7 @@ public class Showtime extends AuditableDomain {
     private Boolean autoGenerateTicket;
     private String locationId;
 
+    private Location location;
     private Film film;
     private Room room;
     private List<RowShowtimeResponse> rows;
@@ -63,6 +64,10 @@ public class Showtime extends AuditableDomain {
         if (Objects.nonNull(room)) {
             this.room = room;
         }
+    }
+
+    public void enrichLocation(Location location){
+        this.location = location;
     }
 
     public void enrichRowShowtimeResponse(List<RowShowtimeResponse> rows) {

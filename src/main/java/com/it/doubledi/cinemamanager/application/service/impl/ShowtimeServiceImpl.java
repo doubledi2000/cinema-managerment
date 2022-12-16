@@ -20,10 +20,7 @@ import com.it.doubledi.cinemamanager.domain.repository.FilmRepository;
 import com.it.doubledi.cinemamanager.domain.repository.RoomRepository;
 import com.it.doubledi.cinemamanager.domain.repository.ShowtimeRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.*;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.FilmEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceByTimeEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.ShowtimeEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.*;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.*;
 import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
@@ -33,6 +30,7 @@ import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestErr
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.NotFoundError;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +61,9 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     private final FilmTypeEntityRepository filmTypeEntityRepository;
     private final FilmEntityMapper filmEntityMapper;
     private final ShowtimeEntityMapper showtimeEntityMapper;
+    private final RoomEntityMapper roomEntityMapper;
+    private final LocationEntityMapper locationEntityMapper;
+    private final LocationEntityRepository locationEntityRepository;
 
     @Override
     public Showtime create(ShowtimeCreateRequest request) {
@@ -197,10 +198,31 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     public PageDTO<Showtime> getShowtimeConfig(ShowtimeConfigSearchRequest request) {
         ShowtimeConfigSearchQuery query = this.autoMapperQuery.toQuery(request);
         Long count = this.showtimeEntityRepository.count(query);
-        if(count == 0) {
+        if (count == 0) {
             return PageDTO.empty();
         }
-        return null;
+        List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.search(query);
+        List<Showtime> showtimes = this.showtimeEntityMapper.toDomain(showtimeEntities);
+        this.enrichShowtime(showtimes);
+        return PageDTO.of(showtimes, query.getPageIndex(), query.getPageSize(), count);
+    }
+
+    private void enrichShowtime(List<Showtime> showtimes) {
+        List<String> roomIds = showtimes.stream().map(Showtime::getRoomId).distinct().collect(Collectors.toList());
+        List<String> filmIds = showtimes.stream().map(Showtime::getFilmId).distinct().collect(Collectors.toList());
+        List<String> locationIds = showtimes.stream().map(Showtime::getLocationId).distinct().collect(Collectors.toList());
+        List<RoomEntity> roomEntities = this.roomEntityRepository.findByIds(roomIds);
+        List<Room> rooms = this.roomEntityMapper.toDomain(roomEntities);
+        List<Film> films = this.filmEntityMapper.toDomain(this.filmEntityRepository.findByIds(filmIds));
+        List<Location> locations = this.locationEntityMapper.toDomain(this.locationEntityRepository.findByIds(locationIds));
+        showtimes.forEach(s -> {
+            Optional<Room> roomOptional = rooms.stream().filter(r -> Objects.equals(r.getId(), s.getRoomId())).findFirst();
+            roomOptional.ifPresent(s::enrichRoom);
+            Optional<Film> filmOptional = films.stream().filter(f -> Objects.equals(f.getId(), s.getFilmId())).findFirst();
+            filmOptional.ifPresent(s::enrichFilm);
+            Optional<Location> locationOptional = locations.stream().filter(l -> Objects.equals(l.getId(), s.getLocationId())).findFirst();
+            locationOptional.ifPresent(s::enrichLocation);
+        });
     }
 
     private List<RowShowtimeResponse> generateTickets(String showtimeId, Room room, Film film, PriceByTime priceByTime) {
@@ -270,7 +292,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
 
 
     //task
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void finishShowtime() {
         LocalDateTime localDateTime = LocalDateTime.now();
         LocalDate localDate = localDateTime.toLocalDate();
@@ -287,7 +309,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
 //        this.showtimeRepository.saveALl()
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void syncGenerateTicket() {
         LocalDate localDate = LocalDate.now().plusDays(3);
         List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findAllToGenerateTicket(localDate, ShowtimeStatus.WAIT_GEN_TICKET);
