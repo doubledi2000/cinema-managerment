@@ -6,7 +6,6 @@ import com.it.doubledi.cinemamanager.application.dto.request.LoginRequest;
 import com.it.doubledi.cinemamanager.application.dto.response.AuthToken;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api")
 public interface AccountResource {
 

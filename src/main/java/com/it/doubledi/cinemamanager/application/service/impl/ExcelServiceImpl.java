@@ -116,7 +116,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
         Sheet filmSheet = workbook.getSheetAt(FILM_SHEET);
         if (Objects.isNull(filmSheet)) {
-            throw new ResponseException(BadRequestError.FILM_SHEET_TEMPLATE_REQUIRED);
+            throw new ResponseException(BadRequestError.TEMPLATE_NOT_HAVE_FILM_SHEET);
         }
         CellStyle cellStyle = ExcelUtils.createValueCellStyle(workbook);
         for (int i = 0; i < films.size(); i++) {
@@ -132,7 +132,7 @@ public class ExcelServiceImpl implements ExcelService {
 
         Sheet roomSheet = workbook.getSheetAt(ROOM_SHEET);
         if (Objects.isNull(roomSheet)) {
-            throw new ResponseException(BadRequestError.ROOM_SHEET_TEMPLATE_REQUIRED);
+            throw new ResponseException(BadRequestError.TEMPLATE_NOT_HAVE_ROOM_SHEET);
         }
 
         for (int i = 0; i < rooms.size(); i++) {

@@ -14,7 +14,9 @@ public enum ResourceCategory {
     REPORT_MANAGER("REPORT", "REPORT_MANAGEMENT_TITLE", List.of(Scope.VIEW), 7),
     LOCATION_MANAGER("LOCATION", "LOCATION_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 8),
     PRICE_MANAGER("PRICE", "PRICE_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 9),
-    PRODUCER("PRODUCER", "PRODUCER_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 10),;
+    PRODUCER("PRODUCER", "PRODUCER_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 10),
+    DRINK_MANAGER("DRINK", "DRINK_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 11),
+    ;
     String resourceCode;
     String resourceName;
     List<Scope> scopes;

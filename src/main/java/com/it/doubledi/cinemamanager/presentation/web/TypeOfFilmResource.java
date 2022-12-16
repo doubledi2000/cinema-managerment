@@ -14,22 +14,25 @@ import javax.validation.Valid;
 
 @RequestMapping("/api")
 @Valid
-@CrossOrigin("*")
 public interface TypeOfFilmResource {
     @PostMapping("/type-of-films")
+    @PreAuthorize("hasPermission(null, 'film_type:create')")
     Response<TypeOfFilm> create(@RequestBody @Valid TypeOfFilmCreateRequest request);
 
     @PostMapping("/type-of-films/{id}/update")
+    @PreAuthorize("hasPermission(null, 'film_type:update')")
     Response<TypeOfFilm> update(@PathVariable("id") String id,@RequestBody @Valid TypeOfFilmUpdateRequest request);
 
     @GetMapping("/type-of-films/{id}")
+    @PreAuthorize("hasPermission(null, 'film_type:view')")
     Response<TypeOfFilm> getById(@PathVariable("id") String id);
 
     @GetMapping("/type-of-films")
-    @PreAuthorize("hasPermission(null,'user:view')")
+    @PreAuthorize("hasPermission(null,'film_type:view')")
     PagingResponse<TypeOfFilm> search(TypeOfFilmSearchRequest request);
 
     @GetMapping("/type-of-films/auto-complete")
+    @PreAuthorize("hasPermission(null, 'film_type:view')")
     PagingResponse<TypeOfFilm>autoComplete(TypeOfFilmSearchRequest request);
 
 }

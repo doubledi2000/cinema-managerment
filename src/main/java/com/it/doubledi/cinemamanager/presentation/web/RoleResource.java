@@ -9,6 +9,7 @@ import com.it.doubledi.cinemamanager.application.dto.request.RoleSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleUpdateRequest;
 import com.it.doubledi.cinemamanager.domain.Permission;
 import com.it.doubledi.cinemamanager.domain.Role;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,20 +18,26 @@ import java.util.List;
 public interface RoleResource {
 
     @PostMapping("/roles")
+    @PreAuthorize("hasPermission(null, 'role:create')")
     Response<Role> create(@RequestBody RoleCreateRequest request);
 
     @PostMapping("/roles/{id}/update")
+    @PreAuthorize("hasPermission(null, 'role:update')")
     Response<Role> update(@PathVariable("id") String id, @RequestBody RoleUpdateRequest request);
 
     @GetMapping("/roles/{id}")
+    @PreAuthorize("hasPermission(null, 'role:view')")
     Response<Role> findById(@PathVariable("id") String id);
 
     @GetMapping("/roles")
+    @PreAuthorize("hasPermission(null, 'role:view')")
     PagingResponse<Role> search(RoleSearchRequest request);
 
     @GetMapping("/permissions/find-all")
+    @PreAuthorize("hasPermission(null, 'role:view')")
     Response<List<Permission>> findAllPermission();
 
     @PostMapping("/roles/{id}/permit")
+    @PreAuthorize("hasPermission(null, 'role:update')")
     Response<Role> permit(@PathVariable("id") String id, @RequestBody RolePermittedRequest request);
 }
