@@ -4,6 +4,7 @@ import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.persistence.support.SeqRepository;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
+import com.it.doubledi.cinemamanager.application.config.SecurityUtils;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeConfigSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeSearchRequest;
@@ -12,16 +13,40 @@ import com.it.doubledi.cinemamanager.application.dto.response.ShowtimeResponse;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapperQuery;
 import com.it.doubledi.cinemamanager.application.service.ShowtimeService;
-import com.it.doubledi.cinemamanager.domain.*;
+import com.it.doubledi.cinemamanager.domain.Chair;
+import com.it.doubledi.cinemamanager.domain.Film;
+import com.it.doubledi.cinemamanager.domain.Location;
+import com.it.doubledi.cinemamanager.domain.Price;
+import com.it.doubledi.cinemamanager.domain.PriceByTime;
+import com.it.doubledi.cinemamanager.domain.Room;
+import com.it.doubledi.cinemamanager.domain.Row;
+import com.it.doubledi.cinemamanager.domain.Showtime;
+import com.it.doubledi.cinemamanager.domain.Ticket;
 import com.it.doubledi.cinemamanager.domain.command.FilmScheduleCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.ShowtimeCreateCmd;
 import com.it.doubledi.cinemamanager.domain.query.ShowtimeConfigSearchQuery;
 import com.it.doubledi.cinemamanager.domain.repository.FilmRepository;
 import com.it.doubledi.cinemamanager.domain.repository.RoomRepository;
 import com.it.doubledi.cinemamanager.domain.repository.ShowtimeRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.*;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.*;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.*;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmTypeEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.PriceByTimeEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.PriceEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RoomEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.ShowtimeEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.FilmEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.LocationEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceByTimeEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RoomEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.ShowtimeEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FilmEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FilmTypeEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.LocationEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.PriceByTimeEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.PriceEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RoomEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.ShowtimeEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
@@ -30,7 +55,6 @@ import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestErr
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.NotFoundError;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +62,11 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -85,7 +113,9 @@ public class ShowtimeServiceImpl implements ShowtimeService {
 
     @Override
     public Showtime getById(String id) {
-        return showtimeRepository.getById(id);
+        Showtime showtime = showtimeRepository.getById(id);
+        SecurityUtils.checkPermissionOfLocation(showtime.getLocationId());
+        return showtime;
     }
 
     @Override
@@ -140,6 +170,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     @Transactional
     public void generateTicket(String id) {
         Showtime showtime = this.showtimeRepository.getById(id);
+        SecurityUtils.checkPermissionOfLocation(showtime.getLocationId());
         if (!Objects.equals(showtime.getStatus(), ShowtimeStatus.WAIT_GEN_TICKET)) {
             throw new ResponseException(BadRequestError.FILM_ALREADY_GEN_TICKET);
         }
@@ -170,6 +201,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
             return new ArrayList<>();
         }
         RoomEntity roomEntity = this.roomEntityRepository.findById(cmd.getRoomId()).orElseThrow(() -> new ResponseException(NotFoundError.ROOM_NOT_FOUND));
+        SecurityUtils.checkPermissionOfLocation(roomEntity.getLocationId());
         List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findByRoomIdAndPremiereDate(cmd.getRoomId(), cmd.getPremierDate());
         if (!CollectionUtils.isEmpty(showtimeEntities)) {
             throw new ResponseException(BadRequestError.ROOM_ALREADY_SCHEDULED);

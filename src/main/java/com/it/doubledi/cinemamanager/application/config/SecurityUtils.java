@@ -1,11 +1,14 @@
 package com.it.doubledi.cinemamanager.application.config;
 
 import com.it.doubledi.cinemamanager._common.model.UserAuthentication;
+import com.it.doubledi.cinemamanager._common.model.enums.UserLevel;
 import com.it.doubledi.cinemamanager._common.model.exception.AuthenticationError;
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
+import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -22,9 +25,24 @@ public class SecurityUtils {
             if (Objects.nonNull(userAuthentication.getUserId())) {
                 return Optional.of(userAuthentication.getUserId());
             }
-            return Optional.empty();
         }
         return Optional.empty();
+    }
+
+    public static void checkPermissionOfLocation(String locationId) {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        if (Objects.nonNull(authentication) && authentication instanceof UserAuthentication) {
+            UserAuthentication userAuthentication = (UserAuthentication) authentication;
+            if (UserLevel.CENTER.equals(userAuthentication.getUserLevel()) || userAuthentication.isRoot()) {
+                return;
+            }
+            if (!CollectionUtils.isEmpty(userAuthentication.getLocationIds())
+                    && userAuthentication.getLocationIds().contains(locationId)) {
+                return;
+            }
+        }
+        throw new ResponseException(BadRequestError.USER_HAS_NO_PERMISSION_WITH_LOCATION);
     }
 
     public static UserAuthentication authentication() {

@@ -1,9 +1,12 @@
 package com.it.doubledi.cinemamanager.application.service.impl;
 
+import com.it.doubledi.cinemamanager._common.model.UserAuthentication;
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
+import com.it.doubledi.cinemamanager._common.model.enums.UserLevel;
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.model.mapper.util.PageableMapperUtil;
 import com.it.doubledi.cinemamanager._common.persistence.support.SqlUtils;
+import com.it.doubledi.cinemamanager.application.config.SecurityUtils;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.TicketPriceConfigUpdateRequest;
@@ -29,18 +32,23 @@ import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.LocationStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.time.DayOfWeek;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class LocationServiceImpl implements LocationService {
 
     private final LocationRepository locationRepository;
@@ -58,7 +66,7 @@ public class LocationServiceImpl implements LocationService {
         LocationCreateCmd cmd = this.autoMapper.from(request);
         Location location = new Location(cmd);
         List<PriceConfig> priceConfigs = new ArrayList<>();
-        for (int i = 0; i <7;i++){
+        for (int i = 0; i < 7; i++) {
             PriceConfig priceConfig = new PriceConfig(location.getId(), i, Boolean.FALSE);
             priceConfigs.add(priceConfig);
         }
@@ -69,18 +77,21 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     @Transactional
-    public Location update(LocationCreateRequest request) {
+    public Location update(String id, LocationCreateRequest request) {
+        checkPermissionOfLocation(id);
         return null;
     }
 
     @Override
     public Location getById(String id) {
+        checkPermissionOfLocation(id);
         return this.locationRepository.getById(id);
     }
 
     @Override
     @Transactional
     public void active(String id) {
+        checkPermissionOfLocation(id);
         Location location = this.locationRepository.getById(id);
         location.active();
         this.locationRepository.save(location);
@@ -89,6 +100,7 @@ public class LocationServiceImpl implements LocationService {
     @Override
     @Transactional
     public void inactive(String id) {
+        checkPermissionOfLocation(id);
         Location location = this.locationRepository.getById(id);
         location.inactive();
         this.locationRepository.save(location);
@@ -97,8 +109,20 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public PageDTO<Location> search(LocationSearchRequest request) {
         LocationSearchQuery searchQuery = this.autoMapperQuery.toQuery(request);
+
+        List<String> locationIds;
+        UserAuthentication userAuthentication = SecurityUtils.authentication();
+        if (UserLevel.CENTER.equals(userAuthentication.getUserLevel()) || userAuthentication.isRoot()) {
+            log.info("User have all location");
+            locationIds = new ArrayList<>();
+        } else if (!CollectionUtils.isEmpty(userAuthentication.getLocationIds())) {
+            locationIds = userAuthentication.getLocationIds();
+        } else {
+            return PageDTO.empty();
+        }
+        searchQuery.setIds(locationIds);
         Long count = locationEntityRepository.count(searchQuery);
-        if(Objects.equals(count, 0L)) {
+        if (Objects.equals(count, 0L)) {
             return PageDTO.empty();
         }
         List<LocationEntity> locationEntities = this.locationEntityRepository.search(searchQuery);
@@ -109,6 +133,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationPriceConfigResponse getAllPriceConfigNotSpecial(String locationId) {
+        checkPermissionOfLocation(locationId);
         Location location = this.locationRepository.getById(locationId);
         List<PriceConfigEntity> priceConfigEntities = this.priceConfigEntityRepository.getAllByLocationId(locationId, Boolean.FALSE);
         List<PriceConfig> priceConfigs = this.priceConfigEntityMapper.toDomain(priceConfigEntities);
@@ -126,6 +151,8 @@ public class LocationServiceImpl implements LocationService {
     @Transactional
     public void updatePriceConfig(TicketPriceConfigUpdateRequest request) {
         TicketPriceConfigUpdateCmd cmd = this.autoMapper.from(request);
+        checkPermissionOfLocation(cmd.getId());
+
         Location location = this.locationRepository.getById(cmd.getId());
         List<PriceConfigEntity> priceConfigEntities = this.priceConfigEntityRepository.getAllByLocationId(location.getId(), Boolean.FALSE);
         List<PriceConfig> priceConfigs = this.priceConfigEntityMapper.toDomain(priceConfigEntities);
@@ -133,21 +160,21 @@ public class LocationServiceImpl implements LocationService {
         //check time sequence
         for (PriceConfig configPrice : request.getConfigPrices()) {
             List<PriceByTime> priceByTimes = configPrice.getPriceByTimes().stream().sorted(Comparator.comparing(PriceByTime::getStartAt)).collect(Collectors.toList());
-            if(CollectionUtils.isEmpty(priceByTimes)) {
-               throw new ResponseException(BadRequestError.PRICE_BY_TIME_REQUIRED);
+            if (CollectionUtils.isEmpty(priceByTimes)) {
+                throw new ResponseException(BadRequestError.PRICE_BY_TIME_REQUIRED);
             }
 
-            if(!Objects.equals(priceByTimes.get(0).getStartAt(), Constant.MIN_START_AT)
-                    || !Objects.equals(priceByTimes.get(priceByTimes.size() - 1).getEndAt(), Constant.MAX_START_AT) ) {
+            if (!Objects.equals(priceByTimes.get(0).getStartAt(), Constant.MIN_START_AT)
+                    || !Objects.equals(priceByTimes.get(priceByTimes.size() - 1).getEndAt(), Constant.MAX_START_AT)) {
                 throw new ResponseException(BadRequestError.PRICE_BY_TIME_MUST_COVER_FULL_DAY);
             }
             int endAt = 0;
             for (PriceByTime priceByTime : priceByTimes) {
-                if(Objects.equals(priceByTime.getStartAt(), 0)) {
+                if (Objects.equals(priceByTime.getStartAt(), 0)) {
                     endAt = priceByTime.getEndAt();
                     continue;
                 }
-                if(!Objects.equals(endAt, priceByTime.getStartAt() - 1)) {
+                if (!Objects.equals(endAt, priceByTime.getStartAt() - 1)) {
                     throw new ResponseException(BadRequestError.PRICE_BY_TIME_MUST_COVER_FULL_DAY);
                 }
                 endAt = priceByTime.getEndAt();
@@ -156,7 +183,7 @@ public class LocationServiceImpl implements LocationService {
 
         for (PriceConfig priceConfig : priceConfigs) {
             Optional<PriceConfig> priceConfigOptional = request.getConfigPrices().stream().filter(o -> Objects.equals(o.getId(), priceConfig.getId())).findFirst();
-            if(priceConfigOptional.isPresent()) {
+            if (priceConfigOptional.isPresent()) {
                 priceConfig.delete();
                 priceConfig.updatePriceList(priceConfigOptional.get());
             }
@@ -167,9 +194,23 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public PageDTO<Location> autoComplete(LocationSearchRequest request) {
         Pageable pageable = PageableMapperUtil.toPageable(request);
-        Page<LocationEntity> locationEntityPage = this.locationEntityRepository.autoComplete(SqlUtils.encodeKeyword(request.getKeyword()), List.of(LocationStatus.ACTIVE), pageable);
+        List<String> locationIds = null;
+        UserAuthentication userAuthentication = SecurityUtils.authentication();
+        if (userAuthentication.isRoot() || UserLevel.CENTER.equals(userAuthentication.getUserLevel())) {
+            log.info("User have all location");
+        } else if (!CollectionUtils.isEmpty(userAuthentication.getLocationIds())) {
+            locationIds = userAuthentication.getLocationIds();
+        } else {
+            log.info("User have no location");
+            return PageDTO.empty();
+        }
+        Page<LocationEntity> locationEntityPage = this.locationEntityRepository.autoComplete(SqlUtils.encodeKeyword(request.getKeyword()), List.of(LocationStatus.ACTIVE), locationIds, pageable);
         List<LocationEntity> locationEntities = locationEntityPage.getContent();
         List<Location> locations = this.locationEntityMapper.toDomain(locationEntities);
         return new PageDTO<>(locations, pageable.getPageNumber(), pageable.getPageSize(), locationEntityPage.getTotalElements());
+    }
+
+    private void checkPermissionOfLocation(String locationId) {
+        SecurityUtils.checkPermissionOfLocation(locationId);
     }
 }

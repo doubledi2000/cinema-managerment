@@ -28,7 +28,8 @@ public enum BadRequestError implements ResponseError {
     INPUT_INVALID(40400017, "Input invalid"),
     ROOM_WITH_IDS_NOT_FOUND(40400018, "Room with ids {0} not found"),
     FILM_WITH_IDS_NOT_FOUND(40400019, "Film with ids {0} not found"),
-    SHOWTIME_CONFLICT_WITH_ROOM_IDS(40400020, "Create showtime conflict with room ids {0}")
+    SHOWTIME_CONFLICT_WITH_ROOM_IDS(40400020, "Create showtime conflict with room ids {0}"),
+    USER_HAS_NO_PERMISSION_WITH_LOCATION(40400021, "User has no permission with location")
     ;
 
 

@@ -20,8 +20,9 @@ public interface LocationEntityRepository extends JpaRepository<LocationEntity, 
     @Query("from LocationEntity l where l.deleted = false " +
             " and (:keyword is null or l.name like :keyword or l.code like :keyword) " +
             " and (COALESCE(:statuses, null) is null or l.status in :statuses) " +
+            " and (COALESCE(:ids,null) is null or l.id in :ids) " +
             " order by l.name asc ")
-    Page<LocationEntity> autoComplete(@Param("keyword") String keyword, @Param("statuses") List<LocationStatus> statuses, Pageable pageable);
+    Page<LocationEntity> autoComplete(@Param("keyword") String keyword, @Param("statuses") List<LocationStatus> statuses, @Param("ids") List<String> ids, Pageable pageable);
 
     @Query("From LocationEntity l where l.deleted = false and l.id in :ids")
     List<LocationEntity> findByIds(@Param("ids") List<String> ids);
