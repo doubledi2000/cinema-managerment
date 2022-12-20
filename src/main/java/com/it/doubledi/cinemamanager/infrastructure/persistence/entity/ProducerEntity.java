@@ -42,6 +42,10 @@ public class ProducerEntity extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     private ProducerStatus status;
 
+    @Column(name = "version")
+    @Version
+    private Long version;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

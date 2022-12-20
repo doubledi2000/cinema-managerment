@@ -40,6 +40,7 @@ public class User extends AuditableDomain {
     private UserStatus status;
     private UserLevel userLevel;
     private String avatarFileId;
+    private Long version;
 
     //enrich
     private List<String> locationIds;

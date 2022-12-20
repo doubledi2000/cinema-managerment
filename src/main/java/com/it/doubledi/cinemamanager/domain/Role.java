@@ -33,6 +33,7 @@ public class Role extends AuditableDomain {
     private Boolean deleted;
     private RoleStatus status;
     private RoleLevel roleLevel;
+    private Long version;
 
     private List<RolePermission> permissions;
     private List<String> permissionIds;

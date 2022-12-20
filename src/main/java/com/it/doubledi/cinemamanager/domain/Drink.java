@@ -20,6 +20,8 @@ public class Drink extends AuditableDomain {
     private String description;
     private String fileId;
     private Boolean deleted;
+    private Long version;
+
     private String imagePath;
 
     public void update(DrinkUpdateCmd cmd) {

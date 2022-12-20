@@ -30,6 +30,7 @@ public class Room extends AuditableDomain {
     private Integer maxRow;
     private Integer maxChairPerRow;
     private String locationId;
+    private Long version;
 
     private Location location;
     private List<Row> rows;

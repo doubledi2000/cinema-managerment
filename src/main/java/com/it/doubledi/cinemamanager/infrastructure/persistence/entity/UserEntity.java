@@ -76,6 +76,10 @@ public class UserEntity extends AuditableEntity {
     @Column(name = "avatar_file_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
     private String avatarFileId;
 
+    @Column(name = "version")
+    @Version
+    private Long version;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

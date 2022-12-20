@@ -2,6 +2,7 @@ package com.it.doubledi.cinemamanager.application.service.impl;
 
 import com.it.doubledi.cinemamanager._common.model.UserAuthentication;
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
+import com.it.doubledi.cinemamanager._common.model.enums.UserLevel;
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.persistence.support.SeqRepository;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
@@ -14,40 +15,16 @@ import com.it.doubledi.cinemamanager.application.dto.response.ShowtimeResponse;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapperQuery;
 import com.it.doubledi.cinemamanager.application.service.ShowtimeService;
-import com.it.doubledi.cinemamanager.domain.Chair;
-import com.it.doubledi.cinemamanager.domain.Film;
-import com.it.doubledi.cinemamanager.domain.Location;
-import com.it.doubledi.cinemamanager.domain.Price;
-import com.it.doubledi.cinemamanager.domain.PriceByTime;
-import com.it.doubledi.cinemamanager.domain.Room;
-import com.it.doubledi.cinemamanager.domain.Row;
-import com.it.doubledi.cinemamanager.domain.Showtime;
-import com.it.doubledi.cinemamanager.domain.Ticket;
+import com.it.doubledi.cinemamanager.domain.*;
 import com.it.doubledi.cinemamanager.domain.command.FilmScheduleCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.ShowtimeCreateCmd;
 import com.it.doubledi.cinemamanager.domain.query.ShowtimeConfigSearchQuery;
 import com.it.doubledi.cinemamanager.domain.repository.FilmRepository;
 import com.it.doubledi.cinemamanager.domain.repository.RoomRepository;
 import com.it.doubledi.cinemamanager.domain.repository.ShowtimeRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmTypeEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.PriceByTimeEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.PriceEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.RoomEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.ShowtimeEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.FilmEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.LocationEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceByTimeEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.PriceEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RoomEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.ShowtimeEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FilmEntityRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FilmTypeEntityRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.LocationEntityRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.PriceByTimeEntityRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.PriceEntityRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RoomEntityRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.ShowtimeEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.*;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.*;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.*;
 import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
@@ -63,11 +40,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,9 +94,17 @@ public class ShowtimeServiceImpl implements ShowtimeService {
 
     @Override
     public List<ShowtimeResponse> search(ShowtimeSearchRequest request) {
-
         UserAuthentication userAuthentication = SecurityUtils.authentication();
-        List<String> locationIds;
+        List<String> locationIds = null;
+        if (userAuthentication.isRoot() || UserLevel.CENTER.equals(userAuthentication.getUserLevel())) {
+            log.info("User have all location");
+        } else if (!CollectionUtils.isEmpty(userAuthentication.getLocationIds())) {
+            locationIds = userAuthentication.getLocationIds();
+        } else {
+            log.info("User have no location");
+            return new ArrayList<>();
+        }
+
         if (Objects.isNull(request.getPremierDate())) {
             request.setPremierDate(LocalDate.now());
         }
@@ -143,7 +124,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
             }
         }
 
-        List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findShowtimeByParams(filmIds, request.getPremierDate(), request.getStartTime());
+        List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findShowtimeByParams(filmIds, request.getPremierDate(), locationIds, request.getStartTime());
         List<String> filmInListIds = showtimeEntities.stream().map(ShowtimeEntity::getFilmId).collect(Collectors.toList());
         List<FilmEntity> filmEntities = this.filmEntityRepository.findByIds(filmInListIds);
         List<Film> films = this.filmEntityMapper.toDomain(filmEntities);
@@ -356,6 +337,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         showtimeEntities.forEach(s -> {
             this.generateTicket(s.getId());
         });
-
     }
+
+
 }

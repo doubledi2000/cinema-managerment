@@ -21,7 +21,7 @@ public interface ShowtimeEntityRepository extends JpaRepository<ShowtimeEntity, 
 
     @Query("From ShowtimeEntity s where s.deleted = false " +
             " and (coalesce(:filmIds,null) is null or s.filmId in :filmIds) " +
-            " and (coalesce(:locationIds, null) is null of s.locationId in :locationIds )" +
+            " and (coalesce(:locationIds, null) is null or s.locationId in :locationIds )" +
             " and s.premiereDate = :premiereDate " +
             " and s.endAt > :startAt" +
             " order by s.createdAt desc")

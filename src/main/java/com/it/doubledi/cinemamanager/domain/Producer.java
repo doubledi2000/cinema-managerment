@@ -18,6 +18,7 @@ public class Producer extends AuditableDomain {
     private Boolean deleted;
     private String representative;
     private String nationally;
+    private Long version;
 
     public Producer(ProducerCreateCmd cmd) {
         this.id = IdUtils.nextId();

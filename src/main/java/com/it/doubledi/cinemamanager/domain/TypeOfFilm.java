@@ -18,6 +18,7 @@ public class TypeOfFilm extends AuditableDomain {
     private String description;
     private TypeOfFilmStatus status;
     private Boolean deleted;
+    private Long version;
 
     public TypeOfFilm(TypeOfFilmCreateCmd cmd) {
         this.id = IdUtils.nextId();
