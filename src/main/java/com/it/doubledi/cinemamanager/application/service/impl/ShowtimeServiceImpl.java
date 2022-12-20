@@ -1,5 +1,6 @@
 package com.it.doubledi.cinemamanager.application.service.impl;
 
+import com.it.doubledi.cinemamanager._common.model.UserAuthentication;
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.persistence.support.SeqRepository;
@@ -120,6 +121,9 @@ public class ShowtimeServiceImpl implements ShowtimeService {
 
     @Override
     public List<ShowtimeResponse> search(ShowtimeSearchRequest request) {
+
+        UserAuthentication userAuthentication = SecurityUtils.authentication();
+        List<String> locationIds;
         if (Objects.isNull(request.getPremierDate())) {
             request.setPremierDate(LocalDate.now());
         }
