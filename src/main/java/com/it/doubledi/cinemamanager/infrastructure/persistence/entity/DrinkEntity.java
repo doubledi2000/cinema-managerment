@@ -46,6 +46,6 @@ public class DrinkEntity extends AuditableEntity {
 
     @Column(name = "version" )
     @Version
-    private Long version;
+    private Long version = 0L;
 
 }

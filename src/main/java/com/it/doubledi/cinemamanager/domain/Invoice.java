@@ -26,6 +26,7 @@ public class Invoice extends AuditableDomain {
     private Instant paymentTime;
     private Double total;
     private Boolean deleted;
+    private String locationId;
 
     private List<Item> items;
     private List<Ticket> tickets;

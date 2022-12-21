@@ -32,6 +32,9 @@ public class InvoiceEntity extends AuditableEntity {
     @Column(name = "total")
     private Double total;
 
+    @Column(name = "location_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
+    private String locationId;
+
     @Column(name = "deleted")
     private Boolean deleted;
 

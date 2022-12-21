@@ -78,7 +78,7 @@ public class UserEntity extends AuditableEntity {
 
     @Column(name = "version")
     @Version
-    private Long version;
+    private Long version = 0L;
 
     @Override
     public boolean equals(Object o) {
