@@ -38,7 +38,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public Invoice booking(InvoiceCreateRequest request) {
+        public Invoice booking(InvoiceCreateRequest request) {
         UserAuthentication userAuthority = SecurityUtils.authentication();
         InvoiceCreateCmd cmd = this.autoMapper.from(request);
         Invoice invoice = new Invoice(userAuthority.getUserId());

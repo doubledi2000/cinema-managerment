@@ -49,7 +49,7 @@ public class PriceConfigEntity extends AuditableEntity {
 
     private Boolean deleted;
 
-    @Column(name = "version")
-    @Version
-    private Long version = 0L;
+//    @Column(name = "version")
+//    @Version
+//    private Long version = 0L;
 }

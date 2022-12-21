@@ -54,8 +54,8 @@ public class ShowtimeEntity extends AuditableEntity {
     @Column(name = "location_id")
     private String locationId;
 
-    @Column(name = "version")
-    @Version
-    private Long version = 0L;
+//    @Column(name = "version")
+//    @Version
+//    private Long version = 0L;
 
 }

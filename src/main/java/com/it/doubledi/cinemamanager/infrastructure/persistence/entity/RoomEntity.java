@@ -45,9 +45,9 @@ public class RoomEntity extends AuditableEntity {
     @Column(name = "location_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
     private String locationId;
 
-    @Column(name = "version")
-    @Version
-    private Long version = 0L;
+//    @Column(name = "version")
+//    @Version
+//    private Long version = 0L;
 
     @Override
     public boolean equals(Object o) {

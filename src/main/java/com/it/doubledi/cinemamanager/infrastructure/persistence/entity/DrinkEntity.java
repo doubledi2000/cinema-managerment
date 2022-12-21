@@ -44,8 +44,8 @@ public class DrinkEntity extends AuditableEntity {
     @Column(name = "file_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
     private String fileId;
 
-    @Column(name = "version" )
-    @Version
-    private Long version = 0L;
+//    @Column(name = "version" )
+//    @Version
+//    private Long version = 0L;
 
 }

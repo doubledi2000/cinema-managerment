@@ -21,6 +21,10 @@ public interface LocationResource {
     @PreAuthorize("hasPermission(null, 'location:update')")
     Response<Location> update(LocationCreateRequest request);
 
+    @GetMapping("/locations/{id}")
+    @PreAuthorize("hasPermission(null, 'location:view')")
+    Response<Location> getById(@PathVariable("id") String id);
+
     @PostMapping("/locations/{id}/active")
     @PreAuthorize("hasPermission(null, 'location:update')")
     Response<Boolean> active(@PathVariable("id") String id);

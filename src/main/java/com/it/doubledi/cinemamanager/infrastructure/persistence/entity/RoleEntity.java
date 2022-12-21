@@ -51,9 +51,9 @@ public class RoleEntity extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     private RoleLevel roleLevel;
 
-    @Column(name = "version")
-    @Version
-    private Long version = 0L;
+//    @Column(name = "version")
+//    @Version
+//    private Long version = 0L;
 
     @Override
     public boolean equals(Object o) {
