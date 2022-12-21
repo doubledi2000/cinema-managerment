@@ -9,7 +9,14 @@ public enum ResourceCategory {
     ZOOM_MANAGER("ZOOM", "ZOOM_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 2),
     FILM_MANAGER("FILM", "FILM_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 3),
     FILM_TYPE_MANAGER("FILM_TYPE", "FILM_TYPE_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 4),
-    ROLE_MANAGER("ROLE", "ROLE_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 5);
+    ROLE_MANAGER("ROLE", "ROLE_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 5),
+    BOOKING_MANAGER("BOOKING", "BOOKING_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 6),
+    REPORT_MANAGER("REPORT", "REPORT_MANAGEMENT_TITLE", List.of(Scope.VIEW), 7),
+    LOCATION_MANAGER("LOCATION", "LOCATION_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 8),
+    PRICE_MANAGER("PRICE", "PRICE_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 9),
+    PRODUCER("PRODUCER", "PRODUCER_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 10),
+    DRINK_MANAGER("DRINK", "DRINK_MANAGEMENT_TITLE", List.of(Scope.CREATE, Scope.UPDATE, Scope.VIEW, Scope.DELETE), 11),
+    ;
     String resourceCode;
     String resourceName;
     List<Scope> scopes;
@@ -35,6 +42,8 @@ public enum ResourceCategory {
         return scopes;
     }
 
-    public int getPriority(){ return this.priority;}
+    public int getPriority() {
+        return this.priority;
+    }
 }
     

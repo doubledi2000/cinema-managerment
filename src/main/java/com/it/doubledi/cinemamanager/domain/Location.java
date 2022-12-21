@@ -17,6 +17,7 @@ public class Location extends AuditableDomain {
     private String address;
     private LocationStatus status;
     private Boolean deleted;
+    private Long version;
 
     public Location(LocationCreateCmd cmd){
         this.id = IdUtils.nextId();

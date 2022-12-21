@@ -12,7 +12,12 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ticket")
+@Table(name = "ticket", indexes = {
+        @Index(name = "ticket_showtime_id_idx", columnList = "showtime_id"),
+        @Index(name = "ticket_row_id_idx", columnList = "row_id"),
+        @Index(name = "ticket_room_id_idx", columnList = "room_id"),
+        @Index(name = "ticket_film_id_idx", columnList = "film_id")
+})
 @Data
 @Builder
 @AllArgsConstructor

@@ -34,6 +34,7 @@ public class Film extends AuditableDomain {
     private String directors;
     private List<String> producerIds;
     private Boolean deleted;
+    private Long version;
 
     private List<FilmType> filmTypes;
     private List<String> filmTypeIds;

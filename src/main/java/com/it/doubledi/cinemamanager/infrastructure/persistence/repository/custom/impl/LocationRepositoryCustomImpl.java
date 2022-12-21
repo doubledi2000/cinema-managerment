@@ -1,12 +1,10 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.repository.custom.impl;
 
 import com.it.doubledi.cinemamanager._common.persistence.support.SqlUtils;
-import com.it.doubledi.cinemamanager.domain.Location;
 import com.it.doubledi.cinemamanager.domain.query.LocationSearchQuery;
-import com.it.doubledi.cinemamanager.domain.query.TypeOfFilmSearchQuery;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.LocationEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.TypeOfFilmEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.custom.LocationRepositoryCustom;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
@@ -53,7 +51,12 @@ public class LocationRepositoryCustomImpl implements LocationRepositoryCustom {
             values.put("keyword", SqlUtils.encodeKeyword(searchQuery.getKeyword()));
         }
 
-        if(Objects.nonNull(searchQuery.getStatus())) {
+        if (!CollectionUtils.isEmpty(searchQuery.getIds())) {
+            sql.append(" AND l.id in :ids ");
+            values.put("ids", searchQuery.getIds());
+        }
+
+        if (Objects.nonNull(searchQuery.getStatus())) {
             sql.append(" AND (l.status = :status)");
             values.put("status", searchQuery.getStatus());
         }
@@ -63,9 +66,9 @@ public class LocationRepositoryCustomImpl implements LocationRepositoryCustom {
 
     private String createOrderBy(LocationSearchQuery searchQuery) {
         StringBuilder sql = new StringBuilder();
-        if(StringUtils.hasLength(searchQuery.getSortBy())) {
+        if (StringUtils.hasLength(searchQuery.getSortBy())) {
             sql.append("order by l.").append(searchQuery.getSortBy().replace(".", " "));
-        }else {
+        } else {
             sql.append("order by l.createdAt desc");
         }
         return sql.toString();

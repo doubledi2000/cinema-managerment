@@ -35,6 +35,10 @@ public class LocationEntity extends AuditableEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
+//    @Column(name = "version")
+//    @Version
+//    private Long version = 0L;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

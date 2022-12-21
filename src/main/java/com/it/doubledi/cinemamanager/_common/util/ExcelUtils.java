@@ -1,8 +1,16 @@
 package com.it.doubledi.cinemamanager._common.util;
 
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.swing.text.DateFormatter;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 public class ExcelUtils {
@@ -18,14 +26,19 @@ public class ExcelUtils {
         String content;
 
         switch (cell.getCellType()) {
-
             case STRING:
                 content = StrUtil.getString(cell.getStringCellValue());
 
                 break;
             case NUMERIC:
                 content = BigDecimal.valueOf(cell.getNumericCellValue()).toString();
-
+                if(DateUtil.isCellDateFormatted(cell)) {
+                    Date startAt = cell.getDateCellValue();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(startAt);
+                    long timeInt = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+                    return String.valueOf(timeInt);
+                }
                 break;
             case BOOLEAN:
                 content = cell.getBooleanCellValue() + BLANK;
@@ -33,11 +46,11 @@ public class ExcelUtils {
                 break;
             case FORMULA:
                 content = cell.getCellFormula() + BLANK;
-
                 break;
             default:
                 content = BLANK;
         }
+
 
         return content;
     }

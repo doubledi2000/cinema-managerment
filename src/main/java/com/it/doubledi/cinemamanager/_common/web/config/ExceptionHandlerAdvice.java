@@ -4,8 +4,9 @@ import com.it.doubledi.cinemamanager._common.model.dto.error.ResponseError;
 import com.it.doubledi.cinemamanager._common.model.exception.AuthorizationError;
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.web.ErrorResponse;
-import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
+import com.it.doubledi.cinemamanager._common.web.i18n.LocaleStringService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,11 @@ import java.util.Objects;
 public class ExceptionHandlerAdvice {
     private final String EXCEPTION_MESSAGE = "custom_exception_message";
 
+    @Autowired
+    private LocaleStringService localeStringService;
+
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse<Object>> handleValidationException(HttpClientErrorException.Forbidden e, HttpServletRequest request){
+    public ResponseEntity<ErrorResponse<Object>> handleValidationException(HttpClientErrorException.Forbidden e, HttpServletRequest request) {
         log.warn("Failed to handle request " + request.getMethod() + ": " + request.getRequestURI() + ": " + e.getMessage(), e);
         catchException(e);
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -44,12 +48,13 @@ public class ExceptionHandlerAdvice {
     public ResponseEntity<ErrorResponse<Object>> handleResponseException(ResponseException e, HttpServletRequest request) {
         log.warn("Failed to handle request {}: {}", request.getRequestURI(), e.getError().getMessage(), e);
         ResponseError error = e.getError();
+        String message = this.localeStringService.getMessages(error.getName(), error.getMessage(), e.getParams());
         catchException(e);
         return ResponseEntity.status(error.getStatus())
                 .body(ErrorResponse.builder()
                         .code(error.getCode())
                         .error(error.getName())
-                        .message(error.getMessage())
+                        .message(message)
                         .build());
 
     }

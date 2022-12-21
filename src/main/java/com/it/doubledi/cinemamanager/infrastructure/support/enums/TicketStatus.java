@@ -5,5 +5,6 @@ public enum TicketStatus {
     UNAVAILABLE,
     SELECTED,
     SOLD,
+    EXPIRED,
     BOGY
 }

@@ -11,7 +11,7 @@ import com.it.doubledi.cinemamanager.domain.query.LocationSearchQuery;
 public interface LocationService {
     Location create(LocationCreateRequest request);
 
-    Location update(LocationCreateRequest request);
+    Location update(String id, LocationCreateRequest request);
 
     Location getById(String id);
 

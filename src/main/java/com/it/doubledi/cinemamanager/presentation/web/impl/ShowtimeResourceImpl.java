@@ -1,5 +1,6 @@
 package com.it.doubledi.cinemamanager.presentation.web.impl;
 
+import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeConfigSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeCreateRequest;
@@ -11,6 +12,7 @@ import com.it.doubledi.cinemamanager.domain.Showtime;
 import com.it.doubledi.cinemamanager.presentation.web.ShowtimeResource;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -44,12 +46,18 @@ public class ShowtimeResourceImpl implements ShowtimeResource {
     }
 
     @Override
-    public Response<List<Showtime>> getShowtimeConfig(ShowtimeConfigSearchRequest request) {
-        return null;
+    public PagingResponse<Showtime> getShowtimeConfig(ShowtimeConfigSearchRequest request) {
+        return PagingResponse.of(this.showtimeService.getShowtimeConfig(request));
     }
 
     @Override
     public void downloadShowtimeTemplate(HttpServletResponse response) {
         this.excelService.downloadShowtimeTemplate(response);
+    }
+
+    @Override
+    public Response<Boolean> uploadShowtime(MultipartFile file) {
+        this.excelService.uploadShowtime(file);
+        return Response.ok();
     }
 }

@@ -35,6 +35,7 @@ public class PriceConfig extends AuditableDomain {
     private PriceConfigStatus status;
     private Boolean deleted;
     private String locationId;
+    private Long version;
     private List<PriceByTime> priceByTimes;
 
     public PriceConfig(String locationId, PriceConfigCreateCmd cmd, PriceConfigType type) {

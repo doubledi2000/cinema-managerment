@@ -29,6 +29,11 @@ public class LocationResourceImpl implements LocationResource {
     }
 
     @Override
+    public Response<Location> getById(String id) {
+        return Response.of(locationService.getById(id));
+    }
+
+    @Override
     public Response<Boolean> active(String id) {
         locationService.active(id);
         return Response.ok();

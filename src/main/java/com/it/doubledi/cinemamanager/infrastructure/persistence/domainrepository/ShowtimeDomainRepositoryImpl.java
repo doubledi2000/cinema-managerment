@@ -77,7 +77,7 @@ public class ShowtimeDomainRepositoryImpl extends AbstractDomainRepository<Showt
     }
 
     @Override
-    protected List<Showtime> enrichList(List<Showtime> showtimes) {
+    public List<Showtime> enrichList(List<Showtime> showtimes) {
         List<String> filmIds = showtimes.stream().map(Showtime::getFilmId).collect(Collectors.toList());
         List<String> roomIds = showtimes.stream().map(Showtime::getRoomId).collect(Collectors.toList());
         List<FilmEntity> filmEntities = this.filmEntityRepository.findByIds(filmIds);

@@ -1,10 +1,13 @@
 package com.it.doubledi.cinemamanager.application.service.impl;
 
+import com.it.doubledi.cinemamanager._common.model.UserAuthentication;
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
+import com.it.doubledi.cinemamanager._common.model.enums.UserLevel;
 import com.it.doubledi.cinemamanager._common.model.mapper.util.PageableMapperUtil;
 import com.it.doubledi.cinemamanager._common.persistence.support.SeqRepository;
 import com.it.doubledi.cinemamanager._common.persistence.support.SqlUtils;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
+import com.it.doubledi.cinemamanager.application.config.SecurityUtils;
 import com.it.doubledi.cinemamanager.application.dto.request.RoomCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoomSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoomUpdateRequest;
@@ -34,6 +37,7 @@ import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RowEn
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoomStatus;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -48,8 +52,9 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class RoomServiceImpl implements RoomService {
-    private final String CHAR_ARRAY = "ABCDEFGHIJKLMNOPQ";
+    private final String CHAR_ARRAY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private final RoomEntityRepository roomEntityRepository;
     private final RoomRepository roomRepository;
     private final RoomEntityMapper roomEntityMapper;
@@ -66,6 +71,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Room create(RoomCreateRequest request) {
         RoomCreateCmd cmd = autoMapper.from(request);
+        SecurityUtils.checkPermissionOfLocation(cmd.getLocationId());
         Room room = new Room(cmd);
         List<Row> rows = getDefaultSetting(room);
         room.enrichRows(rows);
@@ -77,6 +83,7 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public Room update(String id, RoomUpdateRequest request) {
         Room room = this.roomRepository.getById(id);
+        SecurityUtils.checkPermissionOfLocation(room.getLocationId());
         RoomUpdateCmd cmd = this.autoMapper.from(request);
         List<Row> rows = room.getRows();
         room.update(cmd);
@@ -130,6 +137,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Room getById(String id) {
         Room room = roomRepository.getById(id);
+        SecurityUtils.checkPermissionOfLocation(room.getLocationId());
         return room;
     }
 
@@ -141,6 +149,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Room duplicateRoom(String id) {
         Room room = this.roomRepository.getById(id);
+        SecurityUtils.checkPermissionOfLocation(room.getLocationId());
         Room roomDuplicate = new Room(room);
         if (!CollectionUtils.isEmpty(room.getRows())) {
             List<Row> rowDuplicate = this.duplicateRow(roomDuplicate.getId(), room.getRows());
@@ -152,6 +161,19 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public PageDTO<Room> search(RoomSearchRequest request) {
         RoomSearchQuery searchQuery = this.autoMapperQuery.toQuery(request);
+        UserAuthentication userAuthentication = SecurityUtils.authentication();
+        if (userAuthentication.isRoot() || UserLevel.CENTER.equals(userAuthentication.getUserLevel())) {
+            log.info("User have all location");
+        } else if (!CollectionUtils.isEmpty(userAuthentication.getLocationIds())) {
+            if (CollectionUtils.isEmpty(request.getLocationIds())) {
+                searchQuery.setLocationIds(userAuthentication.getLocationIds());
+            } else {
+                searchQuery.getLocationIds().retainAll(userAuthentication.getLocationIds());
+            }
+        } else {
+            log.info("User have no location");
+            return PageDTO.empty();
+        }
         Long count = this.roomEntityRepository.count(searchQuery);
         if (count == 0) {
             return PageDTO.empty();
@@ -172,6 +194,19 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public PageDTO<Room> autoComplete(RoomSearchRequest request) {
         Pageable pageable = PageableMapperUtil.toPageable(request);
+        UserAuthentication userAuthentication = SecurityUtils.authentication();
+        if (userAuthentication.isRoot() || UserLevel.CENTER.equals(userAuthentication.getUserLevel())) {
+            log.info("User have all location");
+        } else if (!CollectionUtils.isEmpty(userAuthentication.getLocationIds())) {
+            if (CollectionUtils.isEmpty(request.getLocationIds())) {
+                request.setLocationIds(userAuthentication.getLocationIds());
+            } else {
+                request.getLocationIds().retainAll(userAuthentication.getLocationIds());
+            }
+        } else {
+            log.info("User have no location");
+            return PageDTO.empty();
+        }
         Page<RoomEntity> roomEntityPage = this.roomEntityRepository.autoComplete(request.getLocationIds(), SqlUtils.encodeKeyword(request.getKeyword()), List.of(RoomStatus.ACTIVE), pageable);
         List<Room> rooms = this.roomEntityMapper.toDomain(roomEntityPage.getContent());
         return new PageDTO<>(rooms,
@@ -201,7 +236,7 @@ public class RoomServiceImpl implements RoomService {
                         .chairType(ChairType.NORMAL)
                         .serialOfChair(j)
                         .code(seqRepository.generateChairCode())
-                        .name("A")
+                        .name(String.valueOf(CHAR_ARRAY.charAt(j)))
                         .build();
                 chairs.add(chair);
 

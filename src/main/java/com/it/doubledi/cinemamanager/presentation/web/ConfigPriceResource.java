@@ -3,6 +3,7 @@ package com.it.doubledi.cinemamanager.presentation.web;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationPriceConfigRequest;
 import com.it.doubledi.cinemamanager.domain.PriceConfig;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 @RequestMapping("/api")
 public interface ConfigPriceResource {
     @PostMapping("/ticket-price-configs")
+    @PreAuthorize("hasPermission('price:create')")
     Response<List<PriceConfig>> setUpPrice(@RequestBody LocationPriceConfigRequest request);
 
     @PostMapping("/ticket-price-demo")

@@ -5,6 +5,7 @@ import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeConfigSearc
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.response.ShowtimeResponse;
+import com.it.doubledi.cinemamanager.domain.Invoice;
 import com.it.doubledi.cinemamanager.domain.Showtime;
 
 import java.util.List;
@@ -23,4 +24,5 @@ public interface ShowtimeService {
     List<Showtime> createMulti(ShowtimeCreateRequest request);
 
     PageDTO<Showtime> getShowtimeConfig(ShowtimeConfigSearchRequest request);
+
 }

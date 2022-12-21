@@ -11,8 +11,10 @@ import java.util.List;
 @Data
 @SuperBuilder
 public class ShowtimeConfigSearchQuery extends PagingQuery {
-    private LocalDate time;
     private List<ShowtimeStatus> statuses;
     private List<String> roomIds;
     private List<String> filmIds;
+
+    private LocalDate startTime;
+    private LocalDate endTime;
 }

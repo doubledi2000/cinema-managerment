@@ -31,7 +31,7 @@ public interface RoomEntityRepository extends JpaRepository<RoomEntity, String>,
     @Query("from RoomEntity r where r.deleted = false and coalesce(:locationIds, null) is null or r.locationId in :locationIds")
     List<RoomEntity> findByLocationIds(List<String> locationIds);
 
-    @Query("from RoomEntity r where r.deleted = false and coalesce(:locationIds, null) is null or r.locationId in :locationIds and r.status = status")
+    @Query("from RoomEntity r where r.deleted = false and (coalesce(:locationIds, null) is null or r.locationId in :locationIds) and r.status = :status")
     List<RoomEntity> findByLocationIdsAndStatus(List<String> locationIds, RoomStatus status);
 
 

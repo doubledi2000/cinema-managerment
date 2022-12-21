@@ -23,8 +23,13 @@ public interface SeqRepository {
     }
 
     @Transactional
-    default String generateTicketCode(){
+    default String generateTicketCode() {
         return nextValue(Const.TICKET_CODE.getPrefix() + "-", Const.TICKET_CODE.getSeqName());
+    }
+
+    @Transactional
+    default String generateDrinkCode() {
+        return nextValue(Const.DRINK_CODE.getPrefix() + "-", Const.DRINK_CODE.getSeqName());
     }
 
 }

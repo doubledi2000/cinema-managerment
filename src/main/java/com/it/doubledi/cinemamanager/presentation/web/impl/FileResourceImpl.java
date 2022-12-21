@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @AllArgsConstructor
 public class FileResourceImpl implements FileResource {
@@ -17,7 +19,7 @@ public class FileResourceImpl implements FileResource {
     private final FileService fileService;
 
     @Override
-    public Response<File> upload(MultipartFile file) {
+    public Response<File> upload(MultipartFile file) throws IOException {
         return Response.of(fileService.upload(file));
     }
 

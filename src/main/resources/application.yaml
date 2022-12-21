@@ -33,6 +33,12 @@ spring:
       file-size-threshold: 2MB
       max-file-size: 5MB
       max-request-size: 10MB
+  messages:
+    always-use-message-format: true
+    basename: i18n/messages
+    encoding: UTF-8
+    fallback-to-system-locale: true
+    use-code-as-default-message: true
 
 cloud:
   aws:

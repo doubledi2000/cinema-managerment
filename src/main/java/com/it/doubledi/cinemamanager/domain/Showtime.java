@@ -7,6 +7,7 @@ import com.it.doubledi.cinemamanager.domain.command.FilmScheduleCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.ShowtimeCreateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketStatus;
 import lombok.*;
 import org.springframework.util.CollectionUtils;
 
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -29,11 +31,15 @@ public class Showtime extends AuditableDomain {
     private Boolean deleted;
     private ShowtimeStatus status;
     private Boolean autoGenerateTicket;
+    private String locationId;
+    private Long version;
+
+    private Location location;
     private Film film;
     private Room room;
     private List<RowShowtimeResponse> rows;
 
-    public Showtime(ShowtimeCreateCmd cmd,FilmScheduleCreateCmd filmScheduleCreateCmd,  FilmEntity filmEntity) {
+    public Showtime(ShowtimeCreateCmd cmd, FilmScheduleCreateCmd filmScheduleCreateCmd, FilmEntity filmEntity) {
         this.id = IdUtils.nextId();
         this.premiereDate = cmd.getPremierDate();
         this.roomId = cmd.getRoomId();
@@ -61,6 +67,10 @@ public class Showtime extends AuditableDomain {
         }
     }
 
+    public void enrichLocation(Location location){
+        this.location = location;
+    }
+
     public void enrichRowShowtimeResponse(List<RowShowtimeResponse> rows) {
         if (!CollectionUtils.isEmpty(rows)) {
             this.rows = rows;
@@ -71,5 +81,19 @@ public class Showtime extends AuditableDomain {
 
     public void genTicket() {
         this.status = ShowtimeStatus.WAIT_ON_SALE;
+    }
+
+    public void finish() {
+        this.status = ShowtimeStatus.FINISH;
+        if(!CollectionUtils.isEmpty(this.rows)) {
+            this.getRows().forEach(r -> {
+                r.getTickets().forEach(t -> {
+                    if (Objects.equals(t.getStatus(), TicketStatus.SELECTED)
+                            || Objects.equals(t.getStatus(), TicketStatus.AVAILABLE)) {
+                        t.finish();
+                    }
+                });
+            });
+        }
     }
 }
