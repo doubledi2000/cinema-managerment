@@ -51,7 +51,7 @@ public class InvoiceDomainRepository extends AbstractDomainRepository<Invoice, I
     }
 
     @Override
-    protected List<Invoice> enrichList(List<Invoice> invoices) {
+    public List<Invoice> enrichList(List<Invoice> invoices) {
         List<String> invoiceIds = invoices.stream().map(Invoice::getId).collect(Collectors.toList());
         List<ItemEntity> itemEntities = this.itemEntityRepository.findAllByInvoiceIds(invoiceIds);
         List<Item> items = this.itemEntityMapper.toDomain(itemEntities);
