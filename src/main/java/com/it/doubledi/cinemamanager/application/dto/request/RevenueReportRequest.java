@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
 
@@ -13,7 +14,10 @@ import java.util.List;
 @Builder
 @Data
 public class RevenueReportRequest extends Request {
+    @NotNull(message = "START_AT_REQUIRED")
     private Instant startAt;
+
+    @NotNull(message = "END_AT_REQUIRED")
     private Instant endAt;
     private List<String> locationIds;
     private ReportType type;

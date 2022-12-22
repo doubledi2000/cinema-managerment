@@ -67,6 +67,20 @@ public class Showtime extends AuditableDomain {
         }
     }
 
+    public void cancel(String userId){
+        if(Objects.isNull(userId)) {
+            return;
+        }
+        this.rows.forEach(r -> {
+            r.getTickets().forEach(t -> {
+                if(Objects.equals(userId, t.getUserSoldId()) && Objects.equals(TicketStatus.SELECTED, t.getStatus())) {
+                    t.unselect();
+                }
+            });
+        });
+
+    }
+
     public void enrichLocation(Location location){
         this.location = location;
     }

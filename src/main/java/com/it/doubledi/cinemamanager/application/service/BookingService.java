@@ -7,4 +7,6 @@ public interface BookingService {
     Invoice booking(InvoiceCreateRequest request);
 
     Invoice getById(String id);
+
+    void cancel(String showtimeId);
 }

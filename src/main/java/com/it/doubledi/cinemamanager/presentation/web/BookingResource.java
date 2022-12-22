@@ -18,6 +18,10 @@ public interface BookingResource {
     @PreAuthorize("hasPermission(null, 'booking:create')")
     Response<Invoice> booking(@RequestBody InvoiceCreateRequest request);
 
+    @PostMapping("/bookings/{showtimeId}/cancel")
+    @PreAuthorize("hasPermission(null, 'booking:create')")
+    Response<Boolean> cancelBooking(@PathVariable("showtimeId") String showtimeId);
+
     @GetMapping("/invoices")
     @PreAuthorize("hasPermission(null, 'booking:view')")
     PagingResponse<Invoice> findInvoices();

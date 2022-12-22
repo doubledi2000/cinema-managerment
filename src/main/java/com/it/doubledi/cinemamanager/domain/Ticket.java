@@ -49,6 +49,13 @@ public class Ticket extends AuditableDomain {
         return false;
     }
 
+    public void unselect(){
+        if(Objects.equals(this.getStatus(), TicketStatus.SELECTED)) {
+            this.status = TicketStatus.AVAILABLE;
+            this.userSoldId = null;
+        }
+    }
+
     public void sold() {
         this.status = TicketStatus.SOLD;
     }

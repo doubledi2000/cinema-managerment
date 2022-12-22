@@ -21,6 +21,12 @@ public class BookingResourceImpl implements BookingResource {
     }
 
     @Override
+    public Response<Boolean> cancelBooking(String showtimeId) {
+        bookingService.cancel(showtimeId);
+        return Response.ok();
+    }
+
+    @Override
     public PagingResponse<Invoice> findInvoices() {
         return null;
     }

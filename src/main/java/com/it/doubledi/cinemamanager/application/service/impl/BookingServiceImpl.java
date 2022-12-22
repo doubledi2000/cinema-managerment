@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,5 +74,13 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Invoice getById(String id) {
         return this.invoiceRepository.getById(id);
+    }
+
+    @Override
+    public void cancel(String showtimeId) {
+        String me = SecurityUtils.getCurrentUserLoginId();
+        Showtime showtime = this.showtimeRepository.getById(showtimeId);
+        showtime.cancel(me);
+        this.showtimeRepository.save(showtime);
     }
 }

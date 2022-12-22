@@ -17,16 +17,16 @@ public class SecurityUtils {
     private SecurityUtils() {
     }
 
-    public static Optional<String> getCurrentUserLoginId() {
+    public static String getCurrentUserLoginId() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if (Objects.nonNull(authentication) && authentication instanceof UserAuthentication) {
             UserAuthentication userAuthentication = (UserAuthentication) authentication;
             if (Objects.nonNull(userAuthentication.getUserId())) {
-                return Optional.of(userAuthentication.getUserId());
+                return userAuthentication.getUserId();
             }
         }
-        return Optional.empty();
+        throw new ResponseException(AuthenticationError.UNAUTHORISED);
     }
 
     public static void checkPermissionOfLocation(String locationId) {

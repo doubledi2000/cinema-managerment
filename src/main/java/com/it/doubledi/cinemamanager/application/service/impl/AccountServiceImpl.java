@@ -49,15 +49,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public UserAuthority myAuthorities() {
-        String me = currentUserId();
+        String me = SecurityUtils.getCurrentUserLoginId();
         return this.authorityService.getUserAuthority(me);
-    }
-
-    public String currentUserId() {
-        Optional<String> userId = SecurityUtils.getCurrentUserLoginId();
-        if (userId.isEmpty()) {
-            throw new ResponseException(AuthenticationError.UNAUTHORISED);
-        }
-        return userId.get();
     }
 }
