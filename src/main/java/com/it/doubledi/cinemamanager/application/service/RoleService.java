@@ -1,10 +1,7 @@
 package com.it.doubledi.cinemamanager.application.service;
 
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
-import com.it.doubledi.cinemamanager.application.dto.request.RoleCreateRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RolePermittedRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RoleSearchRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RoleUpdateRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.*;
 import com.it.doubledi.cinemamanager.domain.Permission;
 import com.it.doubledi.cinemamanager.domain.Role;
 
@@ -24,4 +21,6 @@ public interface RoleService {
     List<Permission> findAllPermission();
 
     Role permission(String id, RolePermittedRequest request);
+
+    Role permission(String id, RolePermissionRequest request);
 }

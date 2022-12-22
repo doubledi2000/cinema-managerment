@@ -36,6 +36,12 @@ public class ShowtimeResourceImpl implements ShowtimeResource {
     }
 
     @Override
+    public Response<Boolean> cancel(String id) {
+        this.showtimeService.cancelShowtime(id);
+        return Response.ok();
+    }
+
+    @Override
     public Response<Showtime> findById(String id) {
         return Response.of(showtimeService.getById(id));
     }

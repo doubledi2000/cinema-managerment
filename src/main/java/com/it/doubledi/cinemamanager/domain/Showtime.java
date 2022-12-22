@@ -1,6 +1,7 @@
 package com.it.doubledi.cinemamanager.domain;
 
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
+import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.application.dto.response.RowShowtimeResponse;
 import com.it.doubledi.cinemamanager.domain.command.FilmScheduleCreateCmd;
@@ -8,6 +9,7 @@ import com.it.doubledi.cinemamanager.domain.command.ShowtimeCreateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketStatus;
+import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
 import lombok.*;
 import org.springframework.util.CollectionUtils;
 
@@ -67,7 +69,7 @@ public class Showtime extends AuditableDomain {
         }
     }
 
-    public void cancel(String userId){
+    public void cancelBooking(String userId){
         if(Objects.isNull(userId)) {
             return;
         }
@@ -78,7 +80,13 @@ public class Showtime extends AuditableDomain {
                 }
             });
         });
+    }
 
+    public void cancel(){
+        if(!ShowtimeStatus.WAIT_GEN_TICKET.equals(this.getStatus())) {
+            throw new ResponseException(BadRequestError.CAN_NOT_CANCEL_SHOWTIME_WITH_STATUS_NOT_EQUAL_WAIT_GEN_TICKET);
+        }
+        this.status = ShowtimeStatus.CANCELED;
     }
 
     public void enrichLocation(Location location){

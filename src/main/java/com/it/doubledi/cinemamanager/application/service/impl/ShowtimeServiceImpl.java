@@ -224,6 +224,13 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         return PageDTO.of(showtimes, query.getPageIndex(), query.getPageSize(), count);
     }
 
+    @Override
+    public void cancelShowtime(String id) {
+        Showtime showtime = this.showtimeRepository.getById(id);
+        showtime.cancel();
+        this.showtimeRepository.save(showtime);
+    }
+
     private void enrichShowtime(List<Showtime> showtimes) {
         List<String> roomIds = showtimes.stream().map(Showtime::getRoomId).distinct().collect(Collectors.toList());
         List<String> filmIds = showtimes.stream().map(Showtime::getFilmId).distinct().collect(Collectors.toList());

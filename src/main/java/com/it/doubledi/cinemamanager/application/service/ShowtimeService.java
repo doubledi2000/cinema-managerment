@@ -25,4 +25,5 @@ public interface ShowtimeService {
 
     PageDTO<Showtime> getShowtimeConfig(ShowtimeConfigSearchRequest request);
 
+    void cancelShowtime(String id);
 }
