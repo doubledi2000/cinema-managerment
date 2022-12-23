@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.RoleCreateCmd;
+import com.it.doubledi.cinemamanager.domain.command.RolePermissionCmd;
 import com.it.doubledi.cinemamanager.domain.command.RolePermittedCmd;
 import com.it.doubledi.cinemamanager.domain.command.RoleUpdateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoleLevel;
@@ -64,6 +65,28 @@ public class Role extends AuditableDomain {
         this.name = cmd.getName();
         this.description = cmd.getDescription();
         this.isRoot = cmd.getIsRoot();
+    }
+
+    public void updatePermission(RolePermissionCmd cmd, List<Permission> permissions) {
+        this.permissions.forEach(RolePermission::delete);
+        cmd.getPermissions().forEach(p -> {
+            if (!CollectionUtils.isEmpty(p.getScopes())) {
+                p.getScopes().forEach(s -> {
+                    Optional<Permission> permissionOptional = permissions.stream()
+                            .filter(per -> Objects.equals(per.getResourceCode(), p.getResourceCode()) && Objects.equals(s, per.getScope()))
+                            .findFirst();
+
+                    permissionOptional.ifPresent(per -> {
+                        Optional<RolePermission> oldPermission = this.permissions.stream().filter(oldPer -> Objects.equals(oldPer.getPermissionId(), per.getId())).findFirst();
+                        if (oldPermission.isPresent()) {
+                            oldPermission.get().undelete();
+                        } else {
+                            this.addPermission(new RolePermission(this.id, per.getId()));
+                        }
+                    });
+                });
+            }
+        });
     }
 
     public void updatePermission(RolePermittedCmd cmd) {

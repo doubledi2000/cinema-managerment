@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class RoleCreateRequest extends Request {
-    private String id;
     private String code;
     private String name;
     private String description;

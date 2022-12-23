@@ -1,16 +1,19 @@
 package com.it.doubledi.cinemamanager.presentation.web;
 
-import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleCreateRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RolePermittedRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.RolePermissionRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleUpdateRequest;
 import com.it.doubledi.cinemamanager.domain.Permission;
 import com.it.doubledi.cinemamanager.domain.Role;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -39,5 +42,5 @@ public interface RoleResource {
 
     @PostMapping("/roles/{id}/permit")
     @PreAuthorize("hasPermission(null, 'role:update')")
-    Response<Role> permit(@PathVariable("id") String id, @RequestBody RolePermittedRequest request);
+    Response<Role> permit(@PathVariable("id") String id, @RequestBody RolePermissionRequest request);
 }

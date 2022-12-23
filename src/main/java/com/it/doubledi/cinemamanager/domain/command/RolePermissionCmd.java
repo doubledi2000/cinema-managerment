@@ -1,4 +1,4 @@
-package com.it.doubledi.cinemamanager.application.dto.request;
+package com.it.doubledi.cinemamanager.domain.command;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class RolePermissionRequest {
-    List<PermissionRequest> permissions;
+public class RolePermissionCmd {
+    private List<PermissionCmd> permissions;
 }
