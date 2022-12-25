@@ -31,7 +31,7 @@ public class ShowtimeResourceImpl implements ShowtimeResource {
 
     @Override
     public Response<Boolean> generateTicket(String id) {
-        showtimeService.generateTicket(id);
+        showtimeService.generateTicket(id, true);
         return Response.ok();
     }
 

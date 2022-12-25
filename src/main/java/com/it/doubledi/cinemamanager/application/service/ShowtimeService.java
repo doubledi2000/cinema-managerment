@@ -19,7 +19,7 @@ public interface ShowtimeService {
 
     PageDTO<Showtime> autoComplete(ShowtimeSearchRequest request);
 
-    void generateTicket(String id);
+    void generateTicket(String id, boolean check);
 
     List<Showtime> createMulti(ShowtimeCreateRequest request);
 

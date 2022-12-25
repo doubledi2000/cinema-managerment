@@ -30,6 +30,7 @@ public class FilmDomainRepositoryImpl extends AbstractDomainRepository<Film, Fil
     private final FilmProducerEntityMapper filmProducerEntityMapper;
     private final ProducerEntityRepository producerEntityRepository;
     private final ProducerEntityMapper producerEntityMapper;
+    private final FileEntityRepository fileEntityRepository;
 
     public FilmDomainRepositoryImpl(FilmEntityRepository filmEntityRepository,
                                     FilmEntityMapper filmEntityMapper,
@@ -40,7 +41,8 @@ public class FilmDomainRepositoryImpl extends AbstractDomainRepository<Film, Fil
                                     FilmProducerEntityRepository filmProducerEntityRepository,
                                     FilmProducerEntityMapper filmProducerEntityMapper,
                                     ProducerEntityRepository producerEntityRepository,
-                                    ProducerEntityMapper producerEntityMapper) {
+                                    ProducerEntityMapper producerEntityMapper,
+                                    FileEntityRepository fileEntityRepository) {
         super(filmEntityRepository, filmEntityMapper);
         this.filmEntityRepository = filmEntityRepository;
         this.filmEntityMapper = filmEntityMapper;
@@ -52,6 +54,7 @@ public class FilmDomainRepositoryImpl extends AbstractDomainRepository<Film, Fil
         this.filmProducerEntityMapper = filmProducerEntityMapper;
         this.producerEntityRepository = producerEntityRepository;
         this.producerEntityMapper = producerEntityMapper;
+        this.fileEntityRepository = fileEntityRepository;
     }
 
     @Override
@@ -100,6 +103,9 @@ public class FilmDomainRepositoryImpl extends AbstractDomainRepository<Film, Fil
         List<ProducerEntity> producerEntities = this.producerEntityRepository.findByIds(filmProducers.stream().map(FilmProducer::getProducerId).collect(Collectors.toList()));
         List<Producer> producers = this.producerEntityMapper.toDomain(producerEntities);
 
+        List<String> fileIds = films.stream().map(Film::getFileId).distinct().collect(Collectors.toList());
+        List<FileEntity> fileEntities = this.fileEntityRepository.findByIds(fileIds);
+
         List<FilmType> filmTypes = this.filmTypeEntityMapper.toDomain(filmTypeEntities);
         for (FilmType filmType : filmTypes) {
             Optional<TypeOfFilm> typeOfFilm = typeOfFilms.stream().filter(t -> Objects.equals(t.getId(), filmType.getTypeId())).findFirst();
@@ -112,6 +118,10 @@ public class FilmDomainRepositoryImpl extends AbstractDomainRepository<Film, Fil
         for (Film film : films) {
             List<FilmType> filmTypeTpm = filmTypes.stream().filter(f -> Objects.equals(f.getFilmId(), film.getId())).collect(Collectors.toList());
             List<FilmProducer> filmProducerTmp = filmProducers.stream().filter(p -> Objects.equals(p.getFilmId(), film.getId())).collect(Collectors.toList());
+            Optional<FileEntity> fileEntityOptional = fileEntities.stream().filter(f -> Objects.equals(f.getId(), film.getFileId())).findFirst();
+            fileEntityOptional.ifPresent(f -> {
+                film.enrichFile(f.getPath());
+            });
             film.enrichProducer(filmProducerTmp);
             film.enrichFilmType(filmTypeTpm);
         }

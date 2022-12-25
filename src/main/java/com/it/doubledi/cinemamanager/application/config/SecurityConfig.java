@@ -55,14 +55,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.cors();
-        http.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
+//        http.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
         http.addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 //        http.addFilterAfter(forbiddenTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
     }
 
-    @Bean
-    public AccessDeniedHandler accessDeniedHandler(){
-        return new RestAccessDeniedHandler();
-    }
+//    @Bean
+//    public AccessDeniedHandler accessDeniedHandler(){
+//        return new RestAccessDeniedHandler();
+//    }
 }

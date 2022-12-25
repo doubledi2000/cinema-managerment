@@ -22,9 +22,7 @@ import com.it.doubledi.cinemamanager.infrastructure.support.enums.TypeOfFilmStat
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -40,14 +38,15 @@ public class TypeOfFilmServiceImpl implements TypeOfFilmService {
     private final TypeOfFilmEntityMapper typeOfFilmEntityMapper;
     private final AutoMapper autoMapper;
     private final AutoMapperQuery autoMapperQuery;
+
     @Override
     public TypeOfFilm create(TypeOfFilmCreateRequest request) {
         TypeOfFilmCreateCmd cmd = autoMapper.from(request);
         Optional<TypeOfFilmEntity> typeOfFilmEntityOptional = this.typeOfFilmEntityRepository.findByCode(cmd.getCode());
-        if(typeOfFilmEntityOptional.isPresent()) {
+        if (typeOfFilmEntityOptional.isPresent()) {
             throw new ResponseException(BadRequestError.TYPE_OF_FILM_CODE_ALREADY_EXISTED);
         }
-        TypeOfFilm  typeOfFilm = new TypeOfFilm(cmd);
+        TypeOfFilm typeOfFilm = new TypeOfFilm(cmd);
         return this.typeOfFilmRepository.save(typeOfFilm);
     }
 
@@ -86,5 +85,19 @@ public class TypeOfFilmServiceImpl implements TypeOfFilmService {
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 typeOfFilmEntitiesPage.getTotalElements());
+    }
+
+    @Override
+    public void active(String id) {
+        TypeOfFilm typeOfFilm = this.typeOfFilmRepository.getById(id);
+        typeOfFilm.active();
+        this.typeOfFilmRepository.save(typeOfFilm);
+    }
+
+    @Override
+    public void inactive(String id) {
+        TypeOfFilm typeOfFilm = this.typeOfFilmRepository.getById(id);
+        typeOfFilm.inactive();
+        this.typeOfFilmRepository.save(typeOfFilm);
     }
 }

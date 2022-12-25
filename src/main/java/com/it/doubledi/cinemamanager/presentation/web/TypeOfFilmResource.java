@@ -35,4 +35,12 @@ public interface TypeOfFilmResource {
     @PreAuthorize("hasPermission(null, 'film_type:view')")
     PagingResponse<TypeOfFilm>autoComplete(TypeOfFilmSearchRequest request);
 
+    @PostMapping("/type-of-films/{id}/active")
+    @PreAuthorize(("hasPermission(null, 'film_type:update')"))
+    Response<Boolean> active(@PathVariable("id") String id);
+
+    @PostMapping("/type-of-films/{id}/inactive")
+    @PreAuthorize(("hasPermission(null, 'film_type:update')"))
+    Response<Boolean> inactive(@PathVariable("id") String id);
+
 }

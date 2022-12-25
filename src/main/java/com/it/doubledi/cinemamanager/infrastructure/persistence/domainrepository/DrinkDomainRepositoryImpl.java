@@ -9,8 +9,10 @@ import com.it.doubledi.cinemamanager.domain.repository.DrinkRepository;
 import com.it.doubledi.cinemamanager.domain.repository.FileRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.DrinkEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FileEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.LocationEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.FileEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FileEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.LocationEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.NotFoundError;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -26,16 +28,19 @@ public class DrinkDomainRepositoryImpl extends AbstractDomainRepository<Drink, D
     private final FileRepository fileRepository;
     private final FileEntityRepository fileEntityRepository;
     private final FileEntityMapper fileEntityMapper;
+    private final LocationEntityRepository locationEntityRepository;
 
     public DrinkDomainRepositoryImpl(JpaRepository<DrinkEntity, String> jpaRepository,
                                      EntityMapper<Drink, DrinkEntity> entityMapper,
                                      FileRepository fileRepository,
                                      FileEntityRepository fileEntityRepository,
-                                     FileEntityMapper fileEntityMapper) {
+                                     FileEntityMapper fileEntityMapper,
+                                     LocationEntityRepository locationEntityRepository) {
         super(jpaRepository, entityMapper);
         this.fileRepository = fileRepository;
         this.fileEntityRepository = fileEntityRepository;
         this.fileEntityMapper = fileEntityMapper;
+        this.locationEntityRepository = locationEntityRepository;
     }
 
     @Override
@@ -49,9 +54,19 @@ public class DrinkDomainRepositoryImpl extends AbstractDomainRepository<Drink, D
         List<String> fileIds = drinks.stream().map(Drink::getFileId).filter(StringUtils::hasLength).collect(Collectors.toList());
         List<FileEntity> fileEntities = this.fileEntityRepository.findByIds(fileIds);
         List<File> files = this.fileEntityMapper.toDomain(fileEntities);
+
+        List<String> locationIds = drinks.stream().map(Drink::getLocationId).distinct().collect(Collectors.toList());
+        List<LocationEntity> locationEntities = this.locationEntityRepository.findByIds(locationIds);
+
         drinks.forEach(d -> {
             Optional<File> fileOptional = files.stream().filter(f -> Objects.equals(f.getId(), d.getFileId())).findFirst();
             fileOptional.ifPresent(d::enrichFile);
+
+            Optional<LocationEntity> locationEntityOptional = locationEntities.stream().filter(l -> Objects.equals(d.getLocationId(), l.getId())).findFirst();
+            locationEntityOptional.ifPresent(l -> {
+                d.enrichLocation(l.getName());
+            });
+
         });
         return drinks;
     }

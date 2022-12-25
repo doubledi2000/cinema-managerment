@@ -22,7 +22,8 @@ public class Drink extends AuditableDomain {
     private Boolean deleted;
     private Long version;
 
-    private String imagePath;
+    private String locationName;
+    private String filePath;
 
     public void update(DrinkUpdateCmd cmd) {
         this.name = cmd.getName();
@@ -40,6 +41,10 @@ public class Drink extends AuditableDomain {
     }
 
     public void enrichFile(File file) {
-        this.imagePath = file.getPath();
+        this.filePath = file.getPath();
+    }
+
+    public void enrichLocation(String name) {
+        this.locationName = name;
     }
 }

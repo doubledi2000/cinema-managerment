@@ -153,9 +153,11 @@ public class ShowtimeServiceImpl implements ShowtimeService {
 
     @Override
     @Transactional
-    public void generateTicket(String id) {
+    public void generateTicket(String id, boolean check) {
         Showtime showtime = this.showtimeRepository.getById(id);
-        SecurityUtils.checkPermissionOfLocation(showtime.getLocationId());
+        if (check) {
+            SecurityUtils.checkPermissionOfLocation(showtime.getLocationId());
+        }
         if (!Objects.equals(showtime.getStatus(), ShowtimeStatus.WAIT_GEN_TICKET)) {
             throw new ResponseException(BadRequestError.FILM_ALREADY_GEN_TICKET);
         }
@@ -342,7 +344,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
             return;
         }
         showtimeEntities.forEach(s -> {
-            this.generateTicket(s.getId());
+            this.generateTicket(s.getId(), false);
         });
     }
 

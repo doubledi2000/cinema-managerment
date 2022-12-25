@@ -31,6 +31,7 @@ public enum BadRequestError implements ResponseError {
     SHOWTIME_CONFLICT_WITH_ROOM_IDS(40400020, "Create showtime conflict with room ids {0}"),
     USER_HAS_NO_PERMISSION_WITH_LOCATION(40400021, "User has no permission with location"),
     CAN_NOT_CANCEL_SHOWTIME_WITH_STATUS_NOT_EQUAL_WAIT_GEN_TICKET(40400022, "Can not cancel showtime with status not equal wait generate ticket"),
+    INVALID_INPUT(40000023, "Invalid input : {0}"),
     ;
 
 

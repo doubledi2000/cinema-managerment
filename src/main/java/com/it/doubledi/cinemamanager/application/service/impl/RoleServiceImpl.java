@@ -1,11 +1,9 @@
 package com.it.doubledi.cinemamanager.application.service.impl;
 
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
-import com.it.doubledi.cinemamanager.application.dto.request.RoleCreateRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RolePermissionRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RolePermittedRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RoleSearchRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RoleUpdateRequest;
+import com.it.doubledi.cinemamanager._common.model.mapper.util.PageableMapperUtil;
+import com.it.doubledi.cinemamanager._common.persistence.support.SqlUtils;
+import com.it.doubledi.cinemamanager.application.dto.request.*;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapper;
 import com.it.doubledi.cinemamanager.application.mapper.AutoMapperQuery;
 import com.it.doubledi.cinemamanager.application.service.RoleService;
@@ -22,7 +20,10 @@ import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.Permissio
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.RoleEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.PermissionEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.RoleEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoleStatus;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -76,7 +77,12 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public PageDTO<Role> autoComplete(RoleSearchRequest request) {
-        return null;
+        Pageable pageable = PageableMapperUtil.toPageable(request);
+        Page<RoleEntity> roleEntityPage = this.roleEntityRepository.autoComplete(SqlUtils.encodeKeyword(request.getKeyword()), RoleStatus.ACTIVE, pageable);
+        if (roleEntityPage.getTotalElements() == 0) {
+            return PageDTO.empty();
+        }
+        return PageDTO.of(this.roleEntityMapper.toDomain(roleEntityPage.getContent()), pageable.getPageNumber(), pageable.getPageSize(), roleEntityPage.getTotalElements());
     }
 
     @Override

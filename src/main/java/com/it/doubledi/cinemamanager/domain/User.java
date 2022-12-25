@@ -62,9 +62,14 @@ public class User extends AuditableDomain {
         this.title = cmd.getTitle();
         this.departmentName = cmd.getDepartmentName();
         this.description = cmd.getDescription();
+        this.password = cmd.getPassword();
         this.status = UserStatus.ACTIVE;
         for (String locationId : cmd.getLocationIds()) {
             this.addUserLocation(new UserLocation(this.id, locationId));
+        }
+
+        for (String roleId : cmd.getRoleIds()) {
+            this.addRole(new UserRole(this.id, roleId));
         }
     }
 
@@ -141,7 +146,7 @@ public class User extends AuditableDomain {
     }
 
     public void addRole(UserRole userRole) {
-        if (!CollectionUtils.isEmpty(this.roles)) {
+        if (CollectionUtils.isEmpty(this.roles)) {
             this.roles = new ArrayList<>();
         }
         this.roles.add(userRole);

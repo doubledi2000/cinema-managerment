@@ -1,6 +1,5 @@
 package com.it.doubledi.cinemamanager.presentation.web.impl;
 
-import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
 import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.TypeOfFilmCreateRequest;
@@ -41,5 +40,17 @@ public class TypeOfFilmResourceImpl implements TypeOfFilmResource {
     @Override
     public PagingResponse<TypeOfFilm> autoComplete(TypeOfFilmSearchRequest request) {
         return PagingResponse.of(typeOfFilmService.autoComplete(request));
+    }
+
+    @Override
+    public Response<Boolean> active(String id) {
+        this.typeOfFilmService.active(id);
+        return Response.ok();
+    }
+
+    @Override
+    public Response<Boolean> inactive(String id) {
+        this.typeOfFilmService.inactive(id);
+        return Response.ok();
     }
 }

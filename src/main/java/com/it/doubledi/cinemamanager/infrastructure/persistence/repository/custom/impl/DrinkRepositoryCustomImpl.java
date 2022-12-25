@@ -1,8 +1,10 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.repository.custom.impl;
 
+import com.it.doubledi.cinemamanager._common.persistence.support.SqlUtils;
 import com.it.doubledi.cinemamanager.domain.query.DrinkSearchQuery;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.DrinkEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.custom.DrinkRepositoryCustom;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
@@ -46,12 +48,12 @@ public class DrinkRepositoryCustomImpl implements DrinkRepositoryCustom {
         StringBuilder sql = new StringBuilder(" where d.deleted = false ");
         if (StringUtils.hasLength(searchQuery.getKeyword())) {
             sql.append(" and d.name like :keyword or d.code like :keyword");
-            values.put("keyword", searchQuery.getKeyword());
+            values.put("keyword", SqlUtils.encodeKeyword(searchQuery.getKeyword()));
         }
 
-        if (StringUtils.hasLength(searchQuery.getLocationId())) {
-            sql.append(" and d.locationId = :locationId");
-            values.put("locationId", searchQuery.getLocationId());
+        if (!CollectionUtils.isEmpty(searchQuery.getLocationIds())) {
+            sql.append(" and d.locationId in :locationId");
+            values.put("locationId", searchQuery.getLocationIds());
         }
 
         if (Objects.nonNull(searchQuery.getStatus())) {

@@ -87,7 +87,8 @@ public class UserDomainRepositoryImpl extends AbstractDomainRepository<User, Use
         this.userLocationEntityRepository.saveAll(this.userLocationEntityMapper.toEntity(userLocations));
         this.userRoleEntityRepository.saveAll(this.userRoleEntityMapper.toEntity(userRoles));
 
-        return this.saveALl(domains);
+        this.userEntityRepository.saveAll(this.userEntityMapper.toEntity(domains));
+        return domains;
     }
 
     @Override
