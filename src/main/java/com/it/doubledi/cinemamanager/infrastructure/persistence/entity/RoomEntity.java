@@ -6,8 +6,13 @@ import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoomStatus;
 import lombok.Data;
 import org.hibernate.Hibernate;
 
-import javax.persistence.*;
-import javax.validation.constraints.Size;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import java.util.Objects;
 
 @Entity
@@ -31,6 +36,7 @@ public class RoomEntity extends AuditableEntity {
     private String description;
 
     @Column(name = "status", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)
+    @Enumerated(EnumType.STRING)
     private RoomStatus status;
 
     @Column(name = "deleted")

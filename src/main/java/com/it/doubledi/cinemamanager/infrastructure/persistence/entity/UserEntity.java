@@ -31,7 +31,7 @@ public class UserEntity extends AuditableEntity {
     @Column(name = "username", length = ValidateConstraint.LENGTH.CODE_MAX_LENGTH, nullable = false)
     private String username;
 
-    @Column(name = "password", length = ValidateConstraint.LENGTH.VALUE_MAX_LENGTH, nullable = false)
+    @Column(name = "password", length = ValidateConstraint.LENGTH.PASSWORD_MAX_LENGTH, nullable = false)
     private String password;
 
     @Column(name = "fullName", length = ValidateConstraint.LENGTH.NAME_MAX_LENGTH, nullable = false)

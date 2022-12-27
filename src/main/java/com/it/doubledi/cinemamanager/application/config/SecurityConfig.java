@@ -1,9 +1,12 @@
 package com.it.doubledi.cinemamanager.application.config;
 
+import com.it.doubledi.cinemamanager._common.web.config.SpringSecurityAuditorAware;
 import com.it.doubledi.cinemamanager.application.service.impl.CustomUserDetailService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
@@ -23,6 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @AllArgsConstructor
+@EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomUserDetailService customUserDetailService;
@@ -60,6 +64,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        http.addFilterAfter(forbiddenTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
     }
+
+    @Bean
+    public AuditorAware<String> springSecurityAuditorAware() {
+        return new SpringSecurityAuditorAware();
+    }
+
 
 //    @Bean
 //    public AccessDeniedHandler accessDeniedHandler(){

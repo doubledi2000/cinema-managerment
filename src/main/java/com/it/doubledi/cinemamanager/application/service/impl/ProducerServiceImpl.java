@@ -79,4 +79,18 @@ public class ProducerServiceImpl implements ProducerService {
                 pageable.getPageSize(),
                 producerEntityPage.getTotalElements());
     }
+
+    @Override
+    public void active(String id) {
+        Producer producer = this.producerRepository.getById(id);
+        producer.active();
+        this.producerRepository.save(producer);
+    }
+
+    @Override
+    public void inactive(String id) {
+        Producer producer = this.producerRepository.getById(id);
+        producer.inactive();
+        this.producerRepository.save(producer);
+    }
 }

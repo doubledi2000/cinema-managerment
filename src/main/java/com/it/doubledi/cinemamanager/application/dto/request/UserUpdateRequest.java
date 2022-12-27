@@ -23,7 +23,7 @@ public class UserUpdateRequest extends Request {
     private String title;
     private String departmentName;
     private String description;
-    private String avatarFileId;
+    private String fileId;
 
     private List<String> locationIds;
     private List<String> roleIds;

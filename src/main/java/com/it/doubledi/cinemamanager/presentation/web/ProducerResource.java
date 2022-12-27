@@ -7,7 +7,11 @@ import com.it.doubledi.cinemamanager.application.dto.request.ProducerSearchReque
 import com.it.doubledi.cinemamanager.application.dto.request.ProducerUpdateRequest;
 import com.it.doubledi.cinemamanager.domain.Producer;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping("/api")
 public interface ProducerResource {
@@ -31,4 +35,12 @@ public interface ProducerResource {
     @GetMapping("/producers/auto-complete")
     @PreAuthorize("hasPermission(null, 'producer:view')")
     PagingResponse<Producer> autoComplete(ProducerSearchRequest request);
+
+    @PostMapping("/producers/{id}/active")
+    @PreAuthorize("hasPermission(null, 'producer:update')")
+    Response<Boolean> active(@PathVariable("id") String id);
+
+    @PostMapping("/producers/{id}/inactive")
+    @PreAuthorize("hasPermission(null, 'producer:update')")
+    Response<Boolean> inactive(@PathVariable("id") String id);
 }

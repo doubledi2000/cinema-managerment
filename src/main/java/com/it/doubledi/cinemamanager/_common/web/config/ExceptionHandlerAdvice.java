@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 @Order
 @Slf4j
+@EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
 public class ExceptionHandlerAdvice {
     private final String EXCEPTION_MESSAGE = "custom_exception_message";
 

@@ -26,10 +26,6 @@ public class RolePermissionEntity extends AuditableEntity {
     @Column(name = "id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH, nullable = false)
     private String id;
 
-    @Column(name = "property", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)
-    @Enumerated(EnumType.STRING)
-    private Property property;
-
     @Column(name = "role_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH, nullable = false)
     private String roleId;
 
