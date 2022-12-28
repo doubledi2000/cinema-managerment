@@ -33,6 +33,7 @@ public class DrinkEntity extends AuditableEntity {
     private String locationId;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private DrinkStatus status;
 
     @Column(name = "description", length = ValidateConstraint.LENGTH.DESC_MAX_LENGTH)

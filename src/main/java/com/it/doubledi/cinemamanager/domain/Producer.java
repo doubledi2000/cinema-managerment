@@ -4,7 +4,11 @@ import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.ProducerCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.ProducerUpdateCmd;
-import lombok.*;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.ProducerStatus;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -17,6 +21,7 @@ public class Producer extends AuditableDomain {
     private String description;
     private Boolean deleted;
     private String representative;
+    private ProducerStatus status;
     private String nationally;
     private Long version;
 
@@ -26,6 +31,7 @@ public class Producer extends AuditableDomain {
         this.name = cmd.getName();
         this.description = cmd.getDescription();
         this.deleted = Boolean.FALSE;
+        this.status = ProducerStatus.INACTIVE;
         this.representative = cmd.getRepresentative();
         this.nationally = cmd.getNationally();
     }
@@ -35,6 +41,14 @@ public class Producer extends AuditableDomain {
         this.description = cmd.getDescription();
         this.representative = cmd.getRepresentative();
         this.nationally = cmd.getNationally();
+    }
+
+    public void active() {
+        this.status = ProducerStatus.ACTIVE;
+    }
+
+    public void inactive() {
+        this.status = ProducerStatus.INACTIVE;
     }
 
 }

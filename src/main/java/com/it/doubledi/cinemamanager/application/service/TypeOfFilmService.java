@@ -16,4 +16,8 @@ public interface TypeOfFilmService {
     PageDTO<TypeOfFilm> search(TypeOfFilmSearchRequest request);
 
     PageDTO<TypeOfFilm> autoComplete(TypeOfFilmSearchRequest request);
+
+    void active(String id);
+
+    void inactive(String id);
 }

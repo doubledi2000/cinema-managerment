@@ -17,7 +17,7 @@ public interface ShowtimeEntityRepository extends JpaRepository<ShowtimeEntity, 
     List<ShowtimeEntity> findAllByIds(List<String> ids);
 
     @Query("from ShowtimeEntity s where s.deleted = false and s.roomId = :roomId and s.premiereDate = :premiereDate")
-    List<ShowtimeEntity> findByRoomIdAndPremiereDate(@Param("roomId") String roomId, @Param("premiereDate")LocalDate premiereDate);
+    List<ShowtimeEntity> findByRoomIdAndPremiereDate(@Param("roomId") String roomId, @Param("premiereDate") LocalDate premiereDate);
 
     @Query("From ShowtimeEntity s where s.deleted = false " +
             " and (coalesce(:filmIds,null) is null or s.filmId in :filmIds) " +
@@ -38,4 +38,7 @@ public interface ShowtimeEntityRepository extends JpaRepository<ShowtimeEntity, 
 
     @Query("From ShowtimeEntity s where s.deleted = false and s.premiereDate <= :premiereDate and s.status = :status")
     List<ShowtimeEntity> findAllToGenerateTicket(LocalDate premiereDate, ShowtimeStatus status);
+
+    @Query("From ShowtimeEntity s where s.deleted = false and s.filmId in :filmIds and s.status in :statuses")
+    List<ShowtimeEntity> findAllByFilmIdsAndStatuses(List<String> filmIds, List<ShowtimeStatus> statuses);
 }

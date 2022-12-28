@@ -5,7 +5,10 @@ import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.TypeOfFilmCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.TypeOfFilmUpdateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TypeOfFilmStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -32,5 +35,13 @@ public class TypeOfFilm extends AuditableDomain {
     public void update(TypeOfFilmUpdateCmd cmd) {
         this.name = cmd.getName();
         this.description = cmd.getDescription();
+    }
+
+    public void active() {
+        this.status = TypeOfFilmStatus.ACTIVE;
+    }
+
+    public void inactive() {
+        this.status = TypeOfFilmStatus.INACTIVE;
     }
 }

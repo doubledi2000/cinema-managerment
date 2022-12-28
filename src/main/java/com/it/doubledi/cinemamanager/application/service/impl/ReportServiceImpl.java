@@ -12,27 +12,24 @@ import com.it.doubledi.cinemamanager.application.dto.response.OccupancyRateRepor
 import com.it.doubledi.cinemamanager.application.dto.response.RevenueReportByYearResponse;
 import com.it.doubledi.cinemamanager.application.dto.response.RevenueReportResponse;
 import com.it.doubledi.cinemamanager.application.service.ReportService;
-import com.it.doubledi.cinemamanager.domain.Invoice;
-import com.it.doubledi.cinemamanager.domain.Location;
+import com.it.doubledi.cinemamanager.domain.*;
 import com.it.doubledi.cinemamanager.domain.repository.InvoiceRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.InvoiceEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.LocationEntityMapper;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.InvoiceEntityRepository;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.LocationEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.ShowtimeEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.TicketEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.*;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.*;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.FilmStatus;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.ReportType;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.time.Instant;
-import java.time.Month;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Objects;
+import java.time.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,12 +42,22 @@ public class ReportServiceImpl implements ReportService {
     private final InvoiceRepository invoiceRepository;
     private final LocationEntityMapper locationEntityMapper;
     private final LocationEntityRepository locationEntityRepository;
+    private final FilmEntityRepository filmEntityRepository;
+    private final FilmEntityMapper filmEntityMapper;
+    private final ShowtimeEntityRepository showtimeEntityRepository;
+    private final ShowtimeEntityMapper showtimeEntityMapper;
+    private final TicketEntityRepository ticketEntityRepository;
+    private final TicketEntityMapper ticketEntityMapper;
 
     @Override
     public List<RevenueReportResponse> revenueReport(RevenueReportRequest request) {
         List<Location> locations = this.getLocations(request.getLocationIds());
-        List<String> locationIds = locations.stream().map(Location::getId).collect(Collectors.toList());
-
+        UserAuthentication userAuthentication = SecurityUtils.authentication();
+        if (Objects.equals(request.getType(), ReportType.MONTH)) {
+            request.setStartAt(DateUtils.getFirstDayOfMonth(Instant.now(Clock.system(ZoneId.systemDefault()))));
+            request.setEndAt(DateUtils.getLastDayOfMonth(Instant.now(Clock.system(ZoneId.systemDefault()))));
+        }
+        List<String> locationIds = userAuthentication.isRoot() ? null : locations.stream().map(Location::getId).collect(Collectors.toList());
         List<Invoice> invoices = this.invoiceEntityMapper.toDomain(
                 this.invoiceEntityRepository.findInvoiceByTime(request.getStartAt(), request.getEndAt(), locationIds));
         this.invoiceRepository.enrichList(invoices);
@@ -133,7 +140,37 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public List<OccupancyRateReportResponse> occupancyRateLast15DaysReport() {
-        return null;
+    public List<OccupancyRateReportResponse> occupancyRate(OccupancyRateReportRequest request) {
+        List<FilmEntity> filmEntities = this.filmEntityRepository.findByIdsAndStatuses(request.getFilmIds(), List.of(FilmStatus.APPROVED));
+        List<Film> films = this.filmEntityMapper.toDomain(filmEntities);
+        List<String> filmIds = films.stream().map(Film::getId).collect(Collectors.toList());
+        List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findAllByFilmIdsAndStatuses(filmIds, List.of(ShowtimeStatus.WAIT_ON_SALE, ShowtimeStatus.FINISH));
+        List<Showtime> showtimes = this.showtimeEntityMapper.toDomain(showtimeEntities);
+        this.enrichTickets(showtimes);
+        List<OccupancyRateReportResponse> responses = new ArrayList<>();
+        films.forEach(f -> {
+            List<Showtime> showtimeTmps = showtimes.stream().filter(s -> Objects.equals(s.getFilmId(), f.getId())).collect(Collectors.toList());
+            Long totalTicket = showtimeTmps.stream().map(Showtime::calTotalTicket).reduce(0L, Long::sum);
+            Long totalTicketSold = showtimeTmps.stream().map(Showtime::calTotalTicketSold).reduce(0L, Long::sum);
+            responses.add(OccupancyRateReportResponse.builder()
+                    .filmId(f.getId())
+                    .filmName(f.getName())
+                    .filmCode(f.getCode())
+                    .totalTicket(totalTicket)
+                    .totalTicketWasSold(totalTicketSold)
+                    .build());
+        });
+        return responses;
+    }
+
+    private void enrichTickets(List<Showtime> showtimes) {
+        List<String> showtimeIds = showtimes.stream().map(Showtime::getId).collect(Collectors.toList());
+        List<TicketEntity> ticketEntities = this.ticketEntityRepository.findAllByShowtimeIds(showtimeIds);
+        List<Ticket> tickets = this.ticketEntityMapper.toDomain(ticketEntities);
+        showtimes.forEach(s -> {
+            List<Ticket> ticketsTmp = tickets.stream().filter(t -> Objects.equals(t.getShowtimeId(), s.getId())).collect(Collectors.toList());
+            s.enrichTicket(ticketsTmp);
+        });
+
     }
 }

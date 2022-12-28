@@ -22,4 +22,7 @@ public interface FilmEntityRepository extends JpaRepository<FilmEntity, String>,
 
     @Query("From FilmEntity f where f.deleted = false and f.status in :statuses")
     List<FilmEntity> findFilmByStatuses(@Param("statuses") List<FilmStatus> statuses);
+
+    @Query("From FilmEntity f where f.deleted = false and (coalesce(:ids, null) is null or f.id in :ids) and f.status in :statuses")
+    List<FilmEntity> findByIdsAndStatuses(@Param("ids") List<String> ids, @Param("statuses") List<FilmStatus> statuses);
 }

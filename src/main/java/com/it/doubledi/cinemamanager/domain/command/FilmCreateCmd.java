@@ -20,6 +20,7 @@ public class FilmCreateCmd {
     private Integer duration;
     private String actors;
     private String directors;
+    private String fileId;
     private List<String> producerId;
     private List<String> filmTypeIds;
 }

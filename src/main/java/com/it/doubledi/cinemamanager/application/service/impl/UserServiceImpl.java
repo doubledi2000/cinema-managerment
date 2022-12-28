@@ -106,22 +106,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageDTO<User> search(UserSearchRequest request) {
         UserSearchQuery query = this.autoMapperQuery.toQuery(request);
-//        List<String> userIds = new ArrayList<>();
-//        if (!CollectionUtils.isEmpty(query.getLocationIds())) {
-//            List<UserLocationEntity> userLocationEntities = this.userLocationEntityRepository.findByLocationIds(query.getLocationIds());
-//            List<String> userTmp = userLocationEntities.stream().map(UserLocationEntity::getUserId).distinct().collect(Collectors.toList());
-//            if (!CollectionUtils.isEmpty(userTmp)) {
-//                userIds = userTmp;
-//            } else {
-//                return PageDTO.empty();
-//            }
-//        }
-//        query.setUserIds(userIds);
         Long count = this.userEntityRepository.count(query);
         if (count == 0) {
             return PageDTO.empty();
         }
-
         List<UserEntity> userEntities = this.userEntityRepository.search(query);
         List<User> users = this.userEntityMapper.toDomain(userEntities);
         return new PageDTO<>(users, query.getPageIndex(), query.getPageSize(), count);

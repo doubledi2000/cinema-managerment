@@ -6,11 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class DrinkSearchRequest extends PagingRequest {
     private String keyword;
-    private String locationId;
+    private List<String> locationIds;
     private DrinkStatus status;
 }

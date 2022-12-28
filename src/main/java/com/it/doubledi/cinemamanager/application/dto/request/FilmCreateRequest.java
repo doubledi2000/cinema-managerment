@@ -4,7 +4,6 @@ import com.it.doubledi.cinemamanager._common.model.dto.request.Request;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.FilmStatus;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -52,6 +51,9 @@ public class FilmCreateRequest extends Request {
 
     @NotEmpty(message = "PRODUCER_ID_REQUIRED")
     private List<String> producerIds;
+
+    @NotEmpty(message = "FILE_REQUIRED")
+    private String fileId;
 
     @NotEmpty(message = "FILM_TYPE_REQUIRED")
     private List<String> filmTypeIds;

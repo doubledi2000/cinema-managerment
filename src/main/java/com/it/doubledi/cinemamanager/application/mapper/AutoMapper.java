@@ -13,6 +13,7 @@ import com.it.doubledi.cinemamanager.application.dto.request.PriceConfigCreateRe
 import com.it.doubledi.cinemamanager.application.dto.request.ProducerCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.ProducerUpdateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleCreateRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.RolePermissionRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RolePermittedRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoleUpdateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RoomCreateRequest;
@@ -37,6 +38,7 @@ import com.it.doubledi.cinemamanager.domain.command.PriceConfigCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.ProducerCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.ProducerUpdateCmd;
 import com.it.doubledi.cinemamanager.domain.command.RoleCreateCmd;
+import com.it.doubledi.cinemamanager.domain.command.RolePermissionCmd;
 import com.it.doubledi.cinemamanager.domain.command.RolePermittedCmd;
 import com.it.doubledi.cinemamanager.domain.command.RoleUpdateCmd;
 import com.it.doubledi.cinemamanager.domain.command.RoomCreateCmd;
@@ -99,4 +101,6 @@ public interface AutoMapper {
     DrinkUpdateCmd from(DrinkUpdateRequest request);
 
     InvoiceCreateCmd from(InvoiceCreateRequest request);
+
+    RolePermissionCmd from(RolePermissionRequest request);
 }

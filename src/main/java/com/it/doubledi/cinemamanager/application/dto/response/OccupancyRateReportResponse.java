@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @Builder
 @AllArgsConstructor
@@ -15,8 +13,6 @@ public class OccupancyRateReportResponse {
     private String filmId;
     private String filmName;
     private String filmCode;
-    private int totalTicket;
-    private int totalTicketWasSold;
-    private LocalDate startAt;
-    private LocalDate endAt;
+    private long totalTicket;
+    private long totalTicketWasSold;
 }

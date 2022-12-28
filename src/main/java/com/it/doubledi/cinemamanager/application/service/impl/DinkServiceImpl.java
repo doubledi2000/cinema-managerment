@@ -1,8 +1,11 @@
 package com.it.doubledi.cinemamanager.application.service.impl;
 
+import com.it.doubledi.cinemamanager._common.model.UserAuthentication;
 import com.it.doubledi.cinemamanager._common.model.dto.PageDTO;
+import com.it.doubledi.cinemamanager._common.model.enums.UserLevel;
 import com.it.doubledi.cinemamanager._common.persistence.support.SeqRepository;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
+import com.it.doubledi.cinemamanager.application.config.SecurityUtils;
 import com.it.doubledi.cinemamanager.application.dto.request.DrinkCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.DrinkSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.DrinkUpdateRequest;
@@ -23,6 +26,7 @@ import com.it.doubledi.cinemamanager.infrastructure.support.enums.DrinkStatus;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -87,6 +91,21 @@ public class DinkServiceImpl implements DrinkService {
     @Override
     public PageDTO<Drink> search(DrinkSearchRequest request) {
         DrinkSearchQuery searchQuery = this.autoMapperQuery.toQuery(request);
+        UserAuthentication userAuthentication = SecurityUtils.authentication();
+        List<String> locationIds;
+        if (userAuthentication.isRoot() || UserLevel.CENTER.equals(userAuthentication.getUserLevel())) {
+            log.info("User have all location");
+        } else if (!CollectionUtils.isEmpty(searchQuery.getLocationIds())) {
+            searchQuery.getLocationIds().retainAll(userAuthentication.getLocationIds());
+            if (CollectionUtils.isEmpty(searchQuery.getLocationIds())) {
+                return PageDTO.empty();
+            }
+        } else {
+            if (CollectionUtils.isEmpty(userAuthentication.getLocationIds())) {
+                log.info("User have no location");
+            }
+            searchQuery.setLocationIds(userAuthentication.getLocationIds());
+        }
         Long count = this.drinkEntityRepository.count(searchQuery);
 
         if (count == 0) {

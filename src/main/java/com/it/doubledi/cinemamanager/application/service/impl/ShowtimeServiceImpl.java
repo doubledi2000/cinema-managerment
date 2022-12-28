@@ -66,6 +66,8 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     private final RoomEntityMapper roomEntityMapper;
     private final LocationEntityMapper locationEntityMapper;
     private final LocationEntityRepository locationEntityRepository;
+    private final FileEntityRepository fileEntityRepository;
+
 
     @Override
     public Showtime create(ShowtimeCreateRequest request) {
@@ -130,6 +132,14 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         List<Film> films = this.filmEntityMapper.toDomain(filmEntities);
         List<ShowtimeResponse> showtimeResponses = new ArrayList<>();
         List<Showtime> showtimes = this.showtimeEntityMapper.toDomain(showtimeEntities);
+        List<String> fileIds = films.stream().map(Film::getFileId).distinct().collect(Collectors.toList());
+        List<FileEntity> files = this.fileEntityRepository.findByIds(fileIds);
+        films.forEach(f -> {
+            Optional<FileEntity> fileEntityOptional = files.stream().filter(fi -> Objects.equals(fi.getId(), f.getFileId())).findFirst();
+            fileEntityOptional.ifPresent(fi -> {
+                f.enrichFile(fi.getPath());
+            });
+        });
         for (Film film : films) {
             List<Showtime> showtimeTmps = showtimes.stream()
                     .filter(s -> Objects.equals(s.getFilmId(), film.getId()))
@@ -153,9 +163,11 @@ public class ShowtimeServiceImpl implements ShowtimeService {
 
     @Override
     @Transactional
-    public void generateTicket(String id) {
+    public void generateTicket(String id, boolean check) {
         Showtime showtime = this.showtimeRepository.getById(id);
-        SecurityUtils.checkPermissionOfLocation(showtime.getLocationId());
+        if (check) {
+            SecurityUtils.checkPermissionOfLocation(showtime.getLocationId());
+        }
         if (!Objects.equals(showtime.getStatus(), ShowtimeStatus.WAIT_GEN_TICKET)) {
             throw new ResponseException(BadRequestError.FILM_ALREADY_GEN_TICKET);
         }
@@ -222,6 +234,13 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         List<Showtime> showtimes = this.showtimeEntityMapper.toDomain(showtimeEntities);
         this.enrichShowtime(showtimes);
         return PageDTO.of(showtimes, query.getPageIndex(), query.getPageSize(), count);
+    }
+
+    @Override
+    public void cancelShowtime(String id) {
+        Showtime showtime = this.showtimeRepository.getById(id);
+        showtime.cancel();
+        this.showtimeRepository.save(showtime);
     }
 
     private void enrichShowtime(List<Showtime> showtimes) {
@@ -335,7 +354,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
             return;
         }
         showtimeEntities.forEach(s -> {
-            this.generateTicket(s.getId());
+            this.generateTicket(s.getId(), false);
         });
     }
 

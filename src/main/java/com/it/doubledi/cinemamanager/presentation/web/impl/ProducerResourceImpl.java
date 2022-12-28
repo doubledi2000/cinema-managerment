@@ -41,4 +41,16 @@ public class ProducerResourceImpl implements ProducerResource {
     public PagingResponse<Producer> autoComplete(ProducerSearchRequest request) {
         return PagingResponse.of(producerService.autoComplete(request));
     }
+
+    @Override
+    public Response<Boolean> active(String id) {
+        this.producerService.active(id);
+        return Response.ok();
+    }
+
+    @Override
+    public Response<Boolean> inactive(String id) {
+        this.producerService.inactive(id);
+        return Response.ok();
+    }
 }

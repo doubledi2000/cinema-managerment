@@ -16,4 +16,8 @@ public interface ProducerService {
     PageDTO<Producer> search(ProducerSearchRequest request);
 
     PageDTO<Producer> autoComplete(ProducerSearchRequest request);
+
+    void active(String id);
+
+    void inactive(String id);
 }

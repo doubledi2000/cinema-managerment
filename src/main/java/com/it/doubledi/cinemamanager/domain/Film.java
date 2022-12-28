@@ -10,7 +10,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 
-import javax.persistence.Column;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +34,8 @@ public class Film extends AuditableDomain {
     private List<String> producerIds;
     private Boolean deleted;
     private Long version;
+    private String fileId;
+    private String filePath;
 
     private List<FilmType> filmTypes;
     private List<String> filmTypeIds;
@@ -53,6 +54,7 @@ public class Film extends AuditableDomain {
         this.actors = cmd.getActors();
         this.directors = cmd.getDirectors();
         this.duration = cmd.getDuration();
+        this.fileId = cmd.getFileId();
         this.deleted = Boolean.FALSE;
     }
 
@@ -72,6 +74,10 @@ public class Film extends AuditableDomain {
             this.filmProducers = filmProducers;
             this.producerIds = filmProducers.stream().map(FilmProducer::getProducerId).collect(Collectors.toList());
         }
+    }
+
+    public void enrichFile(String filePath) {
+        this.filePath = filePath;
     }
 }
 

@@ -71,6 +71,5 @@ public class Invoice extends AuditableDomain {
         if (!CollectionUtils.isEmpty(items)) {
             this.items = items;
         }
-        this.items = new ArrayList<>();
     }
 }

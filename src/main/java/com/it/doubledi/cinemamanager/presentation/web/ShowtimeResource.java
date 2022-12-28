@@ -8,11 +8,7 @@ import com.it.doubledi.cinemamanager.application.dto.request.ShowtimeSearchReque
 import com.it.doubledi.cinemamanager.application.dto.response.ShowtimeResponse;
 import com.it.doubledi.cinemamanager.domain.Showtime;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +25,10 @@ public interface ShowtimeResource {
     @PostMapping("/showtimes/{id}/generate-tickets")
     @PreAuthorize("hasPermission(null, 'showtime:update') or hasPermission(null, 'showtime:create')")
     Response<Boolean> generateTicket(@PathVariable("id") String id);
+
+    @PostMapping("/showtimes/{id}/cancel")
+    @PreAuthorize("hasPermission(null, 'showtime:update') or hasPermission(null, 'showtime:create')")
+    Response<Boolean> cancel(@PathVariable("id") String id);
 
     @GetMapping("/showtimes/{id}")
     @PreAuthorize("hasPermission(null, 'showtime:view')")

@@ -57,6 +57,9 @@ public class FilmEntity extends AuditableEntity {
     @Column(name = "producer_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
     private String producerId;
 
+    @Column(name = "file_id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)
+    private String fileId;
+
     @Column(name = "deleted")
     private Boolean deleted;
 
