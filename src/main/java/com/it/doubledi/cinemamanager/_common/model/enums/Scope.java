@@ -4,5 +4,6 @@ public enum Scope {
     VIEW,
     CREATE,
     UPDATE,
-    DELETE
+    DELETE,
+    CANCEL
 }

@@ -36,6 +36,6 @@ public class ReportResourceImpl implements ReportResource {
 
     @Override
     public Response<List<OccupancyRateReportResponse>> occupancyRateReport(OccupancyRateReportRequest request) {
-        return null;
+        return Response.of(reportService.occupancyRate(request));
     }
 }

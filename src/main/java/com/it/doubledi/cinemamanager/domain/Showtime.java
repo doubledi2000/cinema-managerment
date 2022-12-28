@@ -7,6 +7,7 @@ import com.it.doubledi.cinemamanager.application.dto.response.RowShowtimeRespons
 import com.it.doubledi.cinemamanager.domain.command.FilmScheduleCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.ShowtimeCreateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
+import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
@@ -40,6 +41,7 @@ public class Showtime extends AuditableDomain {
     private Film film;
     private Room room;
     private List<RowShowtimeResponse> rows;
+    private List<Ticket> tickets;
 
     public Showtime(ShowtimeCreateCmd cmd, FilmScheduleCreateCmd filmScheduleCreateCmd, FilmEntity filmEntity) {
         this.id = IdUtils.nextId();
@@ -69,27 +71,35 @@ public class Showtime extends AuditableDomain {
         }
     }
 
-    public void cancelBooking(String userId){
-        if(Objects.isNull(userId)) {
+    public void cancelBooking(String userId) {
+        if (Objects.isNull(userId)) {
             return;
         }
         this.rows.forEach(r -> {
             r.getTickets().forEach(t -> {
-                if(Objects.equals(userId, t.getUserSoldId()) && Objects.equals(TicketStatus.SELECTED, t.getStatus())) {
+                if (Objects.equals(userId, t.getUserSoldId()) && Objects.equals(TicketStatus.SELECTED, t.getStatus())) {
                     t.unselect();
                 }
             });
         });
     }
 
-    public void cancel(){
-        if(!ShowtimeStatus.WAIT_GEN_TICKET.equals(this.getStatus())) {
+    public long calTotalTicket() {
+        return this.tickets.stream().filter(t -> !Objects.equals(t.getType(), ChairType.BOGY)).count();
+    }
+
+    public long calTotalTicketSold() {
+        return this.tickets.stream().filter(t -> Objects.equals(t.getStatus(), TicketStatus.SOLD)).count();
+    }
+
+    public void cancel() {
+        if (!ShowtimeStatus.WAIT_GEN_TICKET.equals(this.getStatus())) {
             throw new ResponseException(BadRequestError.CAN_NOT_CANCEL_SHOWTIME_WITH_STATUS_NOT_EQUAL_WAIT_GEN_TICKET);
         }
         this.status = ShowtimeStatus.CANCELED;
     }
 
-    public void enrichLocation(Location location){
+    public void enrichLocation(Location location) {
         this.location = location;
     }
 
@@ -101,13 +111,22 @@ public class Showtime extends AuditableDomain {
         }
     }
 
+    public void enrichTicket(List<Ticket> tickets) {
+        if (!CollectionUtils.isEmpty(tickets)) {
+            this.tickets = tickets;
+        } else {
+            this.tickets = new ArrayList<>();
+        }
+    }
+
+
     public void genTicket() {
         this.status = ShowtimeStatus.WAIT_ON_SALE;
     }
 
     public void finish() {
         this.status = ShowtimeStatus.FINISH;
-        if(!CollectionUtils.isEmpty(this.rows)) {
+        if (!CollectionUtils.isEmpty(this.rows)) {
             this.getRows().forEach(r -> {
                 r.getTickets().forEach(t -> {
                     if (Objects.equals(t.getStatus(), TicketStatus.SELECTED)

@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequestMapping("/api")
@@ -19,9 +20,9 @@ public interface ReportResource {
     @PreAuthorize("hasPermission(null, 'report:view')")
     Response<List<RevenueReportByYearResponse>> revenueReportByYear(RevenueReportRequest request);
 
-    @GetMapping("/reports/revenue")
+        @GetMapping("/reports/revenue")
     @PreAuthorize("hasPermission(null, 'report:view')")
-    Response<List<RevenueReportResponse>> revenueReport(RevenueReportRequest request);
+    Response<List<RevenueReportResponse>> revenueReport(@Valid RevenueReportRequest request);
 
     @GetMapping("/reports/occupancy-rate-by-month")
     @PreAuthorize("hasPermission(null, 'report:view')")

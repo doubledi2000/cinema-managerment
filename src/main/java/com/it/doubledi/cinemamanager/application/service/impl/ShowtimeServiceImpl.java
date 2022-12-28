@@ -66,6 +66,8 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     private final RoomEntityMapper roomEntityMapper;
     private final LocationEntityMapper locationEntityMapper;
     private final LocationEntityRepository locationEntityRepository;
+    private final FileEntityRepository fileEntityRepository;
+
 
     @Override
     public Showtime create(ShowtimeCreateRequest request) {
@@ -130,6 +132,14 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         List<Film> films = this.filmEntityMapper.toDomain(filmEntities);
         List<ShowtimeResponse> showtimeResponses = new ArrayList<>();
         List<Showtime> showtimes = this.showtimeEntityMapper.toDomain(showtimeEntities);
+        List<String> fileIds = films.stream().map(Film::getFileId).distinct().collect(Collectors.toList());
+        List<FileEntity> files = this.fileEntityRepository.findByIds(fileIds);
+        films.forEach(f -> {
+            Optional<FileEntity> fileEntityOptional = files.stream().filter(fi -> Objects.equals(fi.getId(), f.getFileId())).findFirst();
+            fileEntityOptional.ifPresent(fi -> {
+                f.enrichFile(fi.getPath());
+            });
+        });
         for (Film film : films) {
             List<Showtime> showtimeTmps = showtimes.stream()
                     .filter(s -> Objects.equals(s.getFilmId(), film.getId()))
