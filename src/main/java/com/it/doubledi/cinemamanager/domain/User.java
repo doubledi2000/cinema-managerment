@@ -3,10 +3,14 @@ package com.it.doubledi.cinemamanager.domain;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.model.enums.Gender;
 import com.it.doubledi.cinemamanager._common.model.enums.UserLevel;
+import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
+import com.it.doubledi.cinemamanager.application.dto.request.UpdatePasswordRequest;
+import com.it.doubledi.cinemamanager.domain.command.UpdateProfileCmd;
 import com.it.doubledi.cinemamanager.domain.command.UserCreateCmd;
 import com.it.doubledi.cinemamanager.domain.command.UserUpdateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.UserStatus;
+import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,6 +41,7 @@ public class User extends AuditableDomain {
     private String title;
     private String departmentName;
     private String description;
+    private String address;
     private UserStatus status;
     private UserLevel userLevel;
     private String avatarFileId;
@@ -73,6 +78,15 @@ public class User extends AuditableDomain {
         }
     }
 
+    public void update(UpdateProfileCmd cmd) {
+        this.fullName = cmd.getFullName();
+        this.email = cmd.getEmail();
+        this.phoneNumber = cmd.getPhoneNumber();
+        this.gender = cmd.getGender();
+        this.address = cmd.getAddress();
+        this.description = cmd.getDescription();
+    }
+
     public void update(UserUpdateCmd cmd) {
         this.fullName = cmd.getFullName();
         this.email = cmd.getEmail();
@@ -84,6 +98,14 @@ public class User extends AuditableDomain {
         this.updateRole(cmd);
         this.updateLocation(cmd);
     }
+
+    public void changePassword(UpdatePasswordRequest request) {
+        if (!Objects.equals(request.getPassword(), request.getRepeatPassword())) {
+            throw new ResponseException(BadRequestError.NEW_PASSWORD_AND_CONFIRM_DISSIMILARITY);
+        }
+        this.password = request.getPassword();
+    }
+
 
     public void enrichUserLocation(List<UserLocation> userLocations) {
         if (CollectionUtils.isEmpty(userLocations)) {

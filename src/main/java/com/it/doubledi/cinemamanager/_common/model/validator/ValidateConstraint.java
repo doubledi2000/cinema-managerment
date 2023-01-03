@@ -20,5 +20,6 @@ public interface ValidateConstraint {
         String PHONE_NUMBER_PATTERN = "^(\\+[0-9]+[\\- \\.]*)?(\\([0-9]+\\)[\\- \\.]*)?([0-9][0-9\\- \\.]+[0-9])$";
         String EMAIL_PATTERN = "^(\\s){0,}[a-zA-Z][a-zA-Z0-9-_\\.]{1,50}@[a-zA-Z0-9_-]{2,}(\\.[a-zA-Z0-9]{2,4}){1,2}(\\s){0,}$";
         String CODE_PATTERN = "^[A-Za-z0-9_]{4,50}$";
+        String PASSWORD_PATTERN = "\\S{6,99}";
     }
 }

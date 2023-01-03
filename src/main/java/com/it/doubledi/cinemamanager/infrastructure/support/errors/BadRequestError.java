@@ -32,7 +32,8 @@ public enum BadRequestError implements ResponseError {
     USER_HAS_NO_PERMISSION_WITH_LOCATION(40400021, "User has no permission with location"),
     CAN_NOT_CANCEL_SHOWTIME_WITH_STATUS_NOT_EQUAL_WAIT_GEN_TICKET(40400022, "Can not cancel showtime with status not equal wait generate ticket"),
     INVALID_INPUT(40000023, "Invalid input : {0}"),
-    ;
+    CURRENT_PASSWORD_INCORRECT(40000024, "Old password incorrect"),
+    NEW_PASSWORD_AND_CONFIRM_DISSIMILARITY(40000025, "New password and confirm dissimilarity");
 
 
     private final Integer code;
