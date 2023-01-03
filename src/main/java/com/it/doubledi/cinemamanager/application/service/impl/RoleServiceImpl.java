@@ -108,4 +108,9 @@ public class RoleServiceImpl implements RoleService {
         this.roleRepository.save(role);
         return role;
     }
+
+    @Override
+    public List<Role> findByIds(FindByIdsRequest request) {
+        return this.roleEntityMapper.toDomain(this.roleEntityRepository.findAllByIds(request.getIds()));
+    }
 }

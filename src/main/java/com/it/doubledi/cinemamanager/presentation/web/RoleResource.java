@@ -2,10 +2,7 @@ package com.it.doubledi.cinemamanager.presentation.web;
 
 import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
-import com.it.doubledi.cinemamanager.application.dto.request.RoleCreateRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RolePermissionRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RoleSearchRequest;
-import com.it.doubledi.cinemamanager.application.dto.request.RoleUpdateRequest;
+import com.it.doubledi.cinemamanager.application.dto.request.*;
 import com.it.doubledi.cinemamanager.domain.Permission;
 import com.it.doubledi.cinemamanager.domain.Role;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,4 +40,7 @@ public interface RoleResource {
     @PostMapping("/roles/{id}/permit")
     @PreAuthorize("hasPermission(null, 'role:update')")
     Response<Role> permit(@PathVariable("id") String id, @RequestBody RolePermissionRequest request);
+
+    @PostMapping("/roles/find-by-ids")
+    Response<List<Role>> findByIds(@RequestBody FindByIdsRequest request);
 }
