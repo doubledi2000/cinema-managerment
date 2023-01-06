@@ -30,7 +30,7 @@ public class ReportResourceImpl implements ReportResource {
     }
 
     @Override
-    public Response<List<OccupancyRateReportResponse>> occupancyRateReportByMonth(OccupancyRateReportRequest request) {
+    public Response<List<OccupancyRateReportResponse>> occupancyRateReportDetail(OccupancyRateReportRequest request) {
         return null;
     }
 

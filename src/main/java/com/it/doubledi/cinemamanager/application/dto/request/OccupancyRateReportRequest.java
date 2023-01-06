@@ -18,5 +18,6 @@ public class OccupancyRateReportRequest extends Request {
     private Instant startAt;
     private Instant endAt;
     private List<String> filmIds;
+    private List<String> locationIds;
     private ReportType type;
 }

@@ -27,6 +27,10 @@ public interface ShowtimeEntityRepository extends JpaRepository<ShowtimeEntity, 
             " order by s.createdAt desc")
     List<ShowtimeEntity> findShowtimeByParams(List<String> filmIds, LocalDate premiereDate, List<String> locationIds, int startAt);
 
+    @Query("From ShowtimeEntity s where s.deleted = false " +
+            " and (coalesce(:filmIds, null) is null or s.filmId in :filmIds ) " +
+            " and (coalesce(:locationIds, null) is null or s.locationId in :locationIds ) ")
+
     @Query("From ShowtimeEntity s where s.deleted = false and s.roomId in :roomIds and s.premiereDate = :premiereDate")
     List<ShowtimeEntity> findAllByRoomIds(List<String> roomIds, LocalDate premiereDate);
 

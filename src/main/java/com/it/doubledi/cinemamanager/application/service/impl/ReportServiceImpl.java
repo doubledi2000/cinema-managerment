@@ -12,13 +12,25 @@ import com.it.doubledi.cinemamanager.application.dto.response.OccupancyRateRepor
 import com.it.doubledi.cinemamanager.application.dto.response.RevenueReportByYearResponse;
 import com.it.doubledi.cinemamanager.application.dto.response.RevenueReportResponse;
 import com.it.doubledi.cinemamanager.application.service.ReportService;
-import com.it.doubledi.cinemamanager.domain.*;
+import com.it.doubledi.cinemamanager.domain.Film;
+import com.it.doubledi.cinemamanager.domain.Invoice;
+import com.it.doubledi.cinemamanager.domain.Location;
+import com.it.doubledi.cinemamanager.domain.Showtime;
+import com.it.doubledi.cinemamanager.domain.Ticket;
 import com.it.doubledi.cinemamanager.domain.repository.InvoiceRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FilmEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.ShowtimeEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.TicketEntity;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.*;
-import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.*;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.FilmEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.InvoiceEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.LocationEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.ShowtimeEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.TicketEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FilmEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.InvoiceEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.LocationEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.ShowtimeEntityRepository;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.TicketEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.FilmStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ReportType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
@@ -28,8 +40,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.time.*;
-import java.util.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +73,7 @@ public class ReportServiceImpl implements ReportService {
     public List<RevenueReportResponse> revenueReport(RevenueReportRequest request) {
         List<Location> locations = this.getLocations(request.getLocationIds());
         UserAuthentication userAuthentication = SecurityUtils.authentication();
-        if (Objects.equals(request.getType(), ReportType.MONTH)) {
+        if (Objects.equals(request.getType(), ReportType.DEFAULT) || (Objects.isNull(request.getStartAt()) || Objects.isNull(request.getEndAt()))) {
             request.setStartAt(DateUtils.getFirstDayOfMonth(Instant.now(Clock.system(ZoneId.systemDefault()))));
             request.setEndAt(DateUtils.getLastDayOfMonth(Instant.now(Clock.system(ZoneId.systemDefault()))));
         }
@@ -135,7 +155,13 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public List<OccupancyRateReportResponse> occupancyRateReportByLocation(OccupancyRateReportRequest request) {
+    public List<OccupancyRateReportResponse> occupancyRateDetailReport(OccupancyRateReportRequest request) {
+        List<Location> locations = this.getLocations(request.getLocationIds());
+        if (!CollectionUtils.isEmpty(locations)) {
+            return new ArrayList<>();
+        }
+        List<String> locationIds = locations.stream().map(Location::getId).collect(Collectors.toList());
+
         return null;
     }
 

@@ -16,7 +16,7 @@ public interface ReportService {
 
     List<OccupancyRateReportResponse> occupancyRateReport(OccupancyRateReportRequest request);
 
-    List<OccupancyRateReportResponse> occupancyRateReportByLocation(OccupancyRateReportRequest request);
+    List<OccupancyRateReportResponse> occupancyRateDetailReport(OccupancyRateReportRequest request);
 
     List<OccupancyRateReportResponse> occupancyRate(OccupancyRateReportRequest request);
 }

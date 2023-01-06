@@ -20,13 +20,13 @@ public interface ReportResource {
     @PreAuthorize("hasPermission(null, 'report:view')")
     Response<List<RevenueReportByYearResponse>> revenueReportByYear(RevenueReportRequest request);
 
-        @GetMapping("/reports/revenue")
+    @GetMapping("/reports/revenue")
     @PreAuthorize("hasPermission(null, 'report:view')")
     Response<List<RevenueReportResponse>> revenueReport(@Valid RevenueReportRequest request);
 
-    @GetMapping("/reports/occupancy-rate-by-month")
+    @GetMapping("/reports/occupancy-detail")
     @PreAuthorize("hasPermission(null, 'report:view')")
-    Response<List<OccupancyRateReportResponse>> occupancyRateReportByMonth(OccupancyRateReportRequest request);
+    Response<List<OccupancyRateReportResponse>> occupancyRateReportDetail(OccupancyRateReportRequest request);
 
     @GetMapping("/reports/occupancy")
     @PreAuthorize("hasPermission(null, 'report:view')")
