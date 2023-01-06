@@ -7,6 +7,7 @@ import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.model.mapper.util.PageableMapperUtil;
 import com.it.doubledi.cinemamanager._common.persistence.support.SqlUtils;
 import com.it.doubledi.cinemamanager.application.config.SecurityUtils;
+import com.it.doubledi.cinemamanager.application.dto.request.FindByIdsRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.TicketPriceConfigUpdateRequest;
@@ -39,11 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -189,6 +186,11 @@ public class LocationServiceImpl implements LocationService {
             }
         }
         this.priceConfigRepository.saveALl(priceConfigs);
+    }
+
+    @Override
+    public List<Location> findByIds(FindByIdsRequest request) {
+        return this.locationEntityMapper.toDomain(this.locationEntityRepository.findByIds(request.getIds()));
     }
 
     @Override

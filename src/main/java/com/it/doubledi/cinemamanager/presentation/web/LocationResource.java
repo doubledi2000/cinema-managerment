@@ -2,6 +2,7 @@ package com.it.doubledi.cinemamanager.presentation.web;
 
 import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
+import com.it.doubledi.cinemamanager.application.dto.request.FindByIdsRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.TicketPriceConfigUpdateRequest;
@@ -9,6 +10,8 @@ import com.it.doubledi.cinemamanager.application.dto.response.LocationPriceConfi
 import com.it.doubledi.cinemamanager.domain.Location;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequestMapping("/api")
 public interface LocationResource {
@@ -48,4 +51,7 @@ public interface LocationResource {
     @PostMapping("/locations/update/ticket-price-normal")
     @PreAuthorize("hasPermission(null, 'price:update')")
     Response<Boolean> updateTicketPrice(@RequestBody TicketPriceConfigUpdateRequest request);
+
+    @PostMapping("/locations/find-by-ids")
+    Response<List<Location>> findByIds(@RequestBody FindByIdsRequest request);
 }

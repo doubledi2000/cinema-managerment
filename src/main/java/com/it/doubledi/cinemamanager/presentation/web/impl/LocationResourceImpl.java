@@ -2,6 +2,7 @@ package com.it.doubledi.cinemamanager.presentation.web.impl;
 
 import com.it.doubledi.cinemamanager._common.model.dto.response.PagingResponse;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
+import com.it.doubledi.cinemamanager.application.dto.request.FindByIdsRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationCreateRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.LocationSearchRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.TicketPriceConfigUpdateRequest;
@@ -11,6 +12,8 @@ import com.it.doubledi.cinemamanager.domain.Location;
 import com.it.doubledi.cinemamanager.presentation.web.LocationResource;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -64,5 +67,10 @@ public class LocationResourceImpl implements LocationResource {
     public Response<Boolean> updateTicketPrice(TicketPriceConfigUpdateRequest request) {
         locationService.updatePriceConfig(request);
         return Response.ok();
+    }
+
+    @Override
+    public Response<List<Location>> findByIds(FindByIdsRequest request) {
+        return Response.of(this.locationService.findByIds(request));
     }
 }

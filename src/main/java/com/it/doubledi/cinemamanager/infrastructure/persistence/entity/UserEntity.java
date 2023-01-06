@@ -65,6 +65,9 @@ public class UserEntity extends AuditableEntity {
     @Column(name = "description", length = ValidateConstraint.LENGTH.DESC_MAX_LENGTH)
     private String description;
 
+    @Column(name = "address")
+    private String address;
+
     @Column(name = "status", length = ValidateConstraint.LENGTH.ENUM_MAX_LENGTH)
     @Enumerated(EnumType.STRING)
     private UserStatus status;

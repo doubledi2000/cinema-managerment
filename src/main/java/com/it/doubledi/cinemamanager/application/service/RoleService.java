@@ -23,4 +23,6 @@ public interface RoleService {
     Role permission(String id, RolePermittedRequest request);
 
     Role permission(String id, RolePermissionRequest request);
+
+    List<Role> findByIds(FindByIdsRequest request);
 }
