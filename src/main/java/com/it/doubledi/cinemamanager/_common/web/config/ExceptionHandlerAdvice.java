@@ -55,7 +55,6 @@ public class ExceptionHandlerAdvice {
                         .build());
     }
 
-
     @ExceptionHandler(ResponseException.class)
     public ResponseEntity<ErrorResponse<Object>> handleResponseException(ResponseException e, HttpServletRequest request) {
         log.warn("Failed to handle request {}: {}", request.getRequestURI(), e.getError().getMessage(), e);

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -20,4 +21,5 @@ public class OccupancyRateReportRequest extends Request {
     private List<String> filmIds;
     private List<String> locationIds;
     private ReportType type;
+    private LocalDate premiereDate;
 }

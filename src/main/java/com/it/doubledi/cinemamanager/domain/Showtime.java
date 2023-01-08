@@ -1,5 +1,6 @@
 package com.it.doubledi.cinemamanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.model.exception.ResponseException;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
@@ -11,7 +12,10 @@ import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ShowtimeStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.BadRequestError;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
@@ -19,11 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@EqualsAndHashCode(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Showtime extends AuditableDomain {
     private String id;
     private LocalDate premiereDate;
@@ -69,6 +73,48 @@ public class Showtime extends AuditableDomain {
         if (Objects.nonNull(room)) {
             this.room = room;
         }
+    }
+
+    public long calNormalTicket() {
+        if (CollectionUtils.isEmpty(this.tickets)) {
+            return 0;
+        }
+        return this.tickets.stream().filter(t -> Objects.equals(t.getType(), ChairType.NORMAL)).count();
+    }
+
+    public long calNormalTicketWasSold() {
+        if (CollectionUtils.isEmpty(this.tickets)) {
+            return 0;
+        }
+        return this.tickets.stream().filter(t -> Objects.equals(t.getType(), ChairType.NORMAL) && Objects.equals(t.getStatus(), TicketStatus.SOLD)).count();
+    }
+
+    public long calVIPTicket() {
+        if (CollectionUtils.isEmpty(this.tickets)) {
+            return 0;
+        }
+        return this.tickets.stream().filter(t -> Objects.equals(t.getType(), ChairType.VIP)).count();
+    }
+
+    public long calVIPTicketWasSold() {
+        if (CollectionUtils.isEmpty(this.tickets)) {
+            return 0;
+        }
+        return this.tickets.stream().filter(t -> Objects.equals(t.getType(), ChairType.VIP) && Objects.equals(t.getStatus(), TicketStatus.SOLD)).count();
+    }
+
+    public long calSweetTicket() {
+        if (CollectionUtils.isEmpty(this.tickets)) {
+            return 0;
+        }
+        return this.tickets.stream().filter(t -> Objects.equals(t.getType(), ChairType.SWEET)).count();
+    }
+
+    public long calSweetTicketWasSold() {
+        if (CollectionUtils.isEmpty(this.tickets)) {
+            return 0;
+        }
+        return this.tickets.stream().filter(t -> Objects.equals(t.getType(), ChairType.SWEET) && Objects.equals(t.getStatus(), TicketStatus.SOLD)).count();
     }
 
     public void cancelBooking(String userId) {

@@ -1,7 +1,9 @@
 package com.it.doubledi.cinemamanager._common.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -15,7 +17,11 @@ import java.io.Serializable;
 import java.time.Instant;
 
 @MappedSuperclass
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class AuditableEntity implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -29,10 +35,10 @@ public class AuditableEntity implements Serializable {
     protected Instant createdAt = Instant.now();
 
     @LastModifiedBy
-    @Column(name = "last_modify_by", length = ValidateConstraint.LENGTH.NAME_MAX_LENGTH)
-    protected String lastModifyBy;
+    @Column(name = "last_modified_by", length = ValidateConstraint.LENGTH.NAME_MAX_LENGTH)
+    protected String lastModifiedBy;
 
     @LastModifiedDate
-    @Column(name = "last_modify_at")
-    protected Instant lastModifyAt = Instant.now();
+    @Column(name = "last_modified_at")
+    protected Instant lastModifiedAt = Instant.now();
 }

@@ -1,8 +1,10 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -13,7 +15,11 @@ import java.util.Objects;
         @Index(name = "row_deleted_idx", columnList = "deleted"),
         @Index(name = "row_room_id_idx", columnList = "room_id")
 })
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RowEntity extends AuditableEntity {
     @Id
     @Column(name = "id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)

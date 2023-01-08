@@ -10,10 +10,10 @@ public class OccupancyRateDetailReportResponse {
     private String locationName;
     private String filmCode;
     private String filmName;
-    private int totalNormalTicket;
-    private int totalNormalTicketWasSold;
-    private int totalVIPTicket;
-    private int totalVIPTicketWasSold;
-    private int totalSweetTicket;
-    private int totalSweetTicketWasSold;
+    private long totalNormalTicket;
+    private long totalNormalTicketWasSold;
+    private long totalVIPTicket;
+    private long totalVIPTicketWasSold;
+    private long totalSweetTicket;
+    private long totalSweetTicketWasSold;
 }
