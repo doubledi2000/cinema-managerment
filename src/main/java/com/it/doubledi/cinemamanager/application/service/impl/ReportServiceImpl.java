@@ -8,6 +8,7 @@ import com.it.doubledi.cinemamanager.application.config.SecurityUtils;
 import com.it.doubledi.cinemamanager.application.dto.request.OccupancyRateReportRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RevenueReportByYearRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RevenueReportRequest;
+import com.it.doubledi.cinemamanager.application.dto.response.OccupancyRateDetailReportResponse;
 import com.it.doubledi.cinemamanager.application.dto.response.OccupancyRateReportResponse;
 import com.it.doubledi.cinemamanager.application.dto.response.RevenueReportByYearResponse;
 import com.it.doubledi.cinemamanager.application.dto.response.RevenueReportResponse;
@@ -53,7 +54,7 @@ public class ReportServiceImpl implements ReportService {
     public List<RevenueReportResponse> revenueReport(RevenueReportRequest request) {
         List<Location> locations = this.getLocations(request.getLocationIds());
         UserAuthentication userAuthentication = SecurityUtils.authentication();
-        if (Objects.equals(request.getType(), ReportType.MONTH)) {
+        if (Objects.equals(request.getType(), ReportType.DEFAULT) || (Objects.isNull(request.getStartAt()) || Objects.isNull(request.getEndAt()))) {
             request.setStartAt(DateUtils.getFirstDayOfMonth(Instant.now(Clock.system(ZoneId.systemDefault()))));
             request.setEndAt(DateUtils.getLastDayOfMonth(Instant.now(Clock.system(ZoneId.systemDefault()))));
         }
@@ -135,8 +136,102 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public List<OccupancyRateReportResponse> occupancyRateReportByLocation(OccupancyRateReportRequest request) {
-        return null;
+    public List<OccupancyRateDetailReportResponse> occupancyRateDetailReport(OccupancyRateReportRequest request) {
+        List<Location> locations = this.getLocations(request.getLocationIds());
+        if (CollectionUtils.isEmpty(locations)) {
+            return new ArrayList<>();
+        }
+        UserAuthentication userAuthentication = SecurityUtils.authentication();
+        List<String> locationIds = null;
+        if (userAuthentication.isRoot() || UserLevel.CENTER.equals(userAuthentication.getUserLevel())) {
+            log.info("User have all location");
+        } else {
+            locationIds = locations.stream().map(Location::getId).collect(Collectors.toList());
+        }
+
+        LocalDate startAt;
+        LocalDate endAt;
+        if (Objects.isNull(request.getPremiereDate())) {
+            startAt = DateUtils.getFirstDayOfYear(LocalDate.now().minusYears(1));
+            endAt = DateUtils.getLastDayOfYear(LocalDate.now());
+        } else {
+            startAt = DateUtils.getFirstDayOfYear(request.getPremiereDate());
+            endAt = DateUtils.getLastDayOfYear(request.getPremiereDate());
+        }
+        List<ShowtimeEntity> showtimeEntities = this.showtimeEntityRepository.findByFilmIdsLocationIdsAndPremiereDate(request.getFilmIds(), locationIds, List.of(ShowtimeStatus.FINISH, ShowtimeStatus.WAIT_ON_SALE), startAt, endAt);
+        List<Showtime> showtimes = this.showtimeEntityMapper.toDomain(showtimeEntities);
+        List<String> filmIds = new ArrayList<>();
+        if (CollectionUtils.isEmpty(request.getFilmIds())) {
+            filmIds = showtimes.stream().map(Showtime::getFilmId).distinct().collect(Collectors.toList());
+        } else {
+            filmIds = request.getFilmIds();
+        }
+        List<Film> films = this.filmEntityMapper.toDomain(this.filmEntityRepository.findByIds(filmIds));
+        this.enrichTickets(showtimes);
+        if (Objects.equals(request.getType(), ReportType.DEFAULT)) {
+            return this.getDefaultOccupancyReport(locations, showtimes, films);
+        } else {
+            return this.getCustomOccupancyReport(showtimes, films);
+        }
+    }
+
+    private List<OccupancyRateDetailReportResponse> getCustomOccupancyReport(List<Showtime> showtimes, List<Film> films) {
+        List<OccupancyRateDetailReportResponse> responses = new ArrayList<>();
+        films.forEach(f -> {
+            List<Showtime> showtimesTmp = showtimes.stream()
+                    .filter(s -> Objects.equals(s.getFilmId(), f.getId()))
+                    .collect(Collectors.toList());
+
+            long totalNormalTicket = showtimesTmp.stream().map(Showtime::calNormalTicket).reduce(0L, Long::sum);
+            long totalNormalTicketWasSold = showtimes.stream().map(Showtime::calNormalTicketWasSold).reduce(0L, Long::sum);
+            long totalVIPTicket = showtimesTmp.stream().map(Showtime::calVIPTicket).reduce(0L, Long::sum);
+            long totalVIPTicketWasSold = showtimesTmp.stream().map(Showtime::calVIPTicketWasSold).reduce(0L, Long::sum);
+            long totalSweetTicket = showtimes.stream().map(Showtime::calSweetTicket).reduce(0L, Long::sum);
+            long totalSweetTicketWasSold = showtimes.stream().map(Showtime::calSweetTicketWasSold).reduce(0L, Long::sum);
+            responses.add(OccupancyRateDetailReportResponse.builder()
+                    .filmCode(f.getCode())
+                    .filmName(f.getName())
+                    .totalNormalTicket(totalNormalTicket)
+                    .totalNormalTicketWasSold(totalNormalTicketWasSold)
+                    .totalVIPTicket(totalVIPTicket)
+                    .totalVIPTicketWasSold(totalVIPTicketWasSold)
+                    .totalSweetTicket(totalSweetTicket)
+                    .totalSweetTicketWasSold(totalSweetTicketWasSold)
+                    .build());
+        });
+        return responses;
+    }
+
+    private List<OccupancyRateDetailReportResponse> getDefaultOccupancyReport(List<Location> locations, List<Showtime> showtimes, List<Film> films) {
+        List<OccupancyRateDetailReportResponse> responses = new ArrayList<>();
+        locations.forEach(l -> {
+            films.forEach(f -> {
+                List<Showtime> showtimesTmp = showtimes.stream()
+                        .filter(s -> Objects.equals(s.getLocationId(), l.getId()) && Objects.equals(s.getFilmId(), f.getId()))
+                        .collect(Collectors.toList());
+
+                long totalNormalTicket = showtimesTmp.stream().map(Showtime::calNormalTicket).reduce(0L, Long::sum);
+                long totalNormalTicketWasSold = showtimesTmp.stream().map(Showtime::calNormalTicketWasSold).reduce(0L, Long::sum);
+                long totalVIPTicket = showtimesTmp.stream().map(Showtime::calVIPTicket).reduce(0L, Long::sum);
+                long totalVIPTicketWasSold = showtimesTmp.stream().map(Showtime::calVIPTicketWasSold).reduce(0L, Long::sum);
+                long totalSweetTicket = showtimesTmp.stream().map(Showtime::calSweetTicket).reduce(0L, Long::sum);
+                long totalSweetTicketWasSold = showtimesTmp.stream().map(Showtime::calSweetTicketWasSold).reduce(0L, Long::sum);
+                responses.add(OccupancyRateDetailReportResponse.builder()
+                        .locationCode(l.getCode())
+                        .locationName(l.getName())
+                        .filmCode(f.getCode())
+                        .filmName(f.getName())
+                        .totalNormalTicket(totalNormalTicket)
+                        .totalNormalTicketWasSold(totalNormalTicketWasSold)
+                        .totalVIPTicket(totalVIPTicket)
+                        .totalVIPTicketWasSold(totalVIPTicketWasSold)
+                        .totalSweetTicket(totalSweetTicket)
+                        .totalSweetTicketWasSold(totalSweetTicketWasSold)
+                        .build());
+            });
+        });
+
+        return responses;
     }
 
     @Override

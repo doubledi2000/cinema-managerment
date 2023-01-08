@@ -8,12 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@EqualsAndHashCode(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RolePermission extends AuditableDomain {
     private String id;
     private Property property;

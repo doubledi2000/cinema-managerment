@@ -8,6 +8,7 @@ import com.it.doubledi.cinemamanager.domain.command.RoomUpdateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.constant.Constant;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.RoomStatus;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -15,11 +16,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-@EqualsAndHashCode(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Room extends AuditableDomain {
     private String id;
     private String code;

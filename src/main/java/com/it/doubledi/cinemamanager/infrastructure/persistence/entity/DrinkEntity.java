@@ -1,19 +1,21 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.DrinkStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "drinks")
-@AllArgsConstructor
-@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DrinkEntity extends AuditableEntity {
 
     @Id

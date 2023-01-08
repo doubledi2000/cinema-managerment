@@ -1,11 +1,10 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
@@ -13,10 +12,11 @@ import javax.persistence.*;
 @Table(name = "film_producer", indexes = {
         @Index(name = "film_producer_deleted_idx", columnList = "deleted")
 })
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
-@Builder
-@AllArgsConstructor
+@SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 public class FilmProducerEntity extends AuditableEntity {
     @Id
     @Column(name = "id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)

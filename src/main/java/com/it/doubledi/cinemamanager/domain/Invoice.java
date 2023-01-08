@@ -1,5 +1,6 @@
 package com.it.doubledi.cinemamanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ItemType;
@@ -7,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
@@ -14,8 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@EqualsAndHashCode(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Invoice extends AuditableDomain {

@@ -1,11 +1,10 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -15,10 +14,11 @@ import java.util.Objects;
 @Table(name = "user_role", indexes = {
         @Index(name = "user_role_deleted_idx", columnList = "deleted")
 })
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
-@AllArgsConstructor
+@SuperBuilder
 @NoArgsConstructor
-@Builder
+@AllArgsConstructor
 public class UserRoleEntity extends AuditableEntity {
     @Id
     @Column(name = "id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH, nullable = false)

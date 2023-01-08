@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.util.CollectionUtils;
 
 import java.time.DayOfWeek;
@@ -20,11 +21,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PriceConfig extends AuditableDomain {
     private String id;
     private PriceConfigType type;

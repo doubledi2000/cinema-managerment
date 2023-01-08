@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -20,11 +21,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@EqualsAndHashCode(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Role extends AuditableDomain {
     private String id;
     private String code;

@@ -10,7 +10,9 @@ import com.it.doubledi.cinemamanager.domain.repository.FileRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.DrinkEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.FileEntity;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.entity.LocationEntity;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.DrinkEntityMapper;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.mapper.FileEntityMapper;
+import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.DrinkEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.FileEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.persistence.repository.LocationEntityRepository;
 import com.it.doubledi.cinemamanager.infrastructure.support.errors.NotFoundError;
@@ -30,8 +32,8 @@ public class DrinkDomainRepositoryImpl extends AbstractDomainRepository<Drink, D
     private final FileEntityMapper fileEntityMapper;
     private final LocationEntityRepository locationEntityRepository;
 
-    public DrinkDomainRepositoryImpl(JpaRepository<DrinkEntity, String> jpaRepository,
-                                     EntityMapper<Drink, DrinkEntity> entityMapper,
+    public DrinkDomainRepositoryImpl(DrinkEntityRepository jpaRepository,
+                                     DrinkEntityMapper entityMapper,
                                      FileRepository fileRepository,
                                      FileEntityRepository fileEntityRepository,
                                      FileEntityMapper fileEntityMapper,

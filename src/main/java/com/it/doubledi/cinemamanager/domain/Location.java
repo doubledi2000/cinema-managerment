@@ -1,13 +1,16 @@
 package com.it.doubledi.cinemamanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.util.IdUtils;
 import com.it.doubledi.cinemamanager.domain.command.LocationCreateCmd;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.LocationStatus;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@EqualsAndHashCode(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Location extends AuditableDomain {

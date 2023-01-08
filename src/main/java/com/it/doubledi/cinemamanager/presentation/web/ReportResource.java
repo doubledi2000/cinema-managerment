@@ -3,6 +3,7 @@ package com.it.doubledi.cinemamanager.presentation.web;
 import com.it.doubledi.cinemamanager._common.model.dto.response.Response;
 import com.it.doubledi.cinemamanager.application.dto.request.OccupancyRateReportRequest;
 import com.it.doubledi.cinemamanager.application.dto.request.RevenueReportRequest;
+import com.it.doubledi.cinemamanager.application.dto.response.OccupancyRateDetailReportResponse;
 import com.it.doubledi.cinemamanager.application.dto.response.OccupancyRateReportResponse;
 import com.it.doubledi.cinemamanager.application.dto.response.RevenueReportByYearResponse;
 import com.it.doubledi.cinemamanager.application.dto.response.RevenueReportResponse;
@@ -20,13 +21,13 @@ public interface ReportResource {
     @PreAuthorize("hasPermission(null, 'report:view')")
     Response<List<RevenueReportByYearResponse>> revenueReportByYear(RevenueReportRequest request);
 
-        @GetMapping("/reports/revenue")
+    @GetMapping("/reports/revenue")
     @PreAuthorize("hasPermission(null, 'report:view')")
     Response<List<RevenueReportResponse>> revenueReport(@Valid RevenueReportRequest request);
 
-    @GetMapping("/reports/occupancy-rate-by-month")
+    @GetMapping("/reports/occupancy-detail")
     @PreAuthorize("hasPermission(null, 'report:view')")
-    Response<List<OccupancyRateReportResponse>> occupancyRateReportByMonth(OccupancyRateReportRequest request);
+    Response<List<OccupancyRateDetailReportResponse>> occupancyRateReportDetail(OccupancyRateReportRequest request);
 
     @GetMapping("/reports/occupancy")
     @PreAuthorize("hasPermission(null, 'report:view')")

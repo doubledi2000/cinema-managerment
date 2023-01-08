@@ -1,9 +1,11 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -15,7 +17,11 @@ import java.util.Objects;
         @Index(name = "chair_deleted_idx", columnList = "deleted"),
         @Index(name = "chair_row_id_idx", columnList = "row_id")
 })
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChairEntity extends AuditableEntity {
     @Id
     @Column(name = "id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)

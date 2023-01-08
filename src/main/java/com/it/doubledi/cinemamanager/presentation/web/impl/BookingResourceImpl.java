@@ -33,6 +33,6 @@ public class BookingResourceImpl implements BookingResource {
 
     @Override
     public Response<Invoice> getInvoiceById(String id) {
-        return null;
+        return Response.of(this.bookingService.getById(id));
     }
 }

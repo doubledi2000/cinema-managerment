@@ -1,22 +1,24 @@
 package com.it.doubledi.cinemamanager.infrastructure.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.entity.AuditableEntity;
 import com.it.doubledi.cinemamanager._common.model.validator.ValidateConstraint;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.PriceConfigStatus;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.PriceConfigType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.SpecialBy;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.DayOfWeek;
 
 @Entity
 @Table(name = "price_config")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
-@AllArgsConstructor
+@SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 public class PriceConfigEntity extends AuditableEntity {
     @Id
     @Column(name = "id", length = ValidateConstraint.LENGTH.ID_MAX_LENGTH)

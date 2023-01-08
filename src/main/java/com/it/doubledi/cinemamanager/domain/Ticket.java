@@ -1,17 +1,24 @@
 package com.it.doubledi.cinemamanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager.application.dto.request.TicketBookingRequest;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.ChairType;
 import com.it.doubledi.cinemamanager.infrastructure.support.enums.TicketStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
-@Builder
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Ticket extends AuditableDomain {
     private String id;
     private String code;

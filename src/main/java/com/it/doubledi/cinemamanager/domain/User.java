@@ -1,5 +1,6 @@
 package com.it.doubledi.cinemamanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.doubledi.cinemamanager._common.model.domain.AuditableDomain;
 import com.it.doubledi.cinemamanager._common.model.enums.Gender;
 import com.it.doubledi.cinemamanager._common.model.enums.UserLevel;
@@ -15,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
@@ -23,10 +25,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
-@Builder
-@AllArgsConstructor
+@SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 public class User extends AuditableDomain {
     private String id;
     private String username;
